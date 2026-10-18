@@ -1,0 +1,30 @@
+# Local credentials; only the example is tracked.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.streamlit/secrets.toml
+# Python environments, caches and build output.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+# Local editor and operating-system files.
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+# Runtime records; use data/samples for fictional test fixtures.
+data/runtime/
+logs/
+*.log
+coverage.xml
