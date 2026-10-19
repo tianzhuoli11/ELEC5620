@@ -1,5 +1,7 @@
 # Shared services
 
+`campus_proxy.py` is Jinjing's provisional course-proxy client for Pet Care. It reads the personal `ELEC5620_API_KEY` from the local environment and sends an OpenAI-compatible chat-completions request. It returns a proposed pet risk; the Pet Care handler validates that proposal against its sensor rules. It does not contain or store a key.
+
 Store the LLM adapter, configuration loading, notification transport and audit-log persistence here.
 
 - Yang Yang integrates the shared `langchain-openai` adapter for the course `campus-qwen` proxy.
