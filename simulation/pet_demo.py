@@ -36,9 +36,19 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run a simulated pet-monitoring event")
     parser.add_argument("--scenario", choices=("empty_bowl", "unusual_inactivity", "normal_activity"), default="empty_bowl")
     parser.add_argument("--output", type=Path, default=DEFAULT_RECORD_PATH, help="Local JSONL record path")
+    parser.add_argument("--use-campus-llm", action="store_true", help="Call the course API proxy before rule validation")
     args = parser.parse_args()
     event = make_pet_scenario(args.scenario)
-    assessment = monitor_pet_event(event, record_path=args.output)
+    proposal_provider = None
+    if args.use_campus_llm:
+        from services.campus_proxy import CampusProxyConfig, propose_pet_risk
+
+        try:
+            config = CampusProxyConfig.from_environment()
+        except ValueError as exc:
+            parser.error(str(exc))
+        proposal_provider = lambda observation: propose_pet_risk(observation, config)
+    assessment = monitor_pet_event(event, record_path=args.output, proposal_provider=proposal_provider)
     print(json.dumps({"event": event.to_dict(), "assessment": assessment.to_dict(), "record_path": str(args.output)}, indent=2))
     print("Simulated input only. No owner notification or feeder action was performed.")
 
