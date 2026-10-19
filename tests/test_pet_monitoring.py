@@ -3,15 +3,19 @@
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 import unittest
+from io import BytesIO
 from pathlib import Path
+from unittest.mock import patch
 
 from domains.pet_care.monitoring import assess_pet_event
 from domains.pet_care.records import monitor_pet_event
 from models import Event, SensorReading
 from simulation.events import make_sensor_event
 from simulation.pet_demo import make_pet_scenario
+from services.campus_proxy import CampusProxyConfig, propose_pet_risk
 
 
 class SharedEventTests(unittest.TestCase):
@@ -46,6 +50,41 @@ class PetMonitoringTests(unittest.TestCase):
         result = assess_pet_event(event, lambda _: {"risk_level": "UNKNOWN", "rationale": "x"})
         self.assertEqual(result.risk_level, "MEDIUM")
         self.assertTrue(result.fallback_used)
+
+    def test_valid_campus_proposal_keeps_rule_result_and_explanation(self) -> None:
+        event = make_pet_scenario("empty_bowl")
+        response = {"choices": [{"message": {"content": json.dumps({
+            "risk_level": "MEDIUM", "rationale": "The bowl appears empty."
+        })}}]}
+        config = CampusProxyConfig(api_key="test-only-key")
+        with patch("services.campus_proxy.urlopen", return_value=BytesIO(json.dumps(response).encode())) as send:
+            result = assess_pet_event(event, lambda observation: propose_pet_risk(observation, config))
+        request = send.call_args.args[0]
+        body = json.loads(request.data)
+        self.assertEqual(request.full_url, "http://10.167.60.148:8000/v1/chat/completions")
+        self.assertEqual(request.get_header("Authorization"), "Bearer test-only-key")
+        self.assertEqual(body["model"], "campus-qwen")
+        self.assertNotIn("fictional-pet-1", json.dumps(body))
+        self.assertNotIn("test-only-key", json.dumps(body))
+        self.assertEqual(result.risk_level, "MEDIUM")
+        self.assertEqual(result.model_rationale, "The bowl appears empty.")
+        self.assertFalse(result.fallback_used)
+        self.assertFalse(result.feeding_requested)
+
+    def test_malformed_campus_response_falls_back(self) -> None:
+        config = CampusProxyConfig(api_key="test-only-key")
+        with patch("services.campus_proxy.urlopen", return_value=BytesIO(b"not-json")):
+            result = assess_pet_event(make_pet_scenario("unusual_inactivity"),
+                                      lambda event: propose_pet_risk(event, config))
+        self.assertEqual(result.risk_level, "HIGH")
+        self.assertTrue(result.fallback_used)
+        self.assertIsNone(result.model_rationale)
+
+    def test_missing_key_is_rejected_and_config_repr_hides_key(self) -> None:
+        with patch.dict(os.environ, {"ELEC5620_API_KEY": ""}):
+            with self.assertRaisesRegex(ValueError, "ELEC5620_API_KEY"):
+                CampusProxyConfig.from_environment()
+        self.assertNotIn("test-only-key", repr(CampusProxyConfig(api_key="test-only-key")))
 
     def test_llm_failure_uses_rule_fallback(self) -> None:
         def fail(_: Event) -> dict[str, str]:
