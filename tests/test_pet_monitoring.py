@@ -64,6 +64,7 @@ class PetMonitoringTests(unittest.TestCase):
         self.assertEqual(request.full_url, "http://10.167.60.148:8000/v1/chat/completions")
         self.assertEqual(request.get_header("Authorization"), "Bearer test-only-key")
         self.assertEqual(body["model"], "campus-qwen")
+        self.assertEqual(body["max_completion_tokens"], 1024)
         self.assertNotIn("fictional-pet-1", json.dumps(body))
         self.assertNotIn("test-only-key", json.dumps(body))
         self.assertEqual(result.risk_level, "MEDIUM")
