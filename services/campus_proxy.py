@@ -65,7 +65,7 @@ def propose_pet_risk(event: Event, config: CampusProxyConfig) -> dict[str, Any]:
                 "content": json.dumps({"event_type": event.event_type, "readings": observations}),
             },
         ],
-        "max_completion_tokens": 128,
+        "max_completion_tokens": 1024,
         "stream": False,
     }
     request = Request(
