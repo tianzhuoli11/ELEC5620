@@ -22,6 +22,7 @@ class PetAssessment:
     fallback_used: bool
     evidence: str
     feeding_requested: bool = False
+    model_rationale: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -72,6 +73,7 @@ def assess_pet_event(
     rule_level, rationale, evidence = _rule_assessment(event)
     fallback_used = proposal_provider is None
     policy_override = False
+    model_rationale = None
     if proposal_provider is not None:
         try:
             proposal = proposal_provider(event)
@@ -83,6 +85,8 @@ def assess_pet_event(
             elif proposed_level != rule_level:
                 policy_override = True
                 fallback_used = True
+            else:
+                model_rationale = proposed_reason.strip()
         except Exception:  # A failed external proposal must not stop monitoring.
             fallback_used = True
 
@@ -93,4 +97,5 @@ def assess_pet_event(
         policy_override=policy_override,
         fallback_used=fallback_used,
         evidence=evidence,
+        model_rationale=model_rationale,
     )
