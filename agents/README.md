@@ -2,7 +2,7 @@
 
 Store the shared `HomeCoordinatorAgent`, `MonitoringAgent`, `DeviceAutomationAgent` and LangGraph state graphs, routing, confirmation/timeouts and result aggregation here. Yuanbo Zhang integrates the framework; every domain owner contributes interface needs and tests.
 
-Suggested future files: `coordinator.py`, `monitoring.py`, `automation.py` and `graph.py`. Create them when implementing the functionality.
+Implemented files are `coordinator.py`, `monitoring.py`, `automation.py` and `graph.py`. `SmartHomeWorkflow` assembles the graph once; `run(event)` selects a sensor-assessment path or a direct-goal planning path. The latter skips MonitoringAgent. Both return an assessed, optionally executed, traceable result. The fictional handlers are in `simulation/framework_demo.py`.
 
 Import common types from `models/`, domain handlers from `domains/`, LLM/notification/audit adapters from `services/`, and device operations from `tools/`.
 
