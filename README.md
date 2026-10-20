@@ -4,28 +4,30 @@ Wed 09-11 Group 11 Stage 2 shared repository.
 
 **Option A: Python + LangGraph + Streamlit**, using the course API proxy and the `campus-qwen` model. All five domains reuse the same agents, models and user interface.
 
-The shared framework has runnable, simulated examples for a **sensor event** and a **direct user goal with two device actions**. The coordinator selects the path, and each action has a separate verified result. The goal interpreter in the demo recognises only an exact fictional phrase; campus AI access, real domain rules, notification delivery and the final Streamlit interface are separate integration work. Do not treat the demo as the completed Stage 1 system.
+The root `app.py` runs a Streamlit dashboard with an interactive Pet Care demonstration. Pet Care now routes through the shared coordinator and monitoring agent, records the workflow outcome, and simulates an owner alert for readings needing attention. The other four domain pages are pending their owners' implementations. The offline goal interpreter recognises only a fictional exact phrase, and real notification delivery is not connected yet.
 
-## Run the framework demo
+## Run the dashboard and framework demo
 
-From a clean checkout with Python 3.11 or newer:
+Use Python 3.11 or newer. On Windows, clone or unzip to a short path such as `C:\ELEC5620` before creating a virtual environment; deep paths can exceed the installation path limit.
 
-```bash
+```powershell
 python -m venv .venv
-# Windows PowerShell: .venv\Scripts\python -m pip install -r requirements.txt
-# macOS/Linux: .venv/bin/python -m pip install -r requirements.txt
-.venv\Scripts\python -m simulation.framework_demo
+.venv\Scripts\python -m pip install -r requirements.txt
 .venv\Scripts\python -m unittest discover -s tests -v
+.venv\Scripts\python -m simulation.framework_demo
+.venv\Scripts\python -m streamlit run app.py
 ```
 
-On macOS/Linux use `.venv/bin/python` for the last two commands. The demo prints both paths: a sensor event controlling one simulated light and a direct "Good night" goal controlling a simulated light and thermostat. It includes per-device verification and an agent trace. It needs no API key or network after installation. Streamlit is in the shared dependencies for the later UI; there is not yet a root `app.py` in this branch.
+On macOS/Linux, use `.venv/bin/python` in place of `.venv\Scripts\python`. The framework demo needs no API key after dependencies are installed. Overview and Pet Care provide editable simulated readings, risk assessments and saved local history in the ignored `data/runtime/pet_events.jsonl` file. **Reset inputs** clears the current input and result without deleting history.
 
-On Windows, unzip or clone into a short path such as `C:\ELEC5620` before creating `.venv`; very deep paths can exceed Windows' file-path limit during Streamlit installation. Use that same short-path procedure in the Week 13 clean-deploy rehearsal.
+Campus AI is optional for Pet Care. Set `ELEC5620_API_KEY` in your local environment and connect to the university network or VPN, then enable **Include an AI explanation**. The key is not entered into the page or stored in the repository. If the proxy fails or disagrees with a safety rule, the rule-based result remains visible. Owner alerts are simulated locally for attention-worthy readings; no external message or feeder action occurs.
 
 ## Project structure
 
 ```text
 ELEC5620/
+|-- app.py                     # Streamlit dashboard entry point
+|-- requirements.txt           # Tested framework and dashboard dependencies
 |-- agents/                    # Three shared agents and LangGraph orchestration
 |-- domains/                   # Domain-specific business logic
 |   |-- elderly_safety/        # Yuanbo Zhang
@@ -41,7 +43,6 @@ ELEC5620/
 |-- data/samples/              # Fictional fixtures and demonstration scenarios
 |-- tests/                     # Unit, integration and failure-path tests
 |-- docs/                      # Interfaces, collaboration and deployment guidance
-|-- requirements.txt           # Python dependencies for the shared stack
 |-- .env.example               # Configuration example without real credentials
 `-- .gitignore                 # Local credentials, environments and generated output
 ```
@@ -58,7 +59,7 @@ Each directory has a README explaining its contents and integration boundaries. 
 | Yan Li (Flora in Jira) | `domains/home_security/` | `yan-li` | Security rules and notification integration |
 | Tianzhuo Li | `domains/energy_comfort/` | `tianzhuo-li` | Environment, preference and energy context |
 
-The team must nominate a UI integration lead. Each member supplies the inputs, outputs and demonstration scenarios for their domain. Jira remains the source for task ownership, acceptance criteria and planned dates.
+The initial dashboard was created on Jinjing Huang's branch for the Pet Care demonstration. The team should nominate a UI integration lead for the remaining domains. Each member supplies the inputs, outputs and demonstration scenarios for their domain. Jira remains the source for task ownership, acceptance criteria and planned dates.
 
 ## Shared execution flow
 
@@ -76,8 +77,8 @@ Synchronise your branch with the latest `main` before development. Personal bran
 
 ## Configuration and delivery
 
-Use [.env.example](.env.example) for the proposed variable names. Real keys belong only in local environment variables or an ignored `.env` file. The framework demo does not load configuration or call the model; the campus AI adapter is still to be implemented.
+Use [.env.example](.env.example) for variable names. Real keys belong only in local environment variables or an ignored `.env` file. Pet Care reads environment variables directly; `.env` is not loaded automatically. The framework demo needs no key, and the shared campus goal interpreter is still to be implemented.
 
 Do not commit real resident data, private contacts, credentials, virtual environments or runtime logs. Clearly label simulated data and devices.
 
-The final application still needs its Streamlit entry point, campus goal interpreter, configuration loading, integrated domains, notification delivery, persistent audit records and clean-deploy rehearsal. Canvas submission is due **1 November 2026, 23:59 Australia/Sydney**. All members must download the submitted source and redeploy it during the Week 13 demonstration.
+The final application still needs all five domains integrated, real notification delivery, persistent shared audit records and a clean-deploy rehearsal. Rehearse deployment from a clean directory by 31 October. Canvas submission is due **1 November 2026, 23:59 Australia/Sydney**. All members must download the submitted source and redeploy it during the Week 13 demonstration.

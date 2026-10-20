@@ -10,6 +10,8 @@
 .deps/
 .tmp/
 venv/
+.deps/
+.tmp/
 __pycache__/
 *.py[cod]
 .pytest_cache/

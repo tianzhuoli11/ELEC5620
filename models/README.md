@@ -8,4 +8,4 @@ Common Python dataclasses and validation live here. `docs/INTERFACES.md` describ
 - Tianzhuo Li: environment, preference, energy and HomeMode context.
 - Yan Li: safety decisions and notification-result fields.
 
-The baseline uses frozen dataclasses. Do not create incompatible Event definitions in individual domains. Models must not import Streamlit, call an LLM/network service or execute device actions.
+The baseline uses frozen dataclasses. `events.py` defines `Event` and `SensorReading` with timezone-aware timestamp checks and `to_dict()` output. `Event.readings` carries sensor observations, and `Event.simulated` labels test inputs. Do not create incompatible Event definitions in individual domains. Models must not import Streamlit, call an LLM/network service or execute device actions. Coordinate public field changes with the team.
