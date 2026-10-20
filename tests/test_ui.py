@@ -89,6 +89,8 @@ class HavenAppTests(unittest.TestCase):
         self.assertEqual(len(records), 1)
         self.assertEqual(records[0]["event"]["event_type"], "pet_bowl_level")
         self.assertEqual(records[0]["assessment"]["risk_level"], "MEDIUM")
+        self.assertEqual(records[0]["workflow"]["notification_result"]["status"], "SIMULATED")
+        self.assertEqual(self.app.session_state["pet_result"]["workflow"].notification_result.status, "SIMULATED")
         self.assertEqual(self.app.session_state["pet_result"]["observation"], "Food bowl")
         self.assertIn("Needs attention", self.markdown())
         self.assertIn("refill it as appropriate", self.markdown())

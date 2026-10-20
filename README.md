@@ -4,7 +4,7 @@ Wed 09-11 Group 11 Stage 2 shared repository.
 
 **Option A: Python + LangGraph + Streamlit**, using the course API proxy and the `campus-qwen` model. All five domains reuse the same agents, models and user interface.
 
-The root `app.py` runs a Streamlit dashboard with an interactive Pet Care demonstration. The shared framework also provides a simulated sensor path and a direct user-goal path with two verified device actions. The Pet Care page is being connected to that framework; the other four domain pages are pending their owners' implementations. The offline goal interpreter recognises only a fictional exact phrase, and the campus goal interpreter and notification delivery are not connected yet.
+The root `app.py` runs a Streamlit dashboard with an interactive Pet Care demonstration. Pet Care now routes through the shared coordinator and monitoring agent, records the workflow outcome, and simulates an owner alert for readings needing attention. The other four domain pages are pending their owners' implementations. The offline goal interpreter recognises only a fictional exact phrase, and real notification delivery is not connected yet.
 
 ## Run the dashboard and framework demo
 
@@ -20,7 +20,7 @@ python -m venv .venv
 
 On macOS/Linux, use `.venv/bin/python` in place of `.venv\Scripts\python`. The framework demo needs no API key after dependencies are installed. Overview and Pet Care provide editable simulated readings, risk assessments and saved local history in the ignored `data/runtime/pet_events.jsonl` file. **Reset inputs** clears the current input and result without deleting history.
 
-Campus AI is optional for Pet Care. Set `ELEC5620_API_KEY` in your local environment and connect to the university network or VPN, then enable **Include an AI explanation**. The key is not entered into the page or stored in the repository. If the proxy fails or disagrees with a safety rule, the rule-based result remains visible. No owner notification or feeder action occurs yet.
+Campus AI is optional for Pet Care. Set `ELEC5620_API_KEY` in your local environment and connect to the university network or VPN, then enable **Include an AI explanation**. The key is not entered into the page or stored in the repository. If the proxy fails or disagrees with a safety rule, the rule-based result remains visible. Owner alerts are simulated locally for attention-worthy readings; no external message or feeder action occurs.
 
 ## Project structure
 
@@ -81,4 +81,4 @@ Use [.env.example](.env.example) for variable names. Real keys belong only in lo
 
 Do not commit real resident data, private contacts, credentials, virtual environments or runtime logs. Clearly label simulated data and devices.
 
-The final application still needs all five domains integrated, notification delivery, persistent audit records and a clean-deploy rehearsal. Rehearse deployment from a clean directory by 31 October. Canvas submission is due **1 November 2026, 23:59 Australia/Sydney**. All members must download the submitted source and redeploy it during the Week 13 demonstration.
+The final application still needs all five domains integrated, real notification delivery, persistent shared audit records and a clean-deploy rehearsal. Rehearse deployment from a clean directory by 31 October. Canvas submission is due **1 November 2026, 23:59 Australia/Sydney**. All members must download the submitted source and redeploy it during the Week 13 demonstration.

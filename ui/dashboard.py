@@ -11,7 +11,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from domains.pet_care.records import monitor_pet_event
+from domains.pet_care.integration import monitor_pet_workflow
 from simulation.events import make_sensor_event
 from simulation.pet_demo import DEFAULT_RECORD_PATH
 
@@ -159,8 +159,8 @@ def _check_workspace() -> None:
                     provider = lambda observation: propose_pet_risk(observation, config)
                 try:
                     with st.spinner("Assessing and saving…"):
-                        assessment = monitor_pet_event(event, record_path=DEFAULT_RECORD_PATH, proposal_provider=provider)
-                    st.session_state.pet_result = {"event": event, "assessment": assessment, "requested_ai": use_ai, "observation": selected, "reading": f"{value:g} {unit}"}
+                        checked = monitor_pet_workflow(event, record_path=DEFAULT_RECORD_PATH, proposal_provider=provider)
+                    st.session_state.pet_result = {"event": event, "assessment": checked.assessment, "workflow": checked.workflow, "requested_ai": use_ai, "observation": selected, "reading": f"{value:g} {unit}"}
                     st.rerun()
                 except OSError:
                     _clear_result()
@@ -172,7 +172,7 @@ def _check_workspace() -> None:
             if not isinstance(result, dict):
                 st.markdown('<div class="result-placeholder"><span class="waiting-dot"></span><h3>Ready for a reading</h3><p>Choose a scenario, adjust the value and run a check.</p></div>', unsafe_allow_html=True)
             else:
-                event, assessment = result["event"], result["assessment"]
+                event, assessment, workflow = result["event"], result["assessment"], result["workflow"]
                 risk = assessment.risk_level
                 st.markdown(f'<div class="result-banner risk-{risk.lower()}"><span class="risk-label">{risk} RISK</span><h3>{escape(RISK_LABELS[risk])}</h3><p>{escape(assessment.rationale)}</p></div><div class="next-step"><span>NEXT STEP</span><p>{escape(_recommendation(event, risk))}</p></div>', unsafe_allow_html=True)
                 if assessment.model_rationale:
@@ -181,11 +181,18 @@ def _check_workspace() -> None:
                     st.warning("AI was unavailable or its proposal did not match the rule. The rule-based result was kept.")
                 else:
                     st.caption("Rule-based assessment · AI was not requested")
+                notice = workflow.notification_result
+                if notice is not None and notice.status == "SIMULATED":
+                    st.info("Owner alert simulated and saved locally. No message was sent to a real person.")
+                elif notice is not None:
+                    st.warning(f"Owner alert was not delivered: {notice.detail}")
+                else:
+                    st.caption("No owner alert needed for this reading.")
                 st.markdown(f'<div class="completion-line">{icon("check")} Reading assessed <span>→</span> Record saved</div>', unsafe_allow_html=True)
                 st.caption(f'{result["observation"]} · {result.get("reading", "Sample reading")} · {_local_time(event.timestamp)}')
                 with st.expander("Event details"):
-                    st.caption("No notification was sent. No feeder or other device was activated.")
-                    st.json({"event": event.to_dict(), "assessment": assessment.to_dict()})
+                    st.caption("No feeder or other device was activated. Any owner alert is simulated only.")
+                    st.json({"event": event.to_dict(), "assessment": assessment.to_dict(), "workflow": workflow.to_dict()})
 
 
 def _history(records: list[dict]) -> None:

@@ -1,4 +1,4 @@
-"""Sprint 0 pet event and assessment recording."""
+"""Original Sprint 0 assessment-only recording; shared workflow lives in integration.py."""
 
 from __future__ import annotations
 
@@ -19,7 +19,8 @@ def monitor_pet_event(
 ) -> PetAssessment:
     """Assess and persist an event before returning its result.
 
-    This is the domain entry point for the future shared MonitoringAgent.
+    This remains the assessment-only entry point for older tests and fixtures.
+    New UI and CLI flows use ``integration.monitor_pet_workflow``.
     Persistence errors are surfaced; callers must not report an unrecorded
     assessment as a completed monitoring flow.
     """

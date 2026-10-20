@@ -6,7 +6,7 @@ import argparse
 import json
 from pathlib import Path
 
-from domains.pet_care.records import monitor_pet_event
+from domains.pet_care.integration import monitor_pet_workflow
 from models import Event
 from simulation.events import make_sensor_event
 
@@ -48,9 +48,10 @@ def main() -> None:
         except ValueError as exc:
             parser.error(str(exc))
         proposal_provider = lambda observation: propose_pet_risk(observation, config)
-    assessment = monitor_pet_event(event, record_path=args.output, proposal_provider=proposal_provider)
-    print(json.dumps({"event": event.to_dict(), "assessment": assessment.to_dict(), "record_path": str(args.output)}, indent=2))
-    print("Simulated input only. No owner notification or feeder action was performed.")
+    result = monitor_pet_workflow(event, record_path=args.output, proposal_provider=proposal_provider)
+    print(json.dumps({"event": event.to_dict(), "assessment": result.assessment.to_dict(),
+                      "workflow": result.workflow.to_dict(), "record_path": str(args.output)}, indent=2))
+    print("Simulated input only. Alerts, when needed, are local-only; no external notification or feeder action occurred.")
 
 
 if __name__ == "__main__":
