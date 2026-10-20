@@ -6,4 +6,4 @@ Future tests can be organised under `unit/` and `integration/`, using `test_*.py
 
 Cover model timeout, unsafe-action rejection, notification failure, offline devices, state mismatch and pet core completion with optional feeding disabled. Record expected versus actual results and link evidence in Jira.
 
-Review and deployment records belong in `docs/`. This scaffold does not include implemented tests or passing-test claims.
+`test_framework.py` covers sensor and direct-goal routing, two-device verification, partial failure and stop-on-failure behavior, a whole-plan review gate, ambiguity, bad event IDs, offline devices, mismatched and failed readback, and unavailable notifications. Run `python -m unittest discover -s tests -v`. Domain and real proxy tests remain to be added by the relevant owners.

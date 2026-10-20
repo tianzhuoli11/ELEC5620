@@ -2,7 +2,8 @@
 
 Store interface agreements, installation/configuration/startup instructions, demo scripts, test-result notes, actual Sprint Review/Retrospective records and contribution-statement preparation here.
 
-- `INTERFACES.md`: proposed common fields and module boundaries for team agreement.
+- `INTERFACES.md`: implemented baseline contracts and current limitations.
+- `INTEGRATION_GUIDE.md`: how each owner connects a domain and rehearses deployment.
 - `CONTRIBUTING.md`: named branches, main synchronisation, Pull Requests and Jira workflow.
 - Add real deployment and review records as work happens; do not prefill unperformed meetings/tests.
 
