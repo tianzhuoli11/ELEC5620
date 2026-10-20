@@ -7,6 +7,8 @@
 .streamlit/secrets.toml
 # Python environments, caches and build output.
 .venv/
+.deps/
+.tmp/
 venv/
 .deps/
 .tmp/

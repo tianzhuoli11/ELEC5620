@@ -4,7 +4,7 @@
 
 Store the LLM adapter, configuration loading, notification transport and audit-log persistence here.
 
-- Yang Yang integrates the shared `langchain-openai` adapter for the course `campus-qwen` proxy.
+- `goals.py` defines the shared `GoalInterpreter` contract. Yang Yang integrates a campus `campus-qwen` implementation after validating structured output against domain policy. The deterministic interpreter in `simulation/goals.py` is only an offline example.
 - Yan Li integrates notification interfaces with Yuanbo's caregiver workflow.
 - All members agree audit fields for events, assessments, confirmations, actions and failures.
 

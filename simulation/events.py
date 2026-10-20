@@ -32,3 +32,14 @@ def make_sensor_event(
         simulated=True,
         readings=(reading,),
     )
+
+
+def make_user_goal_event(text: str) -> Event:
+    """Create a simulated direct user request without pretending it is a sensor."""
+    if not text.strip():
+        raise ValueError("user goal text is required")
+    return Event(
+        event_id=str(uuid4()), event_type="user_goal", source="simulated-user",
+        timestamp=datetime.now(timezone.utc).isoformat(),
+        context={"text": text.strip()}, simulated=True,
+    )

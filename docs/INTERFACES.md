@@ -1,33 +1,35 @@
-# Shared interface draft
+# Shared Python contracts (baseline 2)
 
-These proposed fields consolidate the team plan for agreement before implementation. They do not define an existing runnable API or mandate a Python validation library.
+These are the implemented interfaces in `models/`, `domains/base.py`, `tools/device.py`, `services/goals.py`, and `services/notifications.py`. Changes to public fields need a coordinated PR because every domain imports them.
 
-## Event and Sensor
+## Input and ownership
 
-Event: `event_id`, `event_type`, `source`, `timestamp`, `context`; add an explicit `simulated` flag. Use timezone-aware ISO 8601 timestamps and preserve the event ID throughout its lifecycle.
+`Event(event_id, event_type, source, timestamp, context, simulated, readings)` has a timezone-aware ISO 8601 timestamp. `SensorReading(sensor_id, reading_type, value, unit, observed_at)` holds one observation. Event IDs must be preserved in every later message. `simulation.events.make_sensor_event(...)` creates a fresh simulated sensor event; `make_user_goal_event(text)` creates a direct simulated user request with `event_type="user_goal"` and `context["text"]`.
 
-Sensor/readings should identify the sensor, type, value, unit and observation time. Jinjing coordinates validation and each member provides domain examples. Do not independently invent conflicting shared fields.
+A domain exports a handler with `domain: str`, `supports(event) -> bool` and `assess(event) -> MonitoringDecision` for sensor events. A direct-goal handler additionally provides `supports_goal(goal) -> bool` and `plan_goal(event, goal) -> GoalPlan`. Exactly one handler must support an event or structured goal. Zero or multiple matches raise an error before any action. Register handlers with `SmartHomeWorkflow([handler_a, ...], device_tool, notifier=None, goal_interpreter=None)` and call `run(event)`.
 
-## RiskAssessment
+`GoalInterpreter.interpret(event) -> GoalInterpretation(event_id, domain, intent, parameters, evidence, clarification_question)` is a shared service boundary. The coordinator uses it for user goals and validates the event ID and unique owning domain. If a clarification question is present, it returns that question without contacting a domain handler or device. Otherwise, `GoalPlan(assessment, action_requests, notification_request)` is returned by domain policy through DeviceAutomationAgent's planning step; MonitoringAgent is skipped. A model's interpretation is untrusted and cannot itself authorize an action.
 
-`event_id`, `risk_level`, `rationale`, `policy_override`. Use `LOW`, `MEDIUM`, `HIGH`. Add evidence source and fallback indicators as agreed; unavailable facts remain unknown.
+## Monitoring decision
 
-Validate LLM proposals against deterministic rules. Define and test scenario thresholds in the appropriate domain; a model proposal is not execution authorisation.
+`MonitoringDecision` contains a required `RiskAssessment`, an optional legacy singular `action_request`, optional additional `action_requests`, and an optional `NotificationRequest`. `decision.actions` combines the action fields in execution order. New code may use `action_requests` alone.
 
-## ActionRequest and ActionResult
+- `RiskAssessment`: `event_id`, `domain`, `risk_level` (`LOW`/`MEDIUM`/`HIGH`), `rationale`, `evidence`, `policy_override`, `fallback_used`, `requires_human_review`.
+- `ActionRequest`: `event_id`, `device_id`, `action`, `parameters`, nonempty `expected_state`, `authorization` (`POLICY`/`HUMAN`), `simulated`.
+- `NotificationRequest`: `event_id`, `recipient_ref`, `message`, `simulated`.
 
-ActionRequest: `device_id`, `action`, `parameters`, `authorisation`, with `event_id` where needed for tracing.
+The domain must validate any LLM proposal against its deterministic policy before returning a decision. A string in `authorization` is metadata, not proof that a human approved anything. This baseline has no approval UI: `requires_human_review=True` or `authorization="HUMAN"` prevents dispatch. Do not send physical-device actions until a separately reviewed authorization and device adapter exist.
 
-ActionResult: `success`, `returned_state`, `verified`, `error`. Dispatch does not prove success; clearly report unverified, partial, offline and failed outcomes.
+## Execution result
 
-## Notifications and AuditLog
+`DeviceTool.dispatch(request) -> DispatchResult(accepted, error)` and `read_state(device_id) -> dict` are separate calls. `DeviceAutomationAgent` checks **all** action IDs, simulation flags and review requirements before any dispatch, then sends commands in order. It compares each `expected_state` key to the independently returned state and skips later commands after a failed step.
 
-Represent simulated, failed, sent, acknowledged and timeout outcomes only where actually supported. Simulated sending or API acceptance is not recipient acknowledgement.
+`ActionResult` records `accepted`, `verified`, `returned_state`, `error`, `simulated`; `success` is true only if accepted **and** verified. A failed readback after accepted dispatch remains `accepted=True, verified=False`.
 
-AuditLog: `event_id`, `agent`, `action`, `outcome`, `timestamp`. Link events, assessments and action results without keys or unnecessary personal data.
+`NotificationService.send(request) -> NotificationResult` reports `SIMULATED`, `SENT`, `FAILED`, or `UNAVAILABLE` plus `acknowledged`. No adapter means `UNAVAILABLE`. Sending is not the same as recipient acknowledgement.
 
-## Module boundaries
+`WorkflowResult.to_dict()` supplies serializable event, assessment, `action_results`, first-action compatibility field `action_result`, optional `goal`, notification outcome, overall `outcome` (`ASSESSED`, `COMPLETE`, `PARTIAL`, `FAILED`, `CLARIFICATION_REQUIRED`) and a timestamped agent trace. The trace is in-memory for this baseline; persistent audit storage is a later integration task.
 
-`ui/` and `simulation/` provide inputs; `agents/` orchestrates; `domains/` evaluates scenario rules; `models/` defines common types; `services/` provides LLM, notification and audit access; `tools/` provides device entry points, with simulated state in `simulation/`.
+## Current limits
 
-Business logic must not import the UI. Shared-field/entry-point changes require example payloads in a PR and communication with affected members.
+The executable demo uses deterministic rules, an exact-phrase goal interpreter, and in-memory simulated light and thermostat devices. It does not call the campus model, send notifications, operate real devices, provide a web UI, or persist audit records. Those integrations must preserve these contracts and report their actual outcomes.
