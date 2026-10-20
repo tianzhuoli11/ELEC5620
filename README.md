@@ -4,12 +4,29 @@ Wed 09-11 Group 11 Stage 2 shared repository.
 
 **Option A: Python + LangGraph + Streamlit**, using the course API proxy and the `campus-qwen` model. All five domains reuse the same agents, models and user interface.
 
-This scaffold documents directories and collaboration rules. It is not a runnable application yet. A root `app.py` entry point, tested dependency versions, configuration loading and startup instructions will be added with the implementation.
+The root `app.py` now runs a Streamlit dashboard with an interactive Pet Care demonstration. The other domain pages clearly identify modules that are still awaiting integration. The shared agent orchestration is still in progress.
+
+## Run the dashboard
+
+Use Python 3.11 or later. From the repository root:
+
+```powershell
+python -m pip install -r requirements.txt
+python -m streamlit run app.py
+```
+
+Open the local address printed by Streamlit (normally `http://localhost:8501`). Overview and Pet Care both provide a working input panel. Choose a scenario, edit the reading if needed, and click **Run check**. The risk, explanation, and event record are produced by the existing Pet Care module. Summary cards update from saved samples; history can be filtered by risk. Results are appended to the ignored local file `data/runtime/pet_events.jsonl`. **Reset inputs** clears the current input/result without deleting history.
+
+Campus AI is optional. To enable it, set `ELEC5620_API_KEY` in your local environment before starting Streamlit and connect to the university network or VPN. The key is never entered into the web page or stored in the repository. Open **AI options** and enable **Include an AI explanation** before running a check. If the proxy fails or disagrees with a safety rule, the rule-based result remains visible. The demo never sends owner notifications or controls a feeder.
+
+Run the existing checks with `python -m unittest discover -s tests -v`. For the Week 13 demonstration, install dependencies first, then download the submitted source from Canvas and run these commands from that downloaded copy.
 
 ## Project structure
 
 ```text
 ELEC5620/
+|-- app.py                     # Streamlit dashboard entry point
+|-- requirements.txt           # Dashboard dependency
 |-- agents/                    # Three shared agents and LangGraph orchestration
 |-- domains/                   # Domain-specific business logic
 |   |-- elderly_safety/        # Yuanbo Zhang
@@ -41,7 +58,7 @@ Each directory has a README explaining its contents and integration boundaries. 
 | Yan Li (Flora in Jira) | `domains/home_security/` | `yan-li` | Security rules and notification integration |
 | Tianzhuo Li | `domains/energy_comfort/` | `tianzhuo-li` | Environment, preference and energy context |
 
-The team must nominate a UI integration lead. Each member supplies the inputs, outputs and demonstration scenarios for their domain. Jira remains the source for task ownership, acceptance criteria and planned dates.
+The initial dashboard was created on Jinjing Huang's branch for the Pet Care demonstration. The team should nominate a UI integration lead for the remaining domains. Each member supplies the inputs, outputs and demonstration scenarios for their domain. Jira remains the source for task ownership, acceptance criteria and planned dates.
 
 ## Shared execution flow
 
@@ -59,8 +76,8 @@ Synchronise your branch with the latest `main` before development. Personal bran
 
 ## Configuration and delivery
 
-Use [.env.example](.env.example) for the proposed variable names. Real keys belong only in local environment variables or an ignored `.env` file. The application must explicitly implement configuration loading; this scaffold does not load configuration or call the model.
+Use [.env.example](.env.example) for variable names. Real keys belong only in local environment variables or an ignored `.env` file. The Pet Care flow reads environment variables directly; `.env` is not loaded automatically. Other domain configuration is still pending.
 
 Do not commit real resident data, private contacts, credentials, virtual environments or runtime logs. Clearly label simulated data and devices.
 
-The runnable application must include tested dependency versions, installation/configuration instructions, startup commands and test steps. Rehearse deployment from a clean directory by 31 October. Canvas submission is due **1 November 2026, 23:59 Australia/Sydney**. All members must download the submitted source and redeploy it during the Week 13 demonstration.
+Rehearse deployment from a clean directory by 31 October. Canvas submission is due **1 November 2026, 23:59 Australia/Sydney**. All members must download the submitted source and redeploy it during the Week 13 demonstration.

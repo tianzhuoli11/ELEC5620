@@ -8,6 +8,8 @@
 # Python environments, caches and build output.
 .venv/
 venv/
+.deps/
+.tmp/
 __pycache__/
 *.py[cod]
 .pytest_cache/
