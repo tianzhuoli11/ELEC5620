@@ -1,3 +1,3 @@
 # Dashboard assets
 
-`living_room.png` is an original generated illustration used as the overview banner. Keep visual assets in this folder so the dashboard runs offline from the submitted source.
+Put optional dashboard images in this folder and commit any image that the running app actually loads. The current dashboard renders without an image asset.
