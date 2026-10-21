@@ -12,6 +12,10 @@ from models import (
 )
 from tools.device import DeviceTool
 
+from .control_policy import (
+    LightShutdownEligibility, LightShutdownPolicyInput,
+    assess_light_shutdown_eligibility,
+)
 from .monitoring import EnergyComfortAssessment, assess_energy_comfort
 
 
@@ -112,6 +116,15 @@ class EnergyComfortWorkflowOutcome:
     workflow: WorkflowResult
 
 
+@dataclass(frozen=True)
+class EnergyComfortEligibilityOutcome:
+    """Assessment plus a non-executable, domain-only control eligibility result."""
+
+    assessment: EnergyComfortAssessment
+    eligibility: LightShutdownEligibility
+    workflow: WorkflowResult
+
+
 def monitor_energy_comfort_workflow(
     event: Event, *, device_tool: DeviceTool | None = None,
 ) -> EnergyComfortWorkflowOutcome:
@@ -123,3 +136,25 @@ def monitor_energy_comfort_workflow(
     if handler.energy_assessment is None:
         raise RuntimeError("Energy & Comfort handler did not produce an assessment")
     return EnergyComfortWorkflowOutcome(handler.energy_assessment, workflow)
+
+
+def evaluate_light_shutdown_candidate(
+    event: Event,
+    policy_input: LightShutdownPolicyInput | None = None,
+    *,
+    trusted_authorization_sources: frozenset[str] = frozenset(),
+    device_tool: DeviceTool | None = None,
+) -> EnergyComfortEligibilityOutcome:
+    """Run assessment then evaluate eligibility without creating an action."""
+
+    context = context_from_event(event)
+    outcome = monitor_energy_comfort_workflow(event, device_tool=device_tool)
+    eligibility = assess_light_shutdown_eligibility(
+        outcome.assessment,
+        context,
+        policy_input,
+        trusted_authorization_sources=trusted_authorization_sources,
+    )
+    return EnergyComfortEligibilityOutcome(
+        outcome.assessment, eligibility, outcome.workflow,
+    )

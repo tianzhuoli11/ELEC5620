@@ -12,7 +12,8 @@ from domains.energy_comfort.control_policy import (
     assess_light_shutdown_eligibility,
 )
 from domains.energy_comfort.integration import (
-    EnergyComfortHandler, context_from_event, monitor_energy_comfort_workflow,
+    EnergyComfortHandler, context_from_event, evaluate_light_shutdown_candidate,
+    monitor_energy_comfort_workflow,
 )
 from domains.energy_comfort.monitoring import EnergyComfortAssessment, assess_energy_comfort
 from models import (
@@ -349,6 +350,55 @@ class EnergyComfortWorkflowTests(unittest.TestCase):
                 self.assertEqual(result.action_results, ())
                 self.assertIsNone(result.notification_result)
                 self.assertNotIn("DeviceAutomationAgent", [item.agent for item in result.trace])
+
+    def test_assessment_to_eligibility_path_is_fail_closed_and_has_no_side_effect(self) -> None:
+        trusted = frozenset({"test-reviewed-policy"})
+        observed_light = (DeviceObservation("observed-light", True, {"power": "on"}),)
+        approved = LightShutdownPolicyInput(
+            observed_device_id="observed-light",
+            shutdown_basis=EXPLICIT_LIGHT_SHUTDOWN_BASIS,
+            control_authorized=True,
+            authorization_source="test-reviewed-policy",
+            safety_policy_passed=True,
+        )
+        cases = (
+            ("no adjustment", home_context(22.0, True, devices=observed_light), approved,
+             "NO_ADJUSTMENT", "assessment_not_adjustment_needed"),
+            ("occupied adjustment", home_context(27.0, True, devices=observed_light), approved,
+             "ADJUSTMENT_NEEDED", "home_is_occupied"),
+            ("insufficient", home_context(22.0, None, devices=observed_light), approved,
+             "INSUFFICIENT_DATA", "assessment_not_adjustment_needed"),
+            ("authorization absent", home_context(
+                None, False, None, EnergyProfile(900.0, 400.0), observed_light,
+            ), LightShutdownPolicyInput(observed_device_id="observed-light"),
+             "ADJUSTMENT_NEEDED", "control_authorization_unconfirmed"),
+            ("safety conflict", home_context(
+                None, False, None, EnergyProfile(900.0, 400.0), observed_light,
+            ), LightShutdownPolicyInput(
+                observed_device_id="observed-light",
+                shutdown_basis=EXPLICIT_LIGHT_SHUTDOWN_BASIS,
+                control_authorized=True,
+                authorization_source="test-reviewed-policy",
+                safety_policy_passed=True,
+                conflicting_safety_conditions=("security_policy_requires_light",),
+            ), "ADJUSTMENT_NEEDED", "conflicting_safety_conditions"),
+        )
+        for name, context, policy, decision, reason in cases:
+            with self.subTest(name=name):
+                outcome = evaluate_light_shutdown_candidate(
+                    make_energy_comfort_event(context),
+                    policy,
+                    trusted_authorization_sources=trusted,
+                    device_tool=FailingDeviceTool(),
+                )
+                self.assertEqual(outcome.assessment.decision, decision)
+                self.assertFalse(outcome.eligibility.eligible)
+                self.assertIn(reason, outcome.eligibility.reasons)
+                self.assertEqual(outcome.workflow.action_results, ())
+                self.assertNotIn(
+                    "DeviceAutomationAgent",
+                    [item.agent for item in outcome.workflow.trace],
+                )
 
 
 if __name__ == "__main__":
