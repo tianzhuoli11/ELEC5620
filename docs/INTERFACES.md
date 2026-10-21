@@ -30,6 +30,10 @@ The domain must validate any LLM proposal against its deterministic policy befor
 
 `WorkflowResult.to_dict()` supplies serializable event, assessment, `action_results`, first-action compatibility field `action_result`, optional `goal`, notification outcome, overall `outcome` (`ASSESSED`, `COMPLETE`, `PARTIAL`, `FAILED`, `CLARIFICATION_REQUIRED`) and a timestamped agent trace. The trace is in-memory for this baseline; persistent audit storage is a later integration task.
 
+## Resident confirmation (optional, additive)
+
+A domain may also implement `ConfirmationHandler` (`domains/base.py`): `confirmation_question(event, assessment, attempt) -> PendingConfirmation`, `interpret_reply(event, attempt, reply) -> ConfirmationReply` and `escalate(event, assessment, replies) -> MonitoringDecision`. When such a handler returns `requires_human_review=True`, the graph stops after assessment with `WorkflowResult.pending_confirmation` set and `outcome == "AWAITING_CONFIRMATION"`; nothing is dispatched or sent. The UI or simulation calls `SmartHomeWorkflow.resume(result, reply)`; `reply=None` means the timeout expired. A `safe` verdict ends the event; `unclear` asks again up to `max_attempts`; `help`, a second `unclear` or a timeout call `escalate`, whose decision runs through the normal execute and notify steps. Silence is never treated as safe. `confirmation_replies` records every attempt. Domains without this protocol are unaffected (`requires_human_review` keeps blocking dispatch as before). The graph does not run timers; the caller decides when a timeout has passed.
+
 ## Current limits
 
 The executable demo uses deterministic rules, an exact-phrase goal interpreter, and in-memory simulated light and thermostat devices. It does not call the campus model, send notifications, operate real devices, provide a web UI, or persist audit records. Those integrations must preserve these contracts and report their actual outcomes.

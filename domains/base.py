@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from models import Event, GoalInterpretation, GoalPlan, MonitoringDecision
+from models import ConfirmationReply, Event, GoalInterpretation, GoalPlan, MonitoringDecision, PendingConfirmation, RiskAssessment
 
 
 class DomainHandler(Protocol):
@@ -23,6 +23,27 @@ class GoalHandler(DomainHandler, Protocol):
 
     def plan_goal(self, event: Event, goal: GoalInterpretation) -> GoalPlan:
         """Validate the goal and return a policy-approved plan."""
+
+
+class ConfirmationHandler(DomainHandler, Protocol):
+    """Optional: a domain whose MEDIUM assessments pause for a resident reply.
+
+    The coordinator calls these; the domain never contacts the resident or a
+    device itself. Implemented by Elderly Safety (UC-01 steps 5-6).
+    """
+
+    def confirmation_question(self, event: Event, assessment: RiskAssessment, attempt: int) -> PendingConfirmation:
+        """Question to ask on this attempt (1-based), with timeout and max attempts."""
+
+    def interpret_reply(self, event: Event, attempt: int, reply: str | None) -> ConfirmationReply:
+        """Classify a reply as safe / help / unclear; ``None`` is a timeout."""
+
+    def escalate(self, event: Event, assessment: RiskAssessment, replies: tuple[ConfirmationReply, ...]) -> MonitoringDecision:
+        """Actions and notification once help is needed or confirmation failed."""
+
+
+def supports_confirmation(handler: object) -> bool:
+    return all(callable(getattr(handler, name, None)) for name in ("confirmation_question", "interpret_reply", "escalate"))
 
 
 class DomainRegistry:
