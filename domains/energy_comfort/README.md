@@ -27,3 +27,49 @@ Run the offline example from the repository root after installing existing depen
 ```powershell
 .venv\Scripts\python -m simulation.energy_comfort_demo
 ```
+
+## Reviewable evidence and current limits
+
+A minimal simulated payload uses observations in `readings` and policy context in
+the provisional namespace:
+
+```json
+{
+  "event_type": "energy_comfort_observation",
+  "simulated": true,
+  "readings": [
+    {"reading_type": "indoor_temperature", "value": 22.0, "unit": "C"},
+    {"reading_type": "occupancy", "value": true, "unit": "boolean"}
+  ],
+  "context": {
+    "energy_comfort": {
+      "preference": {"temperature_min_c": 20.0, "temperature_max_c": 24.0},
+      "energy": null,
+      "home_mode": "HOME",
+      "devices": [],
+      "simulated": true
+    }
+  }
+}
+```
+
+The executable offline examples produce `NO_ADJUSTMENT`, `ADJUSTMENT_NEEDED`,
+and `INSUFFICIENT_DATA`; unknown occupancy remains missing rather than becoming
+`false`. `tests.test_energy_comfort.SharedContextTests` imports the candidate
+types through `models`, verifies the serialized namespace, and round-trips that
+payload through `context_from_event`. This is a local simulated consumer, not
+evidence that M2 or M4 has integrated the contract.
+
+`evaluate_light_shutdown_candidate` now composes assessment with fail-closed,
+non-executable eligibility. `explain_energy_comfort` explains only supplied
+assessment, workflow, eligibility and verified-result evidence. The UC-05
+preparation runner can be invoked with:
+
+```powershell
+.venv\Scripts\python -m simulation.energy_comfort_acceptance
+```
+
+Its device execution, readback, recovery and post-action environmental cases
+remain explicitly Pending until the M2 device and cross-domain safety contracts
+are approved. The runner's fictional trusted source exercises eligibility logic
+only; it is not a real authorization or team acceptance record.

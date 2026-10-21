@@ -71,6 +71,16 @@ class SharedContextTests(unittest.TestCase):
         self.assertTrue(event.simulated)
         self.assertEqual(len(event.readings), 2)
         self.assertNotIn("environment", event.context["energy_comfort"])
+        self.assertEqual(event.context["energy_comfort"], {
+            "preference": {"temperature_min_c": 19.0, "temperature_max_c": 23.0},
+            "energy": {"current_power_w": 350.0, "unoccupied_power_limit_w": 400.0},
+            "home_mode": "AWAY",
+            "devices": [{
+                "device_id": "heater-1", "available": None,
+                "observed_state": {"power": "off"},
+            }],
+            "simulated": True,
+        })
 
     def test_duplicate_environment_source_is_rejected(self) -> None:
         event = make_energy_comfort_event(home_context())
