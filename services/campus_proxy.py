@@ -38,33 +38,14 @@ class CampusProxyConfig:
         )
 
 
-def propose_pet_risk(event: Event, config: CampusProxyConfig) -> dict[str, Any]:
-    """Ask campus-qwen to interpret only minimal pet sensor observations.
+def request_json_chat(messages: list[dict[str, str]], config: CampusProxyConfig) -> dict[str, Any]:
+    """Send one JSON chat request through the shared course proxy client.
 
-    No pet ID, resident details, location, owner contact or API key is included
-    in the prompt. The caller must validate this untrusted result with rules.
+    The caller owns the domain prompt and must validate the untrusted reply.
     """
-
-    observations = [
-        {"type": item.reading_type, "value": item.value, "unit": item.unit}
-        for item in event.readings
-    ]
     payload = {
         "model": config.model,
-        "messages": [
-            {
-                "role": "system",
-                "content": (
-                    "Assess a pet sensor observation. Reply with one JSON object containing "
-                    "risk_level (LOW, MEDIUM, or HIGH) and a short rationale. "
-                    "Do not suggest or execute feeding or claim an owner was notified."
-                ),
-            },
-            {
-                "role": "user",
-                "content": json.dumps({"event_type": event.event_type, "readings": observations}),
-            },
-        ],
+        "messages": messages,
         "max_completion_tokens": 1024,
         "stream": False,
     }
@@ -86,3 +67,29 @@ def propose_pet_risk(event: Event, config: CampusProxyConfig) -> dict[str, Any]:
     if not isinstance(proposal, dict):
         raise ValueError("campus proxy proposal must be a JSON object")
     return proposal
+
+
+def propose_pet_risk(event: Event, config: CampusProxyConfig) -> dict[str, Any]:
+    """Ask campus-qwen to interpret only minimal pet sensor observations.
+
+    No pet ID, resident details, location, owner contact or API key is included
+    in the prompt. The caller must validate this untrusted result with rules.
+    """
+    observations = [
+        {"type": item.reading_type, "value": item.value, "unit": item.unit}
+        for item in event.readings
+    ]
+    return request_json_chat([
+        {
+            "role": "system",
+            "content": (
+                "Assess a pet sensor observation. Reply with one JSON object containing "
+                "risk_level (LOW, MEDIUM, or HIGH) and a short rationale. "
+                "Do not suggest or execute feeding or claim an owner was notified."
+            ),
+        },
+        {
+            "role": "user",
+            "content": json.dumps({"event_type": event.event_type, "readings": observations}),
+        },
+    ], config)

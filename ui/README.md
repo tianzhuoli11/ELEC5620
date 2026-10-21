@@ -49,7 +49,7 @@ The sidebar and Overview's Home services section will open the registered functi
 
 Overview and Pet Care share a working sample-input workspace. Presets initialise the reading; the `pet_value` input lets users change it before running a check. The page creates a sensor event with `simulation.events.make_sensor_event`, calls `domains.pet_care.integration.monitor_pet_workflow`, and displays the saved assessment, shared workflow trace and simulated owner-alert outcome. Saved readings feed the summary metrics and history filters. These are simulated inputs, not live sensor connections.
 
-The other four domain pages are not connected yet. Pet Care now uses the shared coordinator and monitoring agent; no feeder action is requested, so the automation agent is correctly skipped. Each new page should connect through the shared workflow and show the returned assessment, action results, notification outcome and trace.
+Home Security is now registered with fictional sensor presets, editable context, a local record and an optional campus LLM proposal. It uses the shared coordinator and monitoring agent. SCRUM-15 requests no device action or owner notification, so the automation agent is correctly skipped. The other three domain pages are not connected yet. Each new page should connect through the shared workflow and show the returned assessment, action results, notification outcome and trace.
 
 ## Before opening a pull request
 

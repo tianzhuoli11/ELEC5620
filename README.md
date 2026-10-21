@@ -4,7 +4,7 @@ Wed 09-11 Group 11 Stage 2 shared repository.
 
 **Option A: Python + LangGraph + Streamlit**, using the course API proxy and the `campus-qwen` model. All five domains reuse the same agents, models and user interface.
 
-The root `app.py` runs a Streamlit dashboard with an interactive Pet Care demonstration. Pet Care now routes through the shared coordinator and monitoring agent, records the workflow outcome, and simulates an owner alert for readings needing attention. The other four domain pages are pending their owners' implementations. The offline goal interpreter recognises only a fictional exact phrase, and real notification delivery is not connected yet.
+The root `app.py` runs a Streamlit dashboard with interactive Pet Care and Home Security demonstrations. Both route through the shared coordinator and monitoring agent. Home Security SCRUM-15 records simulated risk assessments without owner alerts or device actions. The other three domain pages are pending their owners' implementations. The offline goal interpreter recognises only a fictional exact phrase, and real notification delivery is not connected yet.
 
 ## Run the dashboard and framework demo
 
@@ -20,7 +20,9 @@ python -m venv .venv
 
 On macOS/Linux, use `.venv/bin/python` in place of `.venv\Scripts\python`. The framework demo needs no API key after dependencies are installed. Overview and Pet Care provide editable simulated readings, risk assessments and saved local history in the ignored `data/runtime/pet_events.jsonl` file. **Reset inputs** clears the current input and result without deleting history.
 
-Campus AI is optional for Pet Care. Set `ELEC5620_API_KEY` in your local environment and connect to the university network or VPN, then enable **Include an AI explanation**. The key is not entered into the page or stored in the repository. If the proxy fails or disagrees with a safety rule, the rule-based result remains visible. Owner alerts are simulated locally for attention-worthy readings; no external message or feeder action occurs.
+Campus AI is optional for Pet Care and Home Security. Set `ELEC5620_API_KEY` in your local environment and connect to the university network or VPN, then enable the AI option in the relevant page. The key is not entered into the page or stored in the repository. If the proxy fails or disagrees with a safety rule, the rule-based result remains visible. Pet Care owner alerts are simulated locally for attention-worthy readings; Home Security SCRUM-15 sends no alerts or device commands.
+
+For the Home Security command-line demonstration, run `.venv\Scripts\python -m simulation.security_demo --scenario smoke`. Other choices are `normal`, `gas`, `water_leak`, `unusual_door`, `suspicious_motion`, and `suspected_intrusion`. Add `--use-campus-llm` only when the local key and university network are available. The command prints the actual assessment and shared agent trace and saves a local JSONL record at `data/runtime/security_events.jsonl`. See [Home Security](domains/home_security/README.md) for rules and scope.
 
 ## Project structure
 

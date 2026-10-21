@@ -3,10 +3,12 @@
 from collections.abc import Callable
 
 from ui.dashboard import render_pending, render_pet_care
+from ui.home_security import render_home_security
 
 
 DOMAIN_VIEWS: dict[str, Callable[[], None]] = {
     "Pet Care": render_pet_care,
+    "Home Security": render_home_security,
     # Import a teammate's render function above, then register its domain here.
     # "Elderly Safety": render_elderly_safety,
 }
