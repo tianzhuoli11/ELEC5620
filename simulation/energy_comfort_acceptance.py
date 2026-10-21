@@ -15,6 +15,7 @@ from domains.energy_comfort.integration import (
 )
 from models import DeviceObservation, EnergyProfile, HomeContext, HomeEnvironment, SensorReading, UserPreference
 from simulation.energy_comfort_demo import make_energy_comfort_event
+from simulation.energy_comfort_execution_fixture import run_test_only_execution_cases
 
 
 class _RejectDeviceUse:
@@ -202,17 +203,35 @@ def run_uc05_acceptance_evidence() -> dict[str, Any]:
             "trusted_eligibility_non_executable", approved, trusted, True, None,
         ),
     ]
+    execution_cases = run_test_only_execution_cases()
     return {
         "suite": "UC-05 offline acceptance preparation",
+        "coverage_layers": {
+            "assessment_and_eligibility": "ASSESSMENT_ONLY",
+            "execution_fixture": "TEST_ONLY_SIMULATION",
+            "formal_energy_comfort_control": "PENDING",
+        },
         "cases": cases,
+        "test_only_execution_cases": execution_cases,
+        "shared_framework_execution_coverage": [
+            "test_three_agent_path_verifies_simulated_state",
+            "test_review_gate_prevents_dispatch",
+            "test_offline_device_does_not_report_success",
+            "test_readback_mismatch_is_unverified",
+            "test_readback_failure_retains_dispatch_acceptance",
+            "test_first_device_failure_skips_later_device",
+        ],
         "summary": {
             "passed": sum(case["test_result"] == "PASS" for case in cases),
             "failed": sum(case["test_result"] == "FAIL" for case in cases),
+            "test_only_execution_passed": sum(
+                case["test_result"] == "PASS" for case in execution_cases
+            ),
         },
         "pending": [
             "M2-approved device ID and command schema",
             "Executable POLICY authorization and cross-domain safety interface",
-            "Device dispatch and independent readback acceptance evidence",
+            "Formal Energy & Comfort device dispatch and independent readback acceptance evidence",
             "Failure recovery, timeout, and bounded replanning evidence",
             "Post-action temperature, power, and energy-savings verification",
         ],
