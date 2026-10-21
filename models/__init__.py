@@ -1,6 +1,14 @@
 """Shared data contracts used by the five smart-home domains."""
 
 from .events import Event, SensorReading
+from .context import (
+    DeviceObservation,
+    EnergyProfile,
+    HomeContext,
+    HomeEnvironment,
+    HomeMode,
+    UserPreference,
+)
 from .workflow import (
     ActionRequest,
     ActionResult,
@@ -19,4 +27,6 @@ __all__ = [
     "NotificationRequest", "NotificationResult", "MonitoringDecision", "AuditEntry",
     "WorkflowResult",
     "GoalInterpretation", "GoalPlan",
+    "HomeEnvironment", "UserPreference", "EnergyProfile", "HomeMode",
+    "DeviceObservation", "HomeContext",
 ]
