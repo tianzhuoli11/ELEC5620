@@ -73,3 +73,31 @@ Its device execution, readback, recovery and post-action environmental cases
 remain explicitly Pending until the M2 device and cross-domain safety contracts
 are approved. The runner's fictional trusted source exercises eligibility logic
 only; it is not a real authorization or team acceptance record.
+
+The current `HomeCoordinatorAgent` has no UC-06 explanation-request route: it
+routes sensor events and user goals and coordinates notifications. Adding a
+shared explanation request/response contract therefore remains a framework-owner
+decision. Until then, domain callers can pass an actual
+`EnergyComfortAssessment`, optional `WorkflowResult`, and optional eligibility
+result directly to `explain_energy_comfort`; missing workflow evidence returns
+`UNKNOWN`, not an execution claim.
+
+## Offline reproduction
+
+Use the repository's existing dependencies; Energy & Comfort adds no package or
+configuration variable and does not require `.env`, a campus key, network access,
+Streamlit, or an external model:
+
+```powershell
+py -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python -m unittest tests.test_energy_comfort tests.test_energy_comfort_explanations tests.test_energy_comfort_execution_fixture tests.test_energy_comfort_acceptance -v
+.venv\Scripts\python -m simulation.energy_comfort_demo
+.venv\Scripts\python -m simulation.energy_comfort_acceptance
+```
+
+The acceptance output separates `ASSESSMENT_ONLY`, `TEST_ONLY_SIMULATION`, and
+formal Energy & Comfort control (`PENDING`). The test-only fixture uses
+`fictional-test-light` and an invented schema solely to validate the existing
+shared automation failure paths; neither is an M2-approved interface or control
+authorization.
