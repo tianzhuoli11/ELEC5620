@@ -1,0 +1,40 @@
+{
+  "domain": "elderly_safety",
+  "requirement": "AR-01 / UC-01",
+  "simulated": true,
+  "purpose": "Brief inactivity at night: contextual uplift from LOW to MEDIUM.",
+  "event": {
+    "event_id": "evt-elderly-medium_night_uplift",
+    "event_type": "fall_detected",
+    "source": "simulated-fall-sensor-1",
+    "timestamp": "2026-10-20T03:00:00+00:00",
+    "context": {
+      "room": "bedroom",
+      "home_mode": "home",
+      "recent_activity": "walking",
+      "scenario": "medium_night_uplift"
+    },
+    "simulated": true,
+    "readings": [
+      {
+        "sensor_id": "simulated-fall-sensor-1",
+        "reading_type": "fall_impact",
+        "value": true,
+        "unit": "bool",
+        "observed_at": "2026-10-20T03:00:00+00:00"
+      },
+      {
+        "sensor_id": "simulated-motion-sensor-1",
+        "reading_type": "seconds_without_motion",
+        "value": 5,
+        "unit": "s",
+        "observed_at": "2026-10-20T03:00:00+00:00"
+      }
+    ]
+  },
+  "expected": {
+    "rule_level": "MEDIUM",
+    "level_without_model": "MEDIUM",
+    "decision": "ask_resident (requires_human_review)"
+  }
+}

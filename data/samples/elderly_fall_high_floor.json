@@ -1,0 +1,47 @@
+{
+  "domain": "elderly_safety",
+  "requirement": "AR-01 / UC-01",
+  "simulated": true,
+  "purpose": "Prolonged inactivity on the floor after an impact: caregiver alert and room light without asking the resident (UC-01 ext. 3).",
+  "event": {
+    "event_id": "evt-elderly-high_floor",
+    "event_type": "fall_detected",
+    "source": "simulated-fall-sensor-1",
+    "timestamp": "2026-10-20T14:00:00+00:00",
+    "context": {
+      "room": "bathroom",
+      "home_mode": "home",
+      "recent_activity": "walking",
+      "scenario": "high_floor"
+    },
+    "simulated": true,
+    "readings": [
+      {
+        "sensor_id": "simulated-fall-sensor-1",
+        "reading_type": "fall_impact",
+        "value": true,
+        "unit": "bool",
+        "observed_at": "2026-10-20T14:00:00+00:00"
+      },
+      {
+        "sensor_id": "simulated-motion-sensor-1",
+        "reading_type": "seconds_without_motion",
+        "value": 90,
+        "unit": "s",
+        "observed_at": "2026-10-20T14:00:00+00:00"
+      },
+      {
+        "sensor_id": "simulated-posture-sensor-1",
+        "reading_type": "posture",
+        "value": "floor",
+        "unit": "category",
+        "observed_at": "2026-10-20T14:00:00+00:00"
+      }
+    ]
+  },
+  "expected": {
+    "rule_level": "HIGH",
+    "level_without_model": "HIGH",
+    "decision": "notify_caregiver + light_on"
+  }
+}
