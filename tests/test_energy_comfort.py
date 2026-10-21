@@ -6,10 +6,15 @@ from dataclasses import replace
 import unittest
 
 from agents.graph import SmartHomeWorkflow
+from domains.energy_comfort.control_policy import (
+    EXPLICIT_LIGHT_SHUTDOWN_BASIS,
+    LightShutdownPolicyInput,
+    assess_light_shutdown_eligibility,
+)
 from domains.energy_comfort.integration import (
     EnergyComfortHandler, context_from_event, monitor_energy_comfort_workflow,
 )
-from domains.energy_comfort.monitoring import assess_energy_comfort
+from domains.energy_comfort.monitoring import EnergyComfortAssessment, assess_energy_comfort
 from models import (
     DeviceObservation, EnergyProfile, HomeContext, HomeEnvironment, HomeMode, SensorReading,
     UserPreference,
@@ -175,6 +180,131 @@ class EnergyComfortRuleTests(unittest.TestCase):
             energy=EnergyProfile(400.0, 400.0),
         ))
         self.assertEqual(result.decision, "NO_ADJUSTMENT")
+
+
+class LightShutdownEligibilityTests(unittest.TestCase):
+    trusted_sources = frozenset({"test-reviewed-policy"})
+
+    def adjustment_context(self):
+        context = home_context(
+            temperature=None, occupied=False, preference=None,
+            energy=EnergyProfile(900.0, 400.0),
+            devices=(DeviceObservation("observed-light", True, {"power": "on"}),),
+        )
+        return context, assess_energy_comfort("event-1", context)
+
+    def test_all_explicit_conditions_make_observed_light_eligible_only(self) -> None:
+        context, assessment = self.adjustment_context()
+        result = assess_light_shutdown_eligibility(
+            assessment,
+            context,
+            LightShutdownPolicyInput(
+                observed_device_id="observed-light",
+                shutdown_basis=EXPLICIT_LIGHT_SHUTDOWN_BASIS,
+                control_authorized=True,
+                authorization_source="test-reviewed-policy",
+                safety_policy_passed=True,
+            ),
+            trusted_authorization_sources=self.trusted_sources,
+        )
+
+        self.assertTrue(result.eligible)
+        self.assertEqual(result.reasons, ())
+        self.assertFalse(hasattr(result, "action_request"))
+
+    def test_power_excess_and_powered_light_alone_fail_closed(self) -> None:
+        context, assessment = self.adjustment_context()
+        result = assess_light_shutdown_eligibility(
+            assessment,
+            context,
+            LightShutdownPolicyInput(observed_device_id="observed-light"),
+        )
+
+        self.assertFalse(result.eligible)
+        self.assertIn("explicit_light_shutdown_basis_missing", result.reasons)
+        self.assertIn("control_authorization_unconfirmed", result.reasons)
+        self.assertIn("safety_policy_unknown", result.reasons)
+
+    def test_unknown_or_conflicting_safety_conditions_reject(self) -> None:
+        context, assessment = self.adjustment_context()
+        for field, value, expected in (
+            ("unknown_safety_conditions", ("emergency_lighting_requirement",),
+             "unknown_safety_conditions"),
+            ("conflicting_safety_conditions", ("security_policy_requires_light",),
+             "conflicting_safety_conditions"),
+        ):
+            values = {
+                "observed_device_id": "observed-light",
+                "shutdown_basis": EXPLICIT_LIGHT_SHUTDOWN_BASIS,
+                "control_authorized": True,
+                "authorization_source": "test-reviewed-policy",
+                "safety_policy_passed": True,
+                field: value,
+            }
+            with self.subTest(field=field):
+                result = assess_light_shutdown_eligibility(
+                    assessment, context, LightShutdownPolicyInput(**values),
+                    trusted_authorization_sources=self.trusted_sources,
+                )
+                self.assertFalse(result.eligible)
+                self.assertIn(expected, result.reasons)
+
+    def test_each_required_observation_rejects_when_not_satisfied(self) -> None:
+        base_context, assessment = self.adjustment_context()
+        approved = LightShutdownPolicyInput(
+            observed_device_id="observed-light",
+            shutdown_basis=EXPLICIT_LIGHT_SHUTDOWN_BASIS,
+            control_authorized=True,
+            authorization_source="test-reviewed-policy",
+            safety_policy_passed=True,
+        )
+        cases = (
+            ("wrong decision", EnergyComfortAssessment(
+                assessment.event_id, "NO_ADJUSTMENT", "test", (), (), "test",
+            ), base_context, approved, "assessment_not_adjustment_needed"),
+            ("occupied", assessment, home_context(
+                temperature=27.0, occupied=True,
+                devices=(DeviceObservation("observed-light", True, {"power": "on"}),),
+            ), approved, "home_is_occupied"),
+            ("unknown occupancy", assessment, home_context(
+                occupied=None,
+                devices=(DeviceObservation("observed-light", True, {"power": "on"}),),
+            ), approved, "occupancy_unknown"),
+            ("unavailable", assessment, home_context(
+                occupied=False, energy=EnergyProfile(900.0, 400.0),
+                devices=(DeviceObservation("observed-light", False, {"power": "on"}),),
+            ), approved, "light_unavailable"),
+            ("not on", assessment, home_context(
+                occupied=False, energy=EnergyProfile(900.0, 400.0),
+                devices=(DeviceObservation("observed-light", True, {"power": "off"}),),
+            ), approved, "light_not_observed_on"),
+        )
+        for name, candidate_assessment, context, policy, expected in cases:
+            with self.subTest(name=name):
+                result = assess_light_shutdown_eligibility(
+                    candidate_assessment, context, policy,
+                    trusted_authorization_sources=self.trusted_sources,
+                )
+                self.assertFalse(result.eligible)
+                self.assertIn(expected, result.reasons)
+
+    def test_self_declared_authorization_source_is_rejected(self) -> None:
+        context, assessment = self.adjustment_context()
+        result = assess_light_shutdown_eligibility(
+            assessment,
+            context,
+            LightShutdownPolicyInput(
+                observed_device_id="observed-light",
+                shutdown_basis=EXPLICIT_LIGHT_SHUTDOWN_BASIS,
+                control_authorized=True,
+                authorization_source="caller-self-declared",
+                safety_policy_passed=True,
+            ),
+            trusted_authorization_sources=self.trusted_sources,
+        )
+
+        self.assertFalse(result.eligible)
+        self.assertIn("control_authorization_source_untrusted", result.reasons)
 
 
 class EnergyComfortWorkflowTests(unittest.TestCase):
