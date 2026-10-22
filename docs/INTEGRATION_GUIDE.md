@@ -43,6 +43,10 @@ print(result.to_dict())
 
 Do not create a second coordinator, monitoring agent, or automation agent in your domain. Add an action request only when domain policy permits it and the target simulated device/expected readback are defined. An unsafe or uncertain outcome should set `requires_human_review=True`, which blocks dispatch in this baseline.
 
+## Pausing for a resident reply
+
+If your domain must ask the resident before acting (Elderly Safety MEDIUM falls), implement the three `ConfirmationHandler` methods in addition to `supports`/`assess`, and return `requires_human_review=True` from `assess`. `workflow.run(event)` then returns `outcome == "AWAITING_CONFIRMATION"` with the question in `result.pending_confirmation`; call `workflow.resume(result, reply)` with the resident's text, or `None` on timeout. See `domains/elderly_safety/handler.py` and `simulation/elderly_demo.py --reply ...`.
+
 ## Direct goals and multiple devices
 
 Use `simulation.events.make_user_goal_event(text)` to create a simulated user request. Register a goal-capable domain handler and an interpreter with `SmartHomeWorkflow(handlers, device_tool, goal_interpreter=...)`. See `DemoNightModeHandler` and `run_goal_demo()` in `simulation/framework_demo.py` for a complete, offline two-device example. Real model output supplies a **proposal**, not device authorization. `plan_goal` must enforce the domain's allowed devices, actions and limits, then return `GoalPlan(assessment, action_requests=(...))`. Every action must include its expected returned state. A later action requiring human approval blocks the whole plan before the first command.

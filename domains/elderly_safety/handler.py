@@ -3,10 +3,9 @@
 Decision mapping (UC-01):
     HIGH    notify the caregiver and switch on the light at the fall location,
             in parallel, without asking the resident (extension 3).
-    MEDIUM  ask the resident first. The baseline graph has no pause point, so
-            the decision carries `requires_human_review=True` (blocks any
-            dispatch) and no notification; the confirmation / timeout /
-            escalation extension (SCRUM-24/25) consumes this flag.
+    MEDIUM  ask the resident first (`requires_human_review=True` pauses the
+            graph). A safe reply closes the event; help, two unclear replies
+            or a 30 s timeout escalate like HIGH (steps 5-6, extension 5).
     LOW     record only (extension 2, false alarm).
 
 Follows the Pet Care pattern: keep the domain's full `FallAssessment` on the
@@ -17,9 +16,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from models import ActionRequest, Event, MonitoringDecision, NotificationRequest, RiskAssessment
+from models import ActionRequest, ConfirmationReply, Event, MonitoringDecision, NotificationRequest, PendingConfirmation, RiskAssessment
 
 from domains.elderly_safety.assessment import DOMAIN, FallAssessment, FallProposalProvider, assess_fall
+from domains.elderly_safety.confirmation import ReplyInterpreter, interpret, question_for
 
 FALL_EVENT_TYPES = frozenset({"fall_detected", "fall_suspected", "elderly_inactivity"})
 
@@ -38,8 +38,13 @@ def light_for(event: Event) -> str:
 class ElderlySafetyHandler:
     domain = DOMAIN
 
-    def __init__(self, proposal_provider: FallProposalProvider | None = None) -> None:
+    def __init__(
+        self,
+        proposal_provider: FallProposalProvider | None = None,
+        reply_interpreter: ReplyInterpreter | None = None,
+    ) -> None:
         self.proposal_provider = proposal_provider
+        self.reply_interpreter = reply_interpreter
         self.fall_assessment: FallAssessment | None = None
 
     def supports(self, event: Event) -> bool:
@@ -60,7 +65,31 @@ class ElderlySafetyHandler:
         )
         if fall.risk_level != "HIGH":
             return MonitoringDecision(assessment=assessment)
+        return self._help_decision(event, assessment, fall.rationale)
 
+    # --- ConfirmationHandler (UC-01 steps 5-6) ---------------------------------
+
+    def confirmation_question(self, event: Event, assessment: RiskAssessment, attempt: int) -> PendingConfirmation:
+        return question_for(event, attempt)
+
+    def interpret_reply(self, event: Event, attempt: int, reply: str | None) -> ConfirmationReply:
+        return interpret(event, attempt, reply or "", self.reply_interpreter)
+
+    def escalate(self, event: Event, assessment: RiskAssessment, replies: tuple[ConfirmationReply, ...]) -> MonitoringDecision:
+        last = replies[-1].verdict if replies else "unclear"
+        why = {"help": "resident asked for help", "timeout": "no reply within the confirmation timeout",
+               "unclear": "reply unclear after a follow-up question"}.get(last, last)
+        escalated = RiskAssessment(
+            event_id=assessment.event_id, domain=self.domain, risk_level="HIGH",
+            rationale=f"{assessment.rationale} Escalated: {why}.",
+            evidence=assessment.evidence, policy_override=assessment.policy_override,
+            fallback_used=assessment.fallback_used, requires_human_review=False,
+        )
+        return self._help_decision(event, escalated, escalated.rationale)
+
+    # --- shared "help is needed" decision --------------------------------------
+
+    def _help_decision(self, event: Event, assessment: RiskAssessment, condition: str) -> MonitoringDecision:
         light = light_for(event)
         action = ActionRequest(
             event_id=event.event_id,
@@ -75,7 +104,7 @@ class ElderlySafetyHandler:
             event_id=event.event_id,
             recipient_ref=CAREGIVER_REF,
             # Describes the detected condition only; no claim about the light (INTEGRATION_GUIDE).
-            message=f"Possible fall needing help: {fall.rationale}",
+            message=f"Possible fall needing help: {condition}",
             simulated=event.simulated,
         )
         return MonitoringDecision(assessment=assessment, action_requests=(action,), notification_request=notification)

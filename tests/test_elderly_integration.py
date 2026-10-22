@@ -43,9 +43,10 @@ class ElderlyWorkflowTests(unittest.TestCase):
         self.assertEqual(result.notification_result.status, "SIMULATED")
         self.assertFalse(result.notification_result.acknowledged)
 
-    def test_medium_is_assessed_only_pending_resident_confirmation(self):
+    def test_medium_pauses_for_resident_confirmation(self):
         result, handler, devices = run("medium_wait")
-        self.assertEqual(result.outcome, "ASSESSED")
+        self.assertEqual(result.outcome, "AWAITING_CONFIRMATION")
+        self.assertIsNotNone(result.pending_confirmation)
         self.assertTrue(result.assessment.requires_human_review)
         self.assertEqual(result.action_results, ())
         self.assertIsNone(result.notification_result)
@@ -56,7 +57,7 @@ class ElderlyWorkflowTests(unittest.TestCase):
         result, handler, _ = run("low_dropped_object")
         self.assertEqual(result.assessment.risk_level, "MEDIUM")
         self.assertTrue(result.assessment.fallback_used)
-        self.assertEqual(result.outcome, "ASSESSED")
+        self.assertEqual(result.outcome, "AWAITING_CONFIRMATION")  # MEDIUM asks the resident
 
     def test_offline_light_is_reported_failed_not_hidden(self):
         result, _, _ = run("high_floor", offline=True)

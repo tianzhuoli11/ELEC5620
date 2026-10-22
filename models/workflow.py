@@ -123,6 +123,38 @@ class GoalPlan:
 
 
 @dataclass(frozen=True)
+class PendingConfirmation:
+    """The workflow is paused until the resident replies or the timeout expires.
+
+    The graph does not run a timer; the UI or simulation decides when the
+    timeout has passed and resumes with ``reply=None``.
+    """
+
+    event_id: str
+    question: str
+    attempt: int
+    timeout_seconds: int
+    max_attempts: int
+
+    def __post_init__(self) -> None:
+        if not self.event_id or not self.question:
+            raise ValueError("pending confirmation needs an event_id and a question")
+        if self.attempt < 1 or self.max_attempts < 1 or self.timeout_seconds <= 0:
+            raise ValueError("attempt, max_attempts and timeout_seconds must be positive")
+
+
+@dataclass(frozen=True)
+class ConfirmationReply:
+    """What the resident said (or did not say) and how it was interpreted."""
+
+    event_id: str
+    attempt: int
+    reply: str | None
+    verdict: Literal["safe", "help", "unclear", "timeout"]
+    interpreted_by: str
+
+
+@dataclass(frozen=True)
 class AuditEntry:
     event_id: str
     agent: str
@@ -140,12 +172,16 @@ class WorkflowResult:
     trace: tuple[AuditEntry, ...]
     action_results: tuple[ActionResult, ...] = ()
     goal: GoalInterpretation | None = None
+    pending_confirmation: PendingConfirmation | None = None
+    confirmation_replies: tuple[ConfirmationReply, ...] = ()
 
     @property
     def outcome(self) -> str:
         """Describe complete, partial, failed and assessment-only outcomes honestly."""
         if self.goal and self.goal.clarification_question:
             return "CLARIFICATION_REQUIRED"
+        if self.pending_confirmation is not None:
+            return "AWAITING_CONFIRMATION"
         completed = sum(result.success for result in self.action_results)
         failed = len(self.action_results) - completed
         notice_failed = self.notification_result is not None and self.notification_result.status in ("FAILED", "UNAVAILABLE")
@@ -166,6 +202,8 @@ class WorkflowResult:
             "action_results": [result.to_dict() for result in self.action_results],
             "notification_result": asdict(self.notification_result) if self.notification_result else None,
             "goal": asdict(self.goal) if self.goal else None,
+            "pending_confirmation": asdict(self.pending_confirmation) if self.pending_confirmation else None,
+            "confirmation_replies": [asdict(item) for item in self.confirmation_replies],
             "outcome": self.outcome,
             "trace": [asdict(item) for item in self.trace],
         }
