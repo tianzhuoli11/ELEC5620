@@ -1,6 +1,6 @@
 # Event and device simulation
 
-`events.py` creates simulated sensor and direct user-goal events. `goals.py` contains an exact-phrase offline interpreter; it is not campus AI. `devices.py` holds in-memory simulated devices with explicit offline/unknown-device failures. `framework_demo.py` shows a sensor light scenario and a two-device night-mode goal. Jinjing Huang integrates Sensor/Event generation; Yang Yang integrates devices; all domain owners provide further scenarios.
+`events.py` creates simulated sensor and direct user-goal events. `goals.py` contains the original exact-phrase framework interpreter; it is not campus AI. `devices.py` holds in-memory simulated devices with explicit offline/unknown-device failures. `framework_demo.py` exercises the shared contracts, while `smart_home_demo.py` runs Yang Yang's complete four-device UC-02 success, failure and safety scenarios. Jinjing Huang integrates Sensor/Event generation; Yang Yang integrates devices; all domain owners provide further scenarios.
 
 - Send inputs conforming to `models/` into the shared monitoring flow.
 - Keep static fictional fixtures in `data/samples/`; keep generators and state-transition code here.
