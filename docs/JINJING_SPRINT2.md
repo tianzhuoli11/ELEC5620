@@ -37,7 +37,7 @@ The Pet Care page has the same editable scenarios and an **Optional feeding demo
 
 - A feeder preflight timeout or malformed state now reports `UNAVAILABLE` so the rule assessment, simulated owner alert and event record can complete. Regression tests cover a timeout-raising adapter and a malformed returned state.
 - The Pet Care reset now initializes the portion widget through Session State without also supplying a widget default, avoiding Streamlit's conflicting-default warning.
-- The 11 Pet Care Sprint 2 tests and all 121 non-UI repository tests passed locally. The full run reached a Streamlit `AppTest` case but did not finish in this terminal session; the UI change still needs a completed interactive or `AppTest` check on the review machine.
+- The 11 Pet Care Sprint 2 tests and the full 134-test repository suite passed locally, including the Streamlit reset test. Its output no longer contains the conflicting `pet_feed_grams` default warning. Streamlit still reports separate `use_container_width` deprecation notices from existing layout code.
 - Jira work items: [SCRUM-36 Pet Care scenario acceptance](https://f1orestyinlem.atlassian.net/browse/SCRUM-36) and [SCRUM-29 optional automatic feeding](https://f1orestyinlem.atlassian.net/browse/SCRUM-29).
 
 ## Remaining team delivery steps
