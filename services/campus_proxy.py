@@ -102,8 +102,10 @@ def propose_smart_home_goal(event: Event, config: CampusProxyConfig) -> dict[str
                 "content": (
                     "Classify a smart-home request. Reply with one JSON object only. "
                     "Use domain 'smart_home_control'. Use intent night_mode, away_mode, "
-                    "relax_mode, unlock_door, or clarify. Parameters may contain only "
-                    "temperature_c from 18 to 28. For clarify, include clarification_question. "
+                    "relax_mode, direct_control, unlock_door, or clarify. Mode parameters may "
+                    "contain temperature_c from 18 to 28. For direct_control, parameters may "
+                    "contain only light_power, light_brightness, curtain_position, door_locked, "
+                    "ac_power, ac_mode, and temperature_c. For clarify, include clarification_question. "
                     "Do not create device IDs, commands, approvals, or claims of execution."
                 ),
             },

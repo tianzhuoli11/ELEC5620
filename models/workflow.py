@@ -38,6 +38,8 @@ class ActionRequest:
     expected_state: dict[str, Any]
     authorization: Literal["POLICY", "HUMAN"]
     simulated: bool
+    continue_on_failure: bool = False
+    max_attempts: int = 1
 
     def __post_init__(self) -> None:
         if not self.event_id or not self.device_id or not self.action:
@@ -46,6 +48,8 @@ class ActionRequest:
             raise ValueError("action authorization must be POLICY or HUMAN")
         if not self.expected_state:
             raise ValueError("expected_state is required for result verification")
+        if self.max_attempts < 1 or self.max_attempts > 3:
+            raise ValueError("max_attempts must be between 1 and 3")
 
 
 @dataclass(frozen=True)
@@ -58,6 +62,7 @@ class ActionResult:
     returned_state: dict[str, Any] = field(default_factory=dict)
     error: str | None = None
     simulated: bool = True
+    attempts: int = 1
 
     @property
     def success(self) -> bool:
@@ -120,6 +125,7 @@ class GoalPlan:
     assessment: RiskAssessment
     action_requests: tuple[ActionRequest, ...] = ()
     notification_request: NotificationRequest | None = None
+    pending_confirmation: PendingConfirmation | None = None
 
 
 @dataclass(frozen=True)

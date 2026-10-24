@@ -7,7 +7,13 @@ import os
 
 import streamlit as st
 
-from domains.smart_home_control import DEFAULT_RECORD_PATH, default_device_states, run_smart_home_control
+from domains.smart_home_control import (
+    DEFAULT_RECORD_PATH,
+    HomeModeState,
+    default_device_states,
+    resume_smart_home_confirmation,
+    run_smart_home_control,
+)
 from services.campus_proxy import CampusProxyConfig, propose_smart_home_goal
 from simulation.devices import SimulatedDeviceTool
 from simulation.events import make_user_goal_event
@@ -29,6 +35,7 @@ OUTCOME_LABELS = {
     "COMPLETE": "Requested state verified",
     "PARTIAL": "Some actions could not be completed",
     "FAILED": "No approved plan was completed",
+    "AWAITING_CONFIRMATION": "Confirmation is required before execution",
     "CLARIFICATION_REQUIRED": "More information is required",
     "ASSESSED": "Request assessed without device action",
 }
@@ -48,6 +55,7 @@ def _reset_demo() -> None:
     st.session_state.smart_home_text = SCENARIOS["Good night"]
     st.session_state.smart_home_fault = "No simulated fault"
     st.session_state.smart_home_use_ai = False
+    st.session_state.smart_home_mode_state = HomeModeState()
     _clear_result()
 
 
@@ -59,6 +67,10 @@ def _state_rows(states: dict[str, dict]) -> list[dict[str, str]]:
 
 
 def _run_request(text: str, use_ai: bool, fault_name: str) -> None:
+    mode_state = st.session_state.get("smart_home_mode_state")
+    if not isinstance(mode_state, HomeModeState):
+        mode_state = HomeModeState()
+        st.session_state.smart_home_mode_state = mode_state
     device_tool = SimulatedDeviceTool(default_device_states())
     offline_device = FAULTS[fault_name]
     if offline_device:
@@ -75,15 +87,33 @@ def _run_request(text: str, use_ai: bool, fault_name: str) -> None:
         make_user_goal_event(text),
         device_tool=device_tool,
         proposal_provider=provider,
+        mode_state=mode_state,
         record_path=DEFAULT_RECORD_PATH,
     )
     st.session_state.smart_home_result = {
         "workflow": result,
+        "device_tool": device_tool,
+        "mode_state": mode_state,
         "states": device_tool.states,
         "fault": fault_name,
         "requested_ai": use_ai,
         "ai_configured": ai_configured,
     }
+
+
+def _respond_to_sensitive_action(approved: bool) -> None:
+    saved = st.session_state.get("smart_home_result")
+    if not isinstance(saved, dict):
+        raise ValueError("No Smart Home Control result is awaiting confirmation")
+    result = resume_smart_home_confirmation(
+        saved["workflow"],
+        approved=approved,
+        device_tool=saved["device_tool"],
+        mode_state=saved["mode_state"],
+        record_path=DEFAULT_RECORD_PATH,
+    )
+    saved["workflow"] = result
+    saved["states"] = saved["device_tool"].states
 
 
 def render_smart_home_control() -> None:
@@ -101,6 +131,9 @@ def render_smart_home_control() -> None:
                 '<span class="small-badge">SIMULATED DEVICES</span></div>',
                 unsafe_allow_html=True,
             )
+            mode_state = st.session_state.get("smart_home_mode_state")
+            current_mode = mode_state.current_mode if isinstance(mode_state, HomeModeState) else "HOME"
+            st.caption(f"Current HomeMode: {current_mode}")
             selected = st.selectbox(
                 "Scenario",
                 list(SCENARIOS),
@@ -166,7 +199,7 @@ def render_smart_home_control() -> None:
             else:
                 result = saved["workflow"]
                 outcome_name = result.outcome
-                css = "low" if outcome_name == "COMPLETE" else "medium" if outcome_name in ("PARTIAL", "CLARIFICATION_REQUIRED") else "high"
+                css = "low" if outcome_name == "COMPLETE" else "medium" if outcome_name in ("PARTIAL", "CLARIFICATION_REQUIRED", "AWAITING_CONFIRMATION") else "high"
                 st.markdown(
                     f'<div class="result-banner risk-{css}"><span class="risk-label">{escape(outcome_name)}</span>'
                     f'<h3>{escape(OUTCOME_LABELS.get(outcome_name, outcome_name))}</h3>'
@@ -177,8 +210,19 @@ def render_smart_home_control() -> None:
                     st.caption(f"Interpreted intent: {result.goal.intent} · {result.goal.evidence}")
                 if result.goal and result.goal.clarification_question:
                     st.warning(result.goal.clarification_question)
-                if result.assessment.requires_human_review:
-                    st.warning("Sensitive action blocked. A human approval workflow is not connected, so no device command was sent.")
+                if result.pending_confirmation is not None:
+                    st.warning(result.pending_confirmation.question)
+                    approve, decline = st.columns(2, gap="small")
+                    with approve:
+                        if st.button("Approve unlock", key="approve-smart-home-sensitive", type="primary", width="stretch"):
+                            _respond_to_sensitive_action(True)
+                            st.rerun()
+                    with decline:
+                        if st.button("Keep door locked", key="decline-smart-home-sensitive", width="stretch"):
+                            _respond_to_sensitive_action(False)
+                            st.rerun()
+                elif result.assessment.requires_human_review:
+                    st.warning("Sensitive action remains blocked; no device command was sent.")
                 if saved["requested_ai"] and not saved["ai_configured"]:
                     st.info("Campus AI was requested but no key was available; the deterministic fallback handled this command.")
 

@@ -140,11 +140,15 @@ class SmartHomeWorkflow:
             goal = state["goal"]
             handler = registry.resolve_goal(goal)
             plan = automation.plan_goal(event, goal, handler)
+            trace = [_audit(event.event_id, "DeviceAutomationAgent", f"planned:{len(plan.action_requests)}")]
+            if plan.pending_confirmation is not None:
+                trace.append(_audit(event.event_id, "HomeCoordinatorAgent", "awaiting_goal_confirmation"))
             return {
                 "assessment": plan.assessment,
                 "action_requests": plan.action_requests,
                 "notification_request": plan.notification_request,
-                "trace": [_audit(event.event_id, "DeviceAutomationAgent", f"planned:{len(plan.action_requests)}")],
+                "pending_confirmation": plan.pending_confirmation,
+                "trace": trace,
             }
 
         def clarify(state: WorkflowState) -> dict:
@@ -206,8 +210,9 @@ class SmartHomeWorkflow:
             {"finish": "finish", "pause": "pause", "execute": "execute", "notify": "notify"},
         )
         graph.add_conditional_edges(
-            "plan_goal", lambda state: "execute" if state.get("action_requests") else "notify",
-            {"execute": "execute", "notify": "notify"},
+            "plan_goal",
+            lambda state: "finish" if state.get("pending_confirmation") else "execute" if state.get("action_requests") else "notify",
+            {"finish": "finish", "execute": "execute", "notify": "notify"},
         )
         graph.add_edge("execute", "notify")
         graph.add_edge("notify", "finish")

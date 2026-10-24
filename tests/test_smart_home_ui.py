@@ -42,6 +42,7 @@ class SmartHomeControlPageTests(unittest.TestCase):
         result = self.app.session_state["smart_home_result"]["workflow"]
         self.assertEqual(result.outcome, "COMPLETE")
         self.assertEqual(len(result.action_results), 4)
+        self.assertEqual(self.app.session_state["smart_home_mode_state"].current_mode, "NIGHT")
         record = json.loads(self.record_path.read_text(encoding="utf-8").strip())
         self.assertEqual(record["outcome"], "COMPLETE")
 
@@ -53,14 +54,18 @@ class SmartHomeControlPageTests(unittest.TestCase):
         self.assertEqual(result.outcome, "PARTIAL")
         self.assertIn("Some actions could not be completed", "\n".join(item.value for item in self.app.markdown))
 
-    def test_sensitive_preset_blocks_dispatch(self) -> None:
+    def test_sensitive_preset_requires_confirmation_then_executes(self) -> None:
         self.open_page()
         self.app.selectbox(key="smart_home_scenario").set_value("Sensitive action").run()
         self.app.button(key="run-smart-home-command").click().run()
         result = self.app.session_state["smart_home_result"]["workflow"]
-        self.assertEqual(result.outcome, "FAILED")
+        self.assertEqual(result.outcome, "AWAITING_CONFIRMATION")
         self.assertTrue(result.assessment.requires_human_review)
-        self.assertIn("Sensitive action blocked", "\n".join(item.value for item in self.app.warning))
+        self.assertTrue(self.app.session_state["smart_home_result"]["states"]["front-door-lock"]["locked"])
+        self.app.button(key="approve-smart-home-sensitive").click().run()
+        result = self.app.session_state["smart_home_result"]["workflow"]
+        self.assertEqual(result.outcome, "COMPLETE")
+        self.assertFalse(self.app.session_state["smart_home_result"]["states"]["front-door-lock"]["locked"])
 
 
 if __name__ == "__main__":
