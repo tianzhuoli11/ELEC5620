@@ -95,6 +95,20 @@ class HavenAppTests(unittest.TestCase):
         self.assertIn("Needs attention", self.markdown())
         self.assertIn("refill it as appropriate", self.markdown())
 
+    def test_optional_feeding_demo_shows_verified_and_unavailable_outcomes(self) -> None:
+        self.open_pet_care()
+        self.app.toggle(key="pet_feed_enabled").set_value(True).run()
+        self.app.checkbox(key="pet_feed_requested").set_value(True).run()
+        self.run_check()
+        self.assertEqual(self.app.session_state["pet_result"]["feeding"].status, "VERIFIED")
+        self.assertEqual(self.saved_records()[-1]["feeding"]["status"], "VERIFIED")
+
+        self.app.checkbox(key="pet_feeder_offline").set_value(True).run()
+        self.run_check()
+        self.assertEqual(self.app.session_state["pet_result"]["feeding"].status, "UNAVAILABLE")
+        self.assertEqual(self.saved_records()[-1]["feeding"]["status"], "UNAVAILABLE")
+        self.assertEqual(self.app.session_state["pet_result"]["workflow"].notification_result.status, "SIMULATED")
+
     def test_overview_uses_edited_reading_and_clears_result_when_input_changes(self) -> None:
         self.app.run()
         self.app.number_input(key="pet_value").set_value(45.0).run()
