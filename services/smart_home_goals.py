@@ -17,6 +17,24 @@ DIRECT_PARAMETER_KEYS = frozenset({
     "light_power", "light_brightness", "curtain_position", "door_locked",
     "ac_power", "ac_mode", "temperature_c",
 })
+NIGHT_MODE_PHRASES = ("good night", "going to sleep", "go to sleep", "bedtime", "晚安", "睡觉", "睡眠模式")
+AWAY_MODE_PHRASES = ("leaving home", "going out", "away mode", "leave the house", "出门", "离家")
+RELAX_MODE_PHRASES = ("relax", "movie mode", "watch a movie", "放松", "电影模式", "看电影")
+LIGHT_OFF_PHRASES = ("turn off the light", "turn off the bedroom light", "switch off the light", "关灯", "关闭灯", "把灯关")
+LIGHT_ON_PHRASES = ("turn on the light", "turn on the bedroom light", "switch on the light", "开灯", "打开灯", "把灯打开")
+CURTAIN_CLOSED_PHRASES = ("close the curtain", "close curtain", "shut the curtain", "关窗帘", "关闭窗帘", "拉上窗帘")
+CURTAIN_OPEN_PHRASES = ("open the curtain", "open curtain", "打开窗帘", "拉开窗帘")
+AC_OFF_PHRASES = ("turn off the air conditioner", "turn off the ac", "switch off the air conditioner", "关空调", "关闭空调")
+AC_ON_PHRASES = ("turn on the air conditioner", "turn on the ac", "switch on the air conditioner", "开空调", "打开空调")
+NEGATABLE_DIRECT_PHRASES = (
+    LIGHT_OFF_PHRASES
+    + LIGHT_ON_PHRASES
+    + CURTAIN_CLOSED_PHRASES
+    + CURTAIN_OPEN_PHRASES
+    + AC_OFF_PHRASES
+    + AC_ON_PHRASES
+    + ("unlock", "open the front door", "open front door", "lock the front door", "lock front door", "打开门锁", "解锁", "开门", "锁门", "锁上门", "把门锁上")
+)
 
 
 def _clarification(event: Event, evidence: str, question: str) -> GoalInterpretation:
@@ -33,13 +51,29 @@ def _contains(text: str, *phrases: str) -> bool:
     return any(phrase in text for phrase in phrases)
 
 
+def _contains_negated_phrase(text: str, *phrases: str) -> bool:
+    """Detect a supported phrase immediately governed by English or Chinese negation."""
+
+    for phrase in phrases:
+        start = 0
+        while (index := text.find(phrase, start)) >= 0:
+            prefix = text[max(0, index - 32):index]
+            if re.search(r"(?:\b(?:do not|don't|dont|never|not to)\s+|(?:不要|别|不许|不能)\s*)$", prefix):
+                return True
+            start = index + len(phrase)
+    return False
+
+
 def _parse_direct_parameters(text: str) -> tuple[dict[str, Any], str | None]:
     """Extract an allow-listed device-state request without creating device commands."""
 
     parameters: dict[str, Any] = {}
 
-    light_off = _contains(text, "turn off the light", "turn off the bedroom light", "switch off the light", "关灯", "关闭灯", "把灯关")
-    light_on = _contains(text, "turn on the light", "turn on the bedroom light", "switch on the light", "开灯", "打开灯", "把灯打开")
+    if _contains_negated_phrase(text, *NEGATABLE_DIRECT_PHRASES):
+        return {}, "The request negates a device action. Please state the desired final device state."
+
+    light_off = _contains(text, *LIGHT_OFF_PHRASES)
+    light_on = _contains(text, *LIGHT_ON_PHRASES)
     if light_off and light_on:
         return {}, "The request contains conflicting light states. Please choose on or off."
     if light_off:
@@ -57,8 +91,8 @@ def _parse_direct_parameters(text: str) -> tuple[dict[str, Any], str | None]:
             parameters["light_brightness"] = value
             parameters.setdefault("light_power", "on")
 
-    curtain_closed = _contains(text, "close the curtain", "close curtain", "shut the curtain", "关窗帘", "关闭窗帘", "拉上窗帘")
-    curtain_open = _contains(text, "open the curtain", "open curtain", "打开窗帘", "拉开窗帘")
+    curtain_closed = _contains(text, *CURTAIN_CLOSED_PHRASES)
+    curtain_open = _contains(text, *CURTAIN_OPEN_PHRASES)
     if curtain_closed and curtain_open:
         return {}, "The request contains conflicting curtain states. Please choose open or closed."
     if curtain_closed:
@@ -77,8 +111,8 @@ def _parse_direct_parameters(text: str) -> tuple[dict[str, Any], str | None]:
 
     ac_mentioned = bool(re.search(r"\b(?:air conditioner|air conditioning|ac)\b", text)) or "空调" in text
     if ac_mentioned:
-        ac_off = _contains(text, "turn off the air conditioner", "turn off the ac", "switch off the air conditioner", "关空调", "关闭空调")
-        ac_on = _contains(text, "turn on the air conditioner", "turn on the ac", "switch on the air conditioner", "开空调", "打开空调")
+        ac_off = _contains(text, *AC_OFF_PHRASES)
+        ac_on = _contains(text, *AC_ON_PHRASES)
         if ac_off and ac_on:
             return {}, "The request contains conflicting air-conditioner power states."
         if ac_off:
@@ -123,8 +157,12 @@ def validate_smart_home_parameters(intent: str, parameters: Mapping[str, Any]) -
 
     validated = dict(parameters)
     for key in ("light_power", "ac_power"):
-        if key in validated and validated[key] not in ("on", "off"):
-            raise ValueError(f"{key} must be on or off")
+        if key in validated:
+            value = validated[key]
+            if isinstance(value, bool):
+                validated[key] = "on" if value else "off"
+            elif value not in ("on", "off"):
+                raise ValueError(f"{key} must be on or off")
     if "curtain_position" in validated and validated["curtain_position"] not in ("open", "closed"):
         raise ValueError("curtain_position must be open or closed")
     if "door_locked" in validated and not isinstance(validated["door_locked"], bool):
@@ -150,11 +188,17 @@ def interpret_smart_home_goal_by_rules(event: Event, *, evidence_prefix: str = "
     text = str(event.context.get("text", "")).strip().casefold()
     evidence = (evidence_prefix + "Deterministic bilingual rule match").strip()
 
-    if any(phrase in text for phrase in ("good night", "going to sleep", "go to sleep", "bedtime", "晚安", "睡觉", "睡眠模式")):
+    if _contains_negated_phrase(text, *(NIGHT_MODE_PHRASES + AWAY_MODE_PHRASES + RELAX_MODE_PHRASES)):
+        return _clarification(
+            event,
+            evidence,
+            "The request negates a home-mode change. Please state the desired final home mode.",
+        )
+    if any(phrase in text for phrase in NIGHT_MODE_PHRASES):
         return GoalInterpretation(event.event_id, "smart_home_control", "night_mode", evidence=evidence)
-    if any(phrase in text for phrase in ("leaving home", "going out", "away mode", "leave the house", "出门", "离家")):
+    if any(phrase in text for phrase in AWAY_MODE_PHRASES):
         return GoalInterpretation(event.event_id, "smart_home_control", "away_mode", evidence=evidence)
-    if any(phrase in text for phrase in ("relax", "movie mode", "watch a movie", "放松", "电影模式", "看电影")):
+    if any(phrase in text for phrase in RELAX_MODE_PHRASES):
         return GoalInterpretation(event.event_id, "smart_home_control", "relax_mode", evidence=evidence)
     direct, problem = _parse_direct_parameters(text)
     if problem:

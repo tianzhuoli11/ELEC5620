@@ -2,10 +2,9 @@
 
 This increment closes the Smart Home Control gaps identified after Sprint 0 and
 aligns the implementation more closely with AR-02 / UC-02 and optional OR-02 /
-UC-07. The implementation is on branch `yang-yang-stage1-compliance`, commit
-`0c47518` (`feat: complete smart home Stage 1 compliance`). At the time this
-document was written, that follow-up branch had not yet been pushed or opened as
-a new pull request.
+UC-07. The implementation and its review follow-up are on branch
+`yang-yang-stage1-compliance` in pull request
+[#7](https://github.com/tianzhuoli11/ELEC5620/pull/7).
 
 ## Sprint goal
 
@@ -37,8 +36,24 @@ project domains.
 | Approved unlock | `COMPLETE`; returned lock state is `false` and approval is recorded in the trace |
 | Declined unlock mixed with a safe action | Unlock is removed, the safe action proceeds and the door remains locked |
 | Forged approval field | Still `AWAITING_CONFIRMATION`; zero dispatches and the door remains locked |
+| Replayed approval | The second resume attempt is rejected and the unlock is dispatched only once |
 | Partial mode change | Stored mode remains at the previous safe value |
 | Invalid or timed-out model proposal | Deterministic validated fallback handles the request safely |
+| Campus proposal with Boolean power | `true` / `false` is normalised to the allow-listed `on` / `off` state before planning |
+| Negated direct command | `Don't turn off the bedroom light` requests clarification and dispatches no action |
+
+## Sprint Review feedback and response
+
+Reviewer `jhua0127` exercised the pull request through the live Campus AI path
+over the university network/VPN. The review confirmed that the night-mode flow
+completed and that door unlock waited for explicit confirmation. It also found
+three cases that were not covered by the original test suite:
+
+| Review finding | Change made |
+| --- | --- |
+| Campus Qwen returned Boolean `light_power`, causing a silent rule fallback | Clarified the structured prompt, safely normalised Boolean power values at the validation boundary and added a regression test that confirms the Campus proposal is used without fallback. |
+| `Don't turn off the bedroom light` was interpreted as an affirmative off command | Added English and Chinese negation detection for supported direct actions and modes; ambiguous negated requests now fail closed with a clarification question and zero dispatches. |
+| The same approved confirmation result could be resumed twice | Added an event-bound, thread-safe one-time confirmation claim and a regression test proving that a replay cannot dispatch a second unlock. |
 
 ## Verification commands
 
@@ -53,10 +68,12 @@ project domains.
 .venv\Scripts\python -m streamlit run app.py
 ```
 
-On 24 October 2026, all 22 Smart Home Control tests and all 119 project tests
-passed. The direct, approval, decline and retry demonstrations also completed
-with their expected outcomes. These tests use fictional local devices and do not
-require an API key.
+On 24 October 2026, all 25 Smart Home Control tests and all 122 project tests
+passed after the review fixes. The direct, approval, decline and retry
+demonstrations also completed with their expected outcomes. These automated
+tests use fictional local devices and do not require an API key. The reviewer
+separately exercised the optional live Campus AI path over the university
+network/VPN without sharing or committing a personal key.
 
 ## Contribution statement
 
@@ -64,14 +81,12 @@ Implemented and hardened AR-02 / UC-02 Smart Home Control: bilingual home-mode
 and direct multi-device interpretation, optional validated Campus Qwen proposals,
 typed device/context models, policy-controlled planning, bounded retry with
 continued independent actions, non-forgeable sensitive-action confirmation,
-verified HomeMode persistence, state verification, Streamlit UI, audit records,
-automated tests and demonstration scenarios. Integrated the domain with the
-shared `HomeCoordinatorAgent` and `DeviceAutomationAgent` contracts.
+one-time replay protection, verified HomeMode persistence, state verification,
+Streamlit UI, audit records, automated tests and demonstration scenarios.
+Integrated the domain with the shared `HomeCoordinatorAgent` and
+`DeviceAutomationAgent` contracts.
 
 ## Evidence still to add after it actually occurs
 
-- The real Jira issue links and status history for both increments.
-- Sprint Review feedback and any change made in response to that feedback.
 - Screenshots or recordings of the final demonstration scenarios.
-- A live Campus Qwen smoke test over the university network/VPN, without exposing the personal key.
 - The clean-deployment rehearsal using the exact source downloaded from Canvas.

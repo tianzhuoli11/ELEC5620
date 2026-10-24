@@ -6,6 +6,7 @@ from dataclasses import replace
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+from threading import Lock
 
 from agents.graph import SmartHomeWorkflow
 from models import AuditEntry, Event, WorkflowResult
@@ -17,6 +18,8 @@ from .modes import HomeModeState
 
 
 DEFAULT_RECORD_PATH = Path("data/runtime/smart_home_control.jsonl")
+_CONSUMED_CONFIRMATIONS: set[str] = set()
+_CONFIRMATION_LOCK = Lock()
 
 
 def _append_record(result: WorkflowResult, record_path: Path | None) -> None:
@@ -25,6 +28,20 @@ def _append_record(result: WorkflowResult, record_path: Path | None) -> None:
     record_path.parent.mkdir(parents=True, exist_ok=True)
     with record_path.open("a", encoding="utf-8") as stream:
         stream.write(json.dumps(result.to_dict(), ensure_ascii=False) + "\n")
+
+
+def _claim_confirmation(result: WorkflowResult) -> None:
+    """Consume one sensitive-action confirmation exactly once per process."""
+
+    pending = result.pending_confirmation
+    if pending is None:
+        raise ValueError("Smart Home Control result is not awaiting confirmation")
+    if pending.event_id != result.event.event_id or result.goal is None or result.goal.event_id != result.event.event_id:
+        raise ValueError("confirmation result has inconsistent event IDs")
+    with _CONFIRMATION_LOCK:
+        if pending.event_id in _CONSUMED_CONFIRMATIONS:
+            raise ValueError("Smart Home Control confirmation has already been handled")
+        _CONSUMED_CONFIRMATIONS.add(pending.event_id)
 
 
 def run_smart_home_control(
@@ -65,6 +82,7 @@ def resume_smart_home_confirmation(
         raise ValueError("Smart Home Control result is not awaiting confirmation")
     if result.goal.domain != "smart_home_control":
         raise ValueError("confirmation result belongs to another domain")
+    _claim_confirmation(result)
 
     resumed_event = result.event
     if mode_state is not None:

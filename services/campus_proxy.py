@@ -105,7 +105,10 @@ def propose_smart_home_goal(event: Event, config: CampusProxyConfig) -> dict[str
                     "relax_mode, direct_control, unlock_door, or clarify. Mode parameters may "
                     "contain temperature_c from 18 to 28. For direct_control, parameters may "
                     "contain only light_power, light_brightness, curtain_position, door_locked, "
-                    "ac_power, ac_mode, and temperature_c. For clarify, include clarification_question. "
+                    "ac_power, ac_mode, and temperature_c. light_power and ac_power must be the "
+                    "strings 'on' or 'off'; curtain_position must be 'open' or 'closed'; "
+                    "door_locked must be a JSON boolean; and ac_mode must be 'sleep', 'eco', or "
+                    "'comfort'. For clarify, include clarification_question. "
                     "Do not create device IDs, commands, approvals, or claims of execution."
                 ),
             },

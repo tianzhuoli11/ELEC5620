@@ -84,6 +84,26 @@ class SmartHomeGoalInterpreterTests(unittest.TestCase):
         self.assertEqual(tool.states["living-room-ac"]["temperature_c"], 20)
         self.assertIn("domain policy", result.goal.evidence)
 
+    def test_boolean_power_from_campus_is_safely_normalized(self) -> None:
+        result, tool = run_goal(
+            "Please turn on the bedroom light",
+            provider=lambda _: {
+                "domain": "smart_home_control",
+                "intent": "direct_control",
+                "parameters": {"light_power": True},
+            },
+        )
+        self.assertEqual(result.outcome, "COMPLETE")
+        self.assertEqual(result.goal.parameters, {"light_power": "on"})
+        self.assertEqual(tool.states["bedroom-light"]["power"], "on")
+        self.assertNotIn("fallback", result.goal.evidence.lower())
+
+    def test_negated_light_command_clarifies_without_dispatch(self) -> None:
+        result, tool = run_goal("Don't turn off the bedroom light")
+        self.assertEqual(result.outcome, "CLARIFICATION_REQUIRED")
+        self.assertIn("negates", result.goal.clarification_question)
+        self.assertEqual(tool.dispatch_count, 0)
+
     def test_invalid_ai_proposal_falls_back_without_using_injected_device(self) -> None:
         result, tool = run_goal(
             "Good night",
@@ -120,6 +140,7 @@ class SmartHomeGoalInterpreterTests(unittest.TestCase):
         self.assertEqual(body["model"], "campus-qwen")
         self.assertEqual(body["max_completion_tokens"], 512)
         self.assertIn("Good night", json.dumps(body))
+        self.assertIn("light_power and ac_power must be the strings", body["messages"][0]["content"])
         self.assertNotIn("test-only-key", json.dumps(body))
 
 
@@ -228,6 +249,23 @@ class SmartHomeWorkflowTests(unittest.TestCase):
         self.assertFalse(tool.states["front-door-lock"]["locked"])
         self.assertEqual(tool.dispatch_count, 1)
         self.assertIn("sensitive_action_approved", [entry.outcome for entry in approved.trace])
+
+    def test_sensitive_confirmation_cannot_be_replayed(self) -> None:
+        initial, tool = run_goal("Unlock the front door")
+        resume_smart_home_confirmation(
+            initial,
+            approved=True,
+            device_tool=tool,
+            record_path=None,
+        )
+        with self.assertRaisesRegex(ValueError, "already been handled"):
+            resume_smart_home_confirmation(
+                initial,
+                approved=True,
+                device_tool=tool,
+                record_path=None,
+            )
+        self.assertEqual(tool.dispatch_count, 1)
 
     def test_declined_unlock_is_removed_while_safe_actions_continue(self) -> None:
         initial, tool = run_goal("Turn off the bedroom light and unlock the front door")
