@@ -18,6 +18,16 @@ class FailedNotifier:
         return NotificationResult(request.event_id, "FAILED", "Simulated delivery failure")
 
 
+class TimeoutFeeder(SimulatedPetFeederTool):
+    def read_state(self, device_id):
+        raise TimeoutError("simulated adapter timeout")
+
+
+class MalformedStateFeeder(SimulatedPetFeederTool):
+    def read_state(self, device_id):
+        return None
+
+
 class PetSprint2AcceptanceTests(unittest.TestCase):
     def setUp(self) -> None:
         temporary = TemporaryDirectory()
@@ -74,6 +84,24 @@ class PetSprint2AcceptanceTests(unittest.TestCase):
 
     def test_offline_feeder_is_reported_without_dispatch_or_false_success(self) -> None:
         feeder = SimulatedPetFeederTool(available=False)
+        result = self.run_pet(feeding_goal={"portion_grams": 20}, feeding_enabled=True, feeder=feeder)
+        self.assertEqual(result.feeding.status, "UNAVAILABLE")
+        self.assertEqual(feeder.dispatch_count, 0)
+        self.assertEqual(result.workflow.notification_result.status, "SIMULATED")
+        self.assertEqual(self.last_record()["feeding"]["status"], "UNAVAILABLE")
+
+    def test_feeder_timeout_does_not_block_core_monitoring_alert_or_record(self) -> None:
+        feeder = TimeoutFeeder()
+        result = self.run_pet(feeding_goal={"portion_grams": 20}, feeding_enabled=True, feeder=feeder)
+        self.assertEqual(result.feeding.status, "UNAVAILABLE")
+        self.assertEqual(feeder.dispatch_count, 0)
+        self.assertEqual(result.assessment.risk_level, "MEDIUM")
+        self.assertEqual(result.workflow.notification_result.status, "SIMULATED")
+        self.assertEqual(result.workflow.outcome, "COMPLETE")
+        self.assertEqual(self.last_record()["feeding"]["status"], "UNAVAILABLE")
+
+    def test_malformed_feeder_state_does_not_block_core_monitoring(self) -> None:
+        feeder = MalformedStateFeeder()
         result = self.run_pet(feeding_goal={"portion_grams": 20}, feeding_enabled=True, feeder=feeder)
         self.assertEqual(result.feeding.status, "UNAVAILABLE")
         self.assertEqual(feeder.dispatch_count, 0)

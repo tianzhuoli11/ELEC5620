@@ -179,6 +179,7 @@ class HavenAppTests(unittest.TestCase):
         self.assertEqual(self.app.selectbox(key="pet_scenario").value, "Food bowl")
         self.assertEqual(self.app.number_input(key="pet_value").value, 0.0)
         self.assertFalse(self.app.toggle(key="pet_use_ai").value)
+        self.assertEqual(self.app.number_input(key="pet_feed_grams").value, 20)
         self.assertFalse(self.app.button(key="run-pet-check").disabled)
         self.assertNotIn("pet_result", self.app.session_state)
         self.assertEqual(self.record_path.read_bytes(), saved_before)

@@ -146,13 +146,15 @@ def _check_workspace() -> None:
             value = st.number_input(f"{reading_label} ({unit})", min_value=0.0, max_value=100.0 if event_type == "pet_bowl_level" else 1440.0, step=1.0, key="pet_value", on_change=_clear_result)
             st.caption("Edit the reading to test a different situation.")
             with st.expander("AI options"):
-                use_ai = st.toggle("Include an AI explanation", value=False, key="pet_use_ai", on_change=_clear_result)
+                use_ai = st.toggle("Include an AI explanation", key="pet_use_ai", on_change=_clear_result)
                 if use_ai and not os.getenv("ELEC5620_API_KEY", "").strip():
                     st.caption("AI is not connected. Turn this option off to run a standard check.")
             with st.expander("Optional feeding demo"):
-                feed_enabled = st.toggle("Enable simulated feeder", value=False, key="pet_feed_enabled", on_change=_clear_result)
+                feed_enabled = st.toggle("Enable simulated feeder", key="pet_feed_enabled", on_change=_clear_result)
                 feed_requested = st.checkbox("Request one feed portion", key="pet_feed_requested", on_change=_clear_result)
-                feed_grams = st.number_input("Portion (grams)", min_value=1, max_value=50, value=20, step=1,
+                if "pet_feed_grams" not in st.session_state:
+                    st.session_state.pet_feed_grams = 20
+                feed_grams = st.number_input("Portion (grams)", min_value=1, max_value=50, step=1,
                                              key="pet_feed_grams", on_change=_clear_result)
                 feeder_offline = st.checkbox("Simulate feeder offline", key="pet_feeder_offline", on_change=_clear_result)
                 st.caption("Only a low food-bowl reading with an explicit request can dispense. All feeder actions are simulated.")

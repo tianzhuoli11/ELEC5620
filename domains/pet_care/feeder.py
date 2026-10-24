@@ -97,8 +97,9 @@ def evaluate_feeding_goal(
         return FeedingDecision("UNAVAILABLE", "No simulated pet feeder is connected")
     try:
         state = feeder.read_state(FEEDER_ID)
-    except (ConnectionError, KeyError):
-        return FeedingDecision("UNAVAILABLE", "The simulated pet feeder is unavailable")
-    if state.get("available") is not True:
+        if not isinstance(state, Mapping) or state.get("available") is not True:
+            return FeedingDecision("UNAVAILABLE", "The simulated pet feeder is unavailable")
+    except Exception:
+        # An optional adapter must never stop the core assessment and owner alert.
         return FeedingDecision("UNAVAILABLE", "The simulated pet feeder is unavailable")
     return FeedingDecision("READY", "Optional simulated feeding goal passed policy checks", portion)

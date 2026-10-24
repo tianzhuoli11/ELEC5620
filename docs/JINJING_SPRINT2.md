@@ -33,6 +33,13 @@ The Pet Care page has the same editable scenarios and an **Optional feeding demo
 - After PR #7 was merged into `main`, the combined repository suite passed **132 tests**. A separate browser session then verified the Pet Care page and its saved JSONL records: an explicit 20 g simulated feed was independently verified; an offline feeder produced `UNAVAILABLE` with zero verified device actions while the simulated owner alert still completed; and a normal-activity request displayed an accepted live campus AI explanation without alert or feeding.
 - The automated tests use simulated devices and controlled AI failures. Repeat the live campus AI request on the final demonstration machine; this local smoke test does not prove VPN availability at the venue.
 
+## PR review follow-up — 25 October 2026
+
+- A feeder preflight timeout or malformed state now reports `UNAVAILABLE` so the rule assessment, simulated owner alert and event record can complete. Regression tests cover a timeout-raising adapter and a malformed returned state.
+- The Pet Care reset now initializes the portion widget through Session State without also supplying a widget default, avoiding Streamlit's conflicting-default warning.
+- The 11 Pet Care Sprint 2 tests and all 121 non-UI repository tests passed locally. The full run reached a Streamlit `AppTest` case but did not finish in this terminal session; the UI change still needs a completed interactive or `AppTest` check on the review machine.
+- Jira work items: [SCRUM-36 Pet Care scenario acceptance](https://f1orestyinlem.atlassian.net/browse/SCRUM-36) and [SCRUM-29 optional automatic feeding](https://f1orestyinlem.atlassian.net/browse/SCRUM-29).
+
 ## Remaining team delivery steps
 
 - Add the actual commit or pull-request link, test output and UI screenshots to the relevant Jira Story before marking it Done.
