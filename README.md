@@ -78,7 +78,7 @@ Synchronise your branch with the latest `main` before development. Personal bran
 
 ## Configuration and delivery
 
-Use [.env.example](.env.example) for variable names. Real keys belong only in local environment variables or an ignored `.env` file. Pet Care reads environment variables directly; `.env` is not loaded automatically. The framework demo needs no key, and the shared campus goal interpreter is still to be implemented.
+Use [.env.example](.env.example) for variable names. Real keys belong only in local environment variables or an ignored `.env` file. Pet Care reads environment variables directly; `.env` is not loaded automatically. The framework demo needs no key. Pet Care and Smart Home Control can optionally use the shared Campus Qwen proxy, while deterministic validated fallbacks remain available when the proxy is disabled or fails.
 
 Do not commit real resident data, private contacts, credentials, virtual environments or runtime logs. Clearly label simulated data and devices.
 

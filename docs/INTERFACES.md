@@ -8,27 +8,27 @@ These are the implemented interfaces in `models/`, `domains/base.py`, `tools/dev
 
 A domain exports a handler with `domain: str`, `supports(event) -> bool` and `assess(event) -> MonitoringDecision` for sensor events. A direct-goal handler additionally provides `supports_goal(goal) -> bool` and `plan_goal(event, goal) -> GoalPlan`. Exactly one handler must support an event or structured goal. Zero or multiple matches raise an error before any action. Register handlers with `SmartHomeWorkflow([handler_a, ...], device_tool, notifier=None, goal_interpreter=None)` and call `run(event)`.
 
-`GoalInterpreter.interpret(event) -> GoalInterpretation(event_id, domain, intent, parameters, evidence, clarification_question)` is a shared service boundary. The coordinator uses it for user goals and validates the event ID and unique owning domain. If a clarification question is present, it returns that question without contacting a domain handler or device. Otherwise, `GoalPlan(assessment, action_requests, notification_request)` is returned by domain policy through DeviceAutomationAgent's planning step; MonitoringAgent is skipped. A model's interpretation is untrusted and cannot itself authorize an action.
+`GoalInterpreter.interpret(event) -> GoalInterpretation(event_id, domain, intent, parameters, evidence, clarification_question)` is a shared service boundary. The coordinator uses it for user goals and validates the event ID and unique owning domain. If a clarification question is present, it returns that question without contacting a domain handler or device. Otherwise, `GoalPlan(assessment, action_requests, notification_request, pending_confirmation)` is returned by domain policy through DeviceAutomationAgent's planning step; MonitoringAgent is skipped. A goal plan may stop with a pending confirmation before dispatch. A model's interpretation is untrusted and cannot itself authorize an action.
 
 ## Monitoring decision
 
 `MonitoringDecision` contains a required `RiskAssessment`, an optional legacy singular `action_request`, optional additional `action_requests`, and an optional `NotificationRequest`. `decision.actions` combines the action fields in execution order. New code may use `action_requests` alone.
 
 - `RiskAssessment`: `event_id`, `domain`, `risk_level` (`LOW`/`MEDIUM`/`HIGH`), `rationale`, `evidence`, `policy_override`, `fallback_used`, `requires_human_review`.
-- `ActionRequest`: `event_id`, `device_id`, `action`, `parameters`, nonempty `expected_state`, `authorization` (`POLICY`/`HUMAN`), `simulated`.
+- `ActionRequest`: `event_id`, `device_id`, `action`, `parameters`, nonempty `expected_state`, `authorization` (`POLICY`/`HUMAN`), `simulated`, plus optional `continue_on_failure` and bounded `max_attempts` execution-policy fields. Both policy fields default to the original stop-after-one-attempt behaviour.
 - `NotificationRequest`: `event_id`, `recipient_ref`, `message`, `simulated`.
 
-The domain must validate any LLM proposal against its deterministic policy before returning a decision. A string in `authorization` is metadata, not proof that a human approved anything. This baseline has no approval UI: `requires_human_review=True` or `authorization="HUMAN"` prevents dispatch. Do not send physical-device actions until a separately reviewed authorization and device adapter exist.
+The domain must validate any LLM proposal against its deterministic policy before returning a decision. A string in `authorization` is metadata, not proof that a human approved anything. `requires_human_review=True` or `authorization="HUMAN"` prevents dispatch unless a domain-specific confirmation flow records an explicit decision and creates a new validated plan. Do not send physical-device actions until a separately reviewed authorization and device adapter exist.
 
 ## Execution result
 
-`DeviceTool.dispatch(request) -> DispatchResult(accepted, error)` and `read_state(device_id) -> dict` are separate calls. `DeviceAutomationAgent` checks **all** action IDs, simulation flags and review requirements before any dispatch, then sends commands in order. It compares each `expected_state` key to the independently returned state and skips later commands after a failed step.
+`DeviceTool.dispatch(request) -> DispatchResult(accepted, error)` and `read_state(device_id) -> dict` are separate calls. `DeviceAutomationAgent` checks **all** action IDs, simulation flags and review requirements before any dispatch, then sends commands in order. It compares each `expected_state` key to the independently returned state. The default policy skips later commands after a failed step; a domain may explicitly request bounded retry and continuation for independent safe actions.
 
-`ActionResult` records `accepted`, `verified`, `returned_state`, `error`, `simulated`; `success` is true only if accepted **and** verified. A failed readback after accepted dispatch remains `accepted=True, verified=False`.
+`ActionResult` records `accepted`, `verified`, `returned_state`, `error`, `simulated`, and `attempts`; `success` is true only if accepted **and** verified. A failed readback after accepted dispatch remains `accepted=True, verified=False`.
 
 `NotificationService.send(request) -> NotificationResult` reports `SIMULATED`, `SENT`, `FAILED`, or `UNAVAILABLE` plus `acknowledged`. No adapter means `UNAVAILABLE`. Sending is not the same as recipient acknowledgement.
 
-`WorkflowResult.to_dict()` supplies serializable event, assessment, `action_results`, first-action compatibility field `action_result`, optional `goal`, notification outcome, overall `outcome` (`ASSESSED`, `COMPLETE`, `PARTIAL`, `FAILED`, `CLARIFICATION_REQUIRED`) and a timestamped agent trace. The trace is in-memory for this baseline; persistent audit storage is a later integration task.
+`WorkflowResult.to_dict()` supplies serializable event, assessment, `action_results`, first-action compatibility field `action_result`, optional `goal`, notification outcome, overall `outcome` (`ASSESSED`, `COMPLETE`, `PARTIAL`, `FAILED`, `CLARIFICATION_REQUIRED`, `AWAITING_CONFIRMATION`) and a timestamped agent trace. Smart Home Control and Pet Care persist their own domain evidence; the shared trace remains in-memory unless the integration records it.
 
 ## Resident confirmation (optional, additive)
 
