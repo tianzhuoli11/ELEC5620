@@ -36,4 +36,4 @@ A domain may also implement `ConfirmationHandler` (`domains/base.py`): `confirma
 
 ## Current limits
 
-The executable demo uses deterministic rules, an exact-phrase goal interpreter, and in-memory simulated light and thermostat devices. It does not call the campus model, send notifications, operate real devices, provide a web UI, or persist audit records. Those integrations must preserve these contracts and report their actual outcomes.
+The executable prototype uses deterministic safety rules and in-memory simulated devices. Smart Home Control has a Streamlit UI, a bilingual rule fallback, optional structured campus-model proposals and local JSONL audit evidence. The campus call still requires the university network/VPN and a local key. The prototype does not send real notifications or operate physical devices; those integrations must preserve these contracts and report their actual outcomes.

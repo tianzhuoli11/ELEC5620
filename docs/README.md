@@ -5,6 +5,7 @@ Store interface agreements, installation/configuration/startup instructions, dem
 - `INTERFACES.md`: implemented baseline contracts and current limitations.
 - `INTEGRATION_GUIDE.md`: how each owner connects a domain and rehearses deployment.
 - `CONTRIBUTING.md`: named branches, main synchronisation, Pull Requests and Jira workflow.
+- `YANG_SMART_HOME_CONTROL_EVIDENCE.md`: AR-02 / UC-02 implementation, acceptance results and contribution wording.
 - Add real deployment and review records as work happens; do not prefill unperformed meetings/tests.
 
 Final deployment instructions must reproduce the system from the Canvas source, including versions, configuration, startup order and verification steps. Examples must not expose real credentials or personal information.

@@ -4,7 +4,7 @@
 
 Store the LLM adapter, configuration loading, notification transport and audit-log persistence here.
 
-- `goals.py` defines the shared `GoalInterpreter` contract. Yang Yang integrates a campus `campus-qwen` implementation after validating structured output against domain policy. The deterministic interpreter in `simulation/goals.py` is only an offline example.
+- `goals.py` defines the shared `GoalInterpreter` contract. `smart_home_goals.py` implements Yang Yang's bilingual rule fallback and validates optional structured `campus-qwen` proposals. `campus_proxy.propose_smart_home_goal` performs the optional proxy request; the domain handler still authorises every device plan.
 - Yan Li integrates notification interfaces with Yuanbo's caregiver workflow.
 - All members agree audit fields for events, assessments, confirmations, actions and failures.
 
