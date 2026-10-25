@@ -19,9 +19,11 @@ python -m venv .venv
 .venv\Scripts\python -m streamlit run app.py
 ```
 
-On macOS/Linux, use `.venv/bin/python` in place of `.venv\Scripts\python`. The framework demo needs no API key after dependencies are installed. Overview and Pet Care provide editable simulated readings, risk assessments and saved local history in the ignored `data/runtime/pet_events.jsonl` file. **Reset inputs** clears the current input and result without deleting history.
+On macOS/Linux, use `.venv/bin/python` in place of `.venv\Scripts\python`. The framework demo needs no API key after dependencies are installed. Overview and Pet Care provide editable simulated readings, risk assessments and saved local history in the ignored `data/runtime/pet_events.jsonl` file. The Pet Care page also includes an optional simulated feeder demonstration with an explicit request, feature flag and offline-failure controls. **Reset inputs** clears the current input and result without deleting history.
 
 Campus AI is optional for Pet Care and Smart Home Control. Set `ELEC5620_API_KEY` in your local environment and connect to the university network or VPN, then enable the AI option on the relevant page. The key is not entered into the page or stored in the repository. Invalid, timed-out or unsafe model proposals fall back to deterministic rules and never directly authorise device commands. Owner alerts and device actions are simulated locally.
+
+For a repeatable Pet Care acceptance check, run `python -m simulation.pet_demo --scenario empty_bowl` for core monitoring and notification, then `python -m simulation.pet_demo --scenario empty_bowl --enable-feeding --feed-grams 20` for one verified simulated feed. Add `--feeder-offline` or `--stale-readback` to check failure reporting. See [Jinjing's Sprint 2 evidence](docs/JINJING_SPRINT2.md) for the complete scenario list.
 
 ## Project structure
 

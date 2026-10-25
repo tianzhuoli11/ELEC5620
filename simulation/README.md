@@ -10,4 +10,4 @@
 
 Domain rules belong in `domains/`, common device entry points in `tools/`, and shared agent orchestration in `agents/`.
 
-Sprint 0 implementation: `events.py` makes shared simulated sensor events, and `pet_demo.py` provides three repeatable Pet Care scenarios. Run it from the repository root as `python -m simulation.pet_demo --scenario empty_bowl`. See `docs/JINJING_SPRINT0.md` for the full demonstration and recorded-output instructions.
+`events.py` makes shared simulated sensor events, and `pet_demo.py` provides three repeatable Pet Care scenarios. Run the core path with `python -m simulation.pet_demo --scenario empty_bowl`, then the optional simulated feeder with `python -m simulation.pet_demo --scenario empty_bowl --enable-feeding --feed-grams 20`. Add `--feeder-offline` or `--stale-readback` to demonstrate failure reporting without automatic repeat dispensing. See `docs/JINJING_SPRINT2.md` for expected outcomes.

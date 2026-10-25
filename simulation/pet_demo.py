@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from domains.pet_care.integration import monitor_pet_workflow
+from domains.pet_care.feeder import SimulatedPetFeederTool
 from models import Event
 from simulation.events import make_sensor_event
 
@@ -37,6 +38,10 @@ def main() -> None:
     parser.add_argument("--scenario", choices=("empty_bowl", "unusual_inactivity", "normal_activity"), default="empty_bowl")
     parser.add_argument("--output", type=Path, default=DEFAULT_RECORD_PATH, help="Local JSONL record path")
     parser.add_argument("--use-campus-llm", action="store_true", help="Call the course API proxy before rule validation")
+    parser.add_argument("--enable-feeding", action="store_true", help="Enable optional simulated feeder control")
+    parser.add_argument("--feed-grams", type=int, help="Explicitly request one simulated feed portion")
+    parser.add_argument("--feeder-offline", action="store_true", help="Simulate an unavailable feeder")
+    parser.add_argument("--stale-readback", action="store_true", help="Simulate a dispense that cannot be verified")
     args = parser.parse_args()
     event = make_pet_scenario(args.scenario)
     proposal_provider = None
@@ -48,10 +53,19 @@ def main() -> None:
         except ValueError as exc:
             parser.error(str(exc))
         proposal_provider = lambda observation: propose_pet_risk(observation, config)
-    result = monitor_pet_workflow(event, record_path=args.output, proposal_provider=proposal_provider)
+    feeder = SimulatedPetFeederTool(
+        available=not args.feeder_offline,
+        stale_readback=args.stale_readback,
+    )
+    result = monitor_pet_workflow(
+        event, record_path=args.output, proposal_provider=proposal_provider,
+        feeding_goal={"portion_grams": args.feed_grams} if args.feed_grams is not None else None,
+        feeding_enabled=args.enable_feeding, feeder=feeder,
+    )
     print(json.dumps({"event": event.to_dict(), "assessment": result.assessment.to_dict(),
-                      "workflow": result.workflow.to_dict(), "record_path": str(args.output)}, indent=2))
-    print("Simulated input only. Alerts, when needed, are local-only; no external notification or feeder action occurred.")
+                      "workflow": result.workflow.to_dict(), "feeding": result.feeding.__dict__,
+                      "record_path": str(args.output)}, indent=2))
+    print("Simulated input and feeder only. Owner alerts are local records; no real message or feed was sent.")
 
 
 if __name__ == "__main__":
