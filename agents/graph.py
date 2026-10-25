@@ -57,6 +57,7 @@ class SmartHomeWorkflow:
     ) -> None:
         registry = DomainRegistry(handlers)
         coordinator = HomeCoordinatorAgent(registry, notifier, goal_interpreter)
+        self._coordinator = coordinator
         monitoring = MonitoringAgent(registry)
         automation = DeviceAutomationAgent(device_tool)
 
@@ -241,6 +242,16 @@ class SmartHomeWorkflow:
             "trace": list(result.trace),
         })
         return self._result(state)
+
+    def notify(self, request: NotificationRequest) -> NotificationResult:
+        """Send a follow-up notification through HomeCoordinatorAgent.
+
+        Used by escalation flows (e.g. Elderly Safety OR-04) that contact the
+        next level after an acknowledgement timeout. Same validation and
+        failure reporting as the graph's notify node; never raises for an
+        adapter failure.
+        """
+        return self._coordinator.notify(request)
 
     @staticmethod
     def _result(state: WorkflowState) -> WorkflowResult:
