@@ -45,9 +45,20 @@ and privacy, safe / help / unclear-then-safe / unclear-twice / timeout /
 notification-failure paths, trace continuity, resume guard, HIGH never
 pauses, Pet Care unaffected. Full suite: 88 (+ `test_ui` with Streamlit).
 
+## Streamlit page
+
+`ui/elderly_safety.py`, registered in `ui/domain_views.py` (sidebar: Elderly Safety).
+Run `streamlit run app.py`. Choose a scenario and optional "All room lights
+offline" fault, run it, then reply by typing, with quick replies, or with
+"No reply (30 s)". The page shows the risk banner, initial assessment source,
+reply history, caregiver alert status, verified light result and the agent
+trace. Each run and reply is appended to `data/runtime/elderly_safety.jsonl`
+(git-ignored) through `domains/elderly_safety/integration.py`.
+`tests/test_elderly_ui.py` (6 Streamlit AppTest cases) covers registration,
+HIGH, safe reply, typed help, unclear then timeout, offline lights.
+
 ## Not done yet
 
 - Caregiver acknowledgement timeout, next-level contact, Human Operator notice (SCRUM-25).
 - Model-drafted alert text checked by the coordinator (UC-01 step 7); the alert is rule text describing the condition only.
 - Real campus-qwen reply interpreter (hook exists: `ElderlySafetyHandler(reply_interpreter=...)`).
-- Streamlit view with the question / reply box (UI owner).
