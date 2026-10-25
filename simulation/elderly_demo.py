@@ -12,6 +12,9 @@ contacted.
     python -m simulation.elderly_demo --scenario medium_wait --reply "hmm" --reply "no"   # unclear, then safe
     python -m simulation.elderly_demo --scenario medium_wait --timeout             # no reply -> alert + light
     python -m simulation.elderly_demo --scenario high_floor --offline
+    python -m simulation.elderly_demo --scenario high_floor --ack                  # caregiver acknowledges
+    python -m simulation.elderly_demo --scenario high_floor --ack-timeouts 1 --ack # secondary contact acknowledges
+    python -m simulation.elderly_demo --scenario high_floor --ack-timeouts 2       # operator informed, event open
 """
 
 from __future__ import annotations
@@ -20,7 +23,7 @@ import argparse
 import json
 
 from agents.graph import SmartHomeWorkflow
-from domains.elderly_safety import ElderlySafetyHandler, default_devices
+from domains.elderly_safety import ElderlySafetyHandler, default_devices, escalation
 from simulation.devices import SimulatedDeviceTool
 from simulation.elderly_scenarios import SCENARIOS, make_fall_scenario
 from simulation.notifications import SimulatedNotificationService
@@ -32,6 +35,8 @@ def main() -> None:
     parser.add_argument("--offline", action="store_true", help="simulate all lights offline")
     parser.add_argument("--reply", action="append", default=[], help="resident reply (repeat for a second reply)")
     parser.add_argument("--timeout", action="store_true", help="no reply within the confirmation timeout")
+    parser.add_argument("--ack-timeouts", type=int, default=0, help="acknowledgement timeouts before any ack (OR-04)")
+    parser.add_argument("--ack", action="store_true", help="the contact reached after the timeouts acknowledges")
     parser.add_argument("--list", action="store_true", help="list scenarios and exit")
     args = parser.parse_args()
 
@@ -75,6 +80,22 @@ def main() -> None:
     print("trace:")
     for entry in result.trace:
         print(f"  {entry.agent:<22} {entry.outcome}")
+
+    state = escalation.start(result)
+    if state is not None:
+        while escalation.needs_next_level_now(state):
+            state = escalation.advance(state, workflow.notify)
+        for _ in range(args.ack_timeouts):
+            if state.status != "AWAITING_ACK":
+                break
+            state = escalation.advance(state, workflow.notify)
+            while escalation.needs_next_level_now(state):
+                state = escalation.advance(state, workflow.notify)
+        if args.ack and state.status == "AWAITING_ACK":
+            state = escalation.acknowledge(state)
+        print(f"escalation: {state.status} (ack timeout {state.ack_timeout_seconds}s, simulated contacts)")
+        for a in state.attempts:
+            print(f"  level {a.level} {a.role:<18} send={a.send_status:<10} ack={a.acknowledged!s:<5} {a.outcome}")
     print("No real device was operated and no real person was contacted.")
 
 
