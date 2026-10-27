@@ -49,7 +49,7 @@ The sidebar and Overview's Home services section will open the registered functi
 
 Overview and Pet Care share a working sample-input workspace. Presets initialise the reading; the `pet_value` input lets users change it before running a check. The page creates a sensor event with `simulation.events.make_sensor_event`, calls `domains.pet_care.integration.monitor_pet_workflow`, and displays the saved assessment, shared workflow trace and simulated owner-alert outcome. Saved readings feed the summary metrics and history filters. These are simulated inputs, not live sensor connections.
 
-The other four domain pages are not connected yet. Pet Care now uses the shared coordinator and monitoring agent; no feeder action is requested, so the automation agent is correctly skipped. Each new page should connect through the shared workflow and show the returned assessment, action results, notification outcome and trace.
+Smart Home Control is also connected. Its page creates a direct user-goal event, runs the shared coordinator and automation agent, displays every command's accepted and verified flags, shows simulated device state, and exposes the agent trace. The remaining three domain pages are not connected yet. Pet Care uses the shared coordinator and monitoring agent; no feeder action is requested, so the automation agent is correctly skipped. Each new page should connect through the shared workflow and show the returned assessment, action results, notification outcome and trace.
 
 ## Before opening a pull request
 

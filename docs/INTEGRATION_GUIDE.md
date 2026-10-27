@@ -4,9 +4,9 @@ Start from the latest `main` after this framework has been reviewed and merged. 
 
 ## Scope of the current contract
 
-The `DomainHandler.assess(event)` contract handles **sensor-event assessment**. The optional `GoalHandler.supports_goal(goal)` and `plan_goal(event, goal)` methods handle **direct user goals**. The coordinator selects the path at runtime; direct goals skip MonitoringAgent. Both paths can return several ordered `ActionRequest` values. All steps are checked before dispatch, each step is independently verified, and later steps are skipped after a failure. `WorkflowResult.action_results` and `outcome` show the result; `action_result` remains a first-action compatibility field.
+The `DomainHandler.assess(event)` contract handles **sensor-event assessment**. The optional `GoalHandler.supports_goal(goal)` and `plan_goal(event, goal)` methods handle **direct user goals**. The coordinator selects the path at runtime; direct goals skip MonitoringAgent. Both paths can return several ordered `ActionRequest` values. All steps are checked before dispatch and each step is independently verified. The default is to skip later steps after failure; domains may explicitly enable bounded retry and continuation for independent safe actions. `WorkflowResult.action_results` and `outcome` show the result; `action_result` remains a first-action compatibility field.
 
-The offline interpreter in `simulation/goals.py` recognises only the exact fictional phrase "Good night" (or "我要睡觉了"). Yang Yang's campus interpreter should implement `services.goals.GoalInterpreter.interpret(event) -> GoalInterpretation`, returning an event ID, domain, intent, parameters and evidence. The domain must validate that untrusted proposal before returning a `GoalPlan`. Unknown or ambiguous goals may return `clarification_question`; the coordinator then returns `CLARIFICATION_REQUIRED` without dispatching a device. The framework does not claim unsupported demo goals were understood by AI.
+The original offline interpreter in `simulation/goals.py` recognises only the exact fictional phrase "Good night" (or "我要睡觉了"). The implemented Smart Home Control path instead uses `services.smart_home_goals.SmartHomeGoalInterpreter`, which supports bilingual home-mode rules, allow-listed direct multi-device state combinations, and optional structured campus proposals. It returns an event ID, domain, intent, parameters and evidence. `SmartHomeControlHandler` validates every untrusted proposal before returning a `GoalPlan`. Unknown or ambiguous goals return `clarification_question`; the coordinator then returns `CLARIFICATION_REQUIRED` without dispatching a device.
 
 ## Minimal handler
 
@@ -42,6 +42,10 @@ print(result.to_dict())
 ```
 
 Do not create a second coordinator, monitoring agent, or automation agent in your domain. Add an action request only when domain policy permits it and the target simulated device/expected readback are defined. An unsafe or uncertain outcome should set `requires_human_review=True`, which blocks dispatch in this baseline.
+
+## Pausing for a resident reply
+
+If your domain must ask the resident before acting (Elderly Safety MEDIUM falls), implement the three `ConfirmationHandler` methods in addition to `supports`/`assess`, and return `requires_human_review=True` from `assess`. `workflow.run(event)` then returns `outcome == "AWAITING_CONFIRMATION"` with the question in `result.pending_confirmation`; call `workflow.resume(result, reply)` with the resident's text, or `None` on timeout. See `domains/elderly_safety/handler.py` and `simulation/elderly_demo.py --reply ...`.
 
 ## Direct goals and multiple devices
 

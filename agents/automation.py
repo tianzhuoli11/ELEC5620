@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 from models import ActionRequest, ActionResult, Event, GoalInterpretation, GoalPlan, RiskAssessment
 from tools.device import DeviceTool
 
@@ -53,7 +55,7 @@ class DeviceAutomationAgent:
     def execute_plan(
         self, event: Event, assessment: RiskAssessment, requests: tuple[ActionRequest, ...]
     ) -> tuple[ActionResult, ...]:
-        """Validate the entire plan before dispatch, then stop after a failed step."""
+        """Validate the plan, then apply each request's bounded retry/continuation policy."""
         if not requests:
             return ()
 
@@ -72,16 +74,25 @@ class DeviceAutomationAgent:
             ) for request in requests)
 
         results = []
-        failed = False
+        blocked = False
         for request in requests:
-            if failed:
+            if blocked:
                 result = ActionResult(
                     event_id=event.event_id, device_id=request.device_id, action=request.action,
                     accepted=False, verified=False, error="Skipped after a prior action failed",
-                    simulated=request.simulated,
+                    simulated=request.simulated, attempts=0,
                 )
             else:
-                result = self.execute(event, assessment, request)
-                failed = not result.success
+                attempts = 0
+                while attempts < request.max_attempts:
+                    attempts += 1
+                    result = self.execute(event, assessment, request)
+                    if result.success:
+                        break
+                error = result.error
+                if not result.success and attempts > 1 and error:
+                    error = f"{error} after {attempts} attempts"
+                result = replace(result, attempts=attempts, error=error)
+                blocked = not result.success and not request.continue_on_failure
             results.append(result)
         return tuple(results)
