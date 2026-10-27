@@ -14,14 +14,14 @@ Each domain can supply its own page without changing the application shell. `app
    - `Home Security`
    - `Energy & Comfort`
 
-For example, create `ui/elderly_safety.py`:
+For example, a future Energy & Comfort page could use `ui/energy_comfort.py`:
 
 ```python
 import streamlit as st
 
 
-def render_elderly_safety() -> None:
-    st.header("Elderly Safety")
+def render_energy_comfort() -> None:
+    st.header("Energy & Comfort")
     # Collect inputs, call the domain handler, and display its actual result here.
     st.info("This page is being connected. No monitoring is active yet.")
 ```
@@ -29,10 +29,10 @@ def render_elderly_safety() -> None:
 Then extend `ui/domain_views.py`:
 
 ```python
-from ui.elderly_safety import render_elderly_safety
+from ui.energy_comfort import render_energy_comfort
 
 # Add this entry inside the existing DOMAIN_VIEWS dictionary:
-"Elderly Safety": render_elderly_safety,
+"Energy & Comfort": render_energy_comfort,
 ```
 
 The sidebar and Overview's Home services section will open the registered function automatically. Home services receives the registered domain names from `app.py`, so its availability labels follow the registry. Unregistered domains retain their pending page. Registration alone does not add a domain's readings to Overview metrics or history; coordinate those shared displays with the UI integration owner.
@@ -49,7 +49,9 @@ The sidebar and Overview's Home services section will open the registered functi
 
 Overview and Pet Care share a working sample-input workspace. Presets initialise the reading; the `pet_value` input lets users change it before running a check. The page creates a sensor event with `simulation.events.make_sensor_event`, calls `domains.pet_care.integration.monitor_pet_workflow`, and displays the saved assessment, shared workflow trace and simulated owner-alert outcome. Saved readings feed the summary metrics and history filters. These are simulated inputs, not live sensor connections.
 
-Smart Home Control is also connected. Its page creates a direct user-goal event, runs the shared coordinator and automation agent, displays every command's accepted and verified flags, shows simulated device state, and exposes the agent trace. The remaining three domain pages are not connected yet. Pet Care uses the shared coordinator and monitoring agent; no feeder action is requested, so the automation agent is correctly skipped. Each new page should connect through the shared workflow and show the returned assessment, action results, notification outcome and trace.
+Smart Home Control is connected. Its page creates a direct user-goal event, runs the shared coordinator and automation agent, displays every command's accepted and verified flags, shows simulated device state, and exposes the agent trace. Pet Care's feeder demonstration is optional and requires an explicit simulated request; ordinary monitoring does not operate a feeder.
+
+Elderly Safety is connected with simulated fall assessment, resident confirmation and caregiver escalation. Home Security is connected with fictional sensor presets, LOW/MEDIUM/HIGH response, homeowner confirmation, verified simulated device actions and OR-06 external warning scenarios. Both use the shared agent workflow and show actual notification and action outcomes. Energy & Comfort remains pending. Each new page should connect through the shared workflow and show the returned assessment, action results, notification outcome and trace.
 
 ## Before opening a pull request
 
