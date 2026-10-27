@@ -5,11 +5,13 @@ from .workflow import (
     ActionRequest,
     ActionResult,
     AuditEntry,
+    ConfirmationReply,
     GoalInterpretation,
     GoalPlan,
     MonitoringDecision,
     NotificationRequest,
     NotificationResult,
+    PendingConfirmation,
     RiskAssessment,
     WorkflowResult,
 )
@@ -19,4 +21,5 @@ __all__ = [
     "NotificationRequest", "NotificationResult", "MonitoringDecision", "AuditEntry",
     "WorkflowResult",
     "GoalInterpretation", "GoalPlan",
+    "PendingConfirmation", "ConfirmationReply",
 ]

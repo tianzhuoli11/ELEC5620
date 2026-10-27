@@ -8,8 +8,12 @@ from typing import Any, Callable, Mapping
 from models import Event
 
 EVENT_TYPE = "security_observation"
-READING_TYPES = (
+CORE_READING_TYPES = (
     "smoke_alarm", "gas_alarm", "water_leak", "door_open", "motion_detected",
+)
+READING_TYPES = CORE_READING_TYPES + (
+    "appliance_overheat_alarm", "appliance_unexpected_run",
+    "window_open", "smart_lock_access_anomaly",
 )
 RISK_LEVELS = ("LOW", "MEDIUM", "HIGH")
 ProposalProvider = Callable[[Event], Mapping[str, Any]]
@@ -31,12 +35,15 @@ class SecurityAssessment:
         return asdict(self)
 
 
-def _readings(event: Event) -> tuple[dict[str, int | None], list[str]]:
+def validated_readings(event: Event) -> tuple[dict[str, int | None], list[str]]:
     """Only one binary, state-unit reading is accepted for each sensor type."""
     values: dict[str, int | None] = {}
     invalid: list[str] = []
     for kind in READING_TYPES:
         matches = [reading for reading in event.readings if reading.reading_type == kind]
+        if not matches and kind not in CORE_READING_TYPES:
+            values[kind] = None  # Older five-sensor events remain valid.
+            continue
         if len(matches) != 1 or matches[0].unit != "state":
             values[kind] = None
             invalid.append(kind)
@@ -73,47 +80,51 @@ def _rule_assessment(event: Event) -> SecurityAssessment:
     if event.event_type != EVENT_TYPE or not event.simulated:
         raise ValueError("SCRUM-15 accepts simulated security observations only")
 
-    values, invalid = _readings(event)
+    values, invalid = validated_readings(event)
     mode, recent, authorised, lock, valve = _context(event)
-    smoke, gas, water, door, motion = (values[kind] for kind in READING_TYPES)
-    review = False
-
+    smoke, gas, water, door, motion, overheat, unexpected_run, window, lock_access = (
+        values[kind] for kind in READING_TYPES
+    )
+    findings: list[tuple[str, str]] = []
     if smoke == 1 or gas == 1:
-        level = "HIGH"
-        rationale = "A smoke or gas alarm is triggered; fixed safety policy requires HIGH risk."
-    elif water == 1 and valve == "open":
-        level = "HIGH"
-        rationale = "A water leak is detected while the simulated water valve is open."
-    elif water == 1:
-        level = "MEDIUM"
-        rationale = "A water leak is detected; its source needs checking."
-        review = True
-    elif door == 1 and motion == 1 and mode == "AWAY" and authorised is False and recent == "NONE":
-        level = "HIGH"
-        rationale = "Door opening and motion coincide in Away Mode without authorised or expected activity."
-    elif door == 1 and lock == "locked":
-        level = "MEDIUM"
-        rationale = "The door reports open while the lock reports locked; the conflicting states need checking."
-        review = True
-    elif door == 1 or motion == 1:
-        if authorised is True or recent == "EXPECTED":
-            level = "LOW"
-            rationale = "Door or motion activity matches authorised or expected household activity."
+        findings.append(("HIGH", "A smoke or gas alarm is triggered; fixed safety policy requires HIGH risk."))
+    if overheat == 1:
+        findings.append(("HIGH", "The simulated appliance overheat alarm is active."))
+    if water == 1:
+        if valve == "open":
+            findings.append(("HIGH", "A water leak is detected while the simulated water valve is open."))
         else:
-            level = "MEDIUM"
-            rationale = "Door or motion activity has no confirmed authorised explanation."
-            review = True
-    else:
-        level = "LOW"
-        rationale = "No simulated hazard or intrusion sensor is triggered."
+            findings.append(("MEDIUM", "A water leak is detected; its source needs checking."))
 
+    unexplained_away = mode == "AWAY" and authorised is False and recent == "NONE"
+    if unexplained_away and motion == 1 and (door == 1 or window == 1 or lock_access == 1):
+        findings.append(("HIGH", "Opening or lock-access anomaly coincides with motion in Away Mode."))
+    if unexplained_away and lock_access == 1 and door == 1:
+        findings.append(("HIGH", "A lock-access anomaly coincides with an open door in Away Mode."))
+    if lock_access == 1:
+        findings.append(("MEDIUM", "The simulated smart lock reports an abnormal access attempt."))
+    if unexpected_run == 1:
+        findings.append(("MEDIUM", "The simulated appliance reports unexpected operation."))
+    if door == 1 and lock == "locked":
+        findings.append(("MEDIUM", "The door reports open while the lock reports locked."))
+    if door == 1 or window == 1 or motion == 1:
+        if authorised is True or recent == "EXPECTED":
+            findings.append(("LOW", "Door, window or motion activity matches authorised or expected activity."))
+        else:
+            findings.append(("MEDIUM", "Door, window or motion activity has no confirmed authorised explanation."))
+
+    level = max((item[0] for item in findings), key=RISK_LEVELS.index, default="LOW")
+    rationale = " ".join(reason for risk, reason in findings if risk == level)
+    if not rationale:
+        rationale = "No simulated hazard or intrusion sensor is triggered."
     if invalid:
-        review = True
         if level == "LOW":
             level = "MEDIUM"
         rationale += " Missing or invalid sensor data requires review."
 
-    review = review or level in ("MEDIUM", "HIGH")
+    # Only MEDIUM pauses for a homeowner decision. HIGH follows the fixed,
+    # pre-approved emergency policy immediately; a notification still follows.
+    review = level == "MEDIUM"
 
     evidence = (
         f"binary_readings={values}; home_mode={mode}; recent_activity={recent}; "

@@ -1,4 +1,4 @@
-"""Small SCRUM-15 Home Security page; monitoring uses the shared workflow."""
+"""UC-04 Home Security page using the shared workflow and simulated devices."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import os
 
 import streamlit as st
 
-from domains.home_security.integration import monitor_security_workflow
+from domains.home_security.integration import monitor_security_workflow, resume_security_workflow
 from domains.home_security.monitoring import READING_TYPES
 from simulation.security_demo import DEFAULT_RECORD_PATH
 from simulation.security_scenarios import SCENARIOS, make_security_observation
@@ -20,7 +20,32 @@ SENSOR_LABELS = {
     "water_leak": "Water leak",
     "door_open": "Door open",
     "motion_detected": "Motion detected",
+    "appliance_overheat_alarm": "Appliance overheat alarm",
+    "appliance_unexpected_run": "Appliance running unexpectedly",
+    "window_open": "Window open",
+    "smart_lock_access_anomaly": "Smart-lock access anomaly",
 }
+
+CONFIRMATION_LABELS = {"help": "approved", "safe": "rejected", "timeout": "timeout", "unclear": "unclear"}
+
+
+def _display_workflow(workflow) -> dict:
+    """Translate confirmation terms for this page without changing audit data."""
+    displayed = workflow.to_dict()
+    for reply in displayed["confirmation_replies"]:
+        reply["verdict"] = CONFIRMATION_LABELS.get(reply["verdict"], reply["verdict"])
+    assessment = displayed["assessment"]
+    for internal, label in CONFIRMATION_LABELS.items():
+        assessment["rationale"] = assessment["rationale"].replace(
+            f"Homeowner confirmation: {internal}.", f"Homeowner confirmation: {label}.",
+        )
+        assessment["evidence"] = assessment["evidence"].replace(
+            f"confirmation_verdict={internal}", f"confirmation_verdict={label}",
+        )
+        for entry in displayed["trace"]:
+            if entry["outcome"] in (f"resident_reply:{internal}", f"escalated:{internal}"):
+                entry["outcome"] = entry["outcome"].replace(f":{internal}", f":{label}")
+    return displayed
 
 
 def _load_preset() -> None:
@@ -32,6 +57,7 @@ def _load_preset() -> None:
     st.session_state.security_authorized = authorised
     st.session_state.security_lock = lock
     st.session_state.security_valve = valve
+    st.session_state.security_failure = st.session_state.security_scenario == "device_failure"
     st.session_state.pop("security_result", None)
 
 
@@ -52,7 +78,7 @@ def _recent_records(limit: int = 10) -> list[dict]:
 
 def render_home_security() -> None:
     st.title("Home Security")
-    st.caption("SCRUM-15 · Fictional sensor inputs and local assessment records")
+    st.caption("UC-04 · Fictional sensors, simulated notifications and devices, local audit")
 
     if "security_scenario" not in st.session_state:
         st.session_state.security_scenario = "normal"
@@ -75,6 +101,7 @@ def render_home_security() -> None:
         authorised = st.checkbox("Authorized entry", key="security_authorized", on_change=_clear_result)
         lock = st.selectbox("Front door lock", ("locked", "unlocked"), key="security_lock", on_change=_clear_result)
         valve = st.selectbox("Water valve", ("closed", "open"), key="security_valve", on_change=_clear_result)
+        failure = st.checkbox("Simulate response devices offline", key="security_failure", on_change=_clear_result)
         with st.expander("AI option"):
             use_ai = st.toggle("Request campus LLM advice", key="security_use_ai", on_change=_clear_result)
             configured = bool(os.getenv("ELEC5620_API_KEY", "").strip())
@@ -96,6 +123,7 @@ def render_home_security() -> None:
             try:
                 result = monitor_security_workflow(
                     event, record_path=DEFAULT_RECORD_PATH, proposal_provider=provider,
+                    offline_devices=("appliance", "gas_valve", "water_valve", "security_lights", "siren") if failure else (),
                 )
                 st.session_state.security_result = result
             except OSError:
@@ -109,26 +137,68 @@ def render_home_security() -> None:
         else:
             assessment = result.assessment
             st.metric("Risk level", assessment.risk_level)
+            st.write(f"Workflow outcome: **{result.workflow.outcome}**")
             st.write(assessment.rationale)
-            st.caption(f"Assessment time: {result.classification_ms:.1f} ms")
+            st.caption(f"Workflow time: {result.classification_ms:.1f} ms")
             st.caption(f"Campus LLM: {assessment.llm_status}")
             if assessment.model_rationale:
                 st.write(f"LLM explanation: {assessment.model_rationale}")
             if assessment.fallback_used:
                 st.warning("LLM advice was unavailable, invalid or conflicted with fixed rules; the rule result was kept.")
-            if assessment.requires_human_review:
-                st.warning("Input or event needs human review. No confirmation workflow runs in SCRUM-15.")
-            st.caption("Assessment recorded locally. No owner notification or device action was requested.")
+            pending = result.workflow.pending_confirmation
+            if pending:
+                st.warning(pending.question)
+                st.caption(f"Attempt {pending.attempt}/{pending.max_attempts}; timeout {pending.timeout_seconds} s. The timeout button simulates expiry.")
+                approve, reject, timeout = st.columns(3)
+                selected = None
+                if approve.button("Approve", key="security_approve"):
+                    selected = "APPROVE"
+                if reject.button("Reject", key="security_reject"):
+                    selected = "REJECT"
+                if timeout.button("No reply / timeout", key="security_timeout"):
+                    selected = "TIMEOUT"
+                if selected is not None:
+                    try:
+                        result = resume_security_workflow(
+                            result, None if selected == "TIMEOUT" else selected,
+                            record_path=DEFAULT_RECORD_PATH,
+                        )
+                        st.session_state.security_result = result
+                        st.rerun()
+                    except OSError:
+                        st.error("Confirmation result could not be saved locally.")
+            if result.workflow.confirmation_replies:
+                st.write("Confirmation:", ", ".join(
+                    CONFIRMATION_LABELS.get(item.verdict, item.verdict)
+                    for item in result.workflow.confirmation_replies
+                ))
+            if result.notification_history:
+                st.write("Simulated owner notifications:")
+                st.dataframe(result.notification_history, hide_index=True, width="stretch")
+            if result.workflow.action_results:
+                st.write("Simulated device actions:")
+                st.dataframe([
+                    {"Device": action.device_id, "Accepted": action.accepted,
+                     "State verified": action.verified, "Attempts": action.attempts,
+                     "Observed state": str(action.returned_state),
+                     "Result": "SUCCESS" if action.success else "FAILURE",
+                     "Error": action.error or ""}
+                    for action in result.workflow.action_results
+                ], hide_index=True, width="stretch")
+            if result.workflow.outcome in ("FAILED", "PARTIAL"):
+                st.error("One or more responses failed or could not be verified. See action results and audit trace.")
+            st.caption("Each workflow stage is recorded in the local audit log. All device and notification results are simulated.")
             with st.expander("Evidence and shared agent trace"):
                 st.write(assessment.evidence)
-                st.json(result.workflow.to_dict())
+                st.json(_display_workflow(result.workflow))
 
     records = _recent_records()
     if records:
-        st.subheader("Recent local assessments")
+        st.subheader("Recent local workflow records")
         st.dataframe([
             {"Time (UTC)": item.get("received_at"),
              "Risk": item.get("assessment", {}).get("risk_level"),
+             "Outcome": item.get("workflow", {}).get("outcome"),
              "Reason": item.get("assessment", {}).get("rationale")}
             for item in records
         ], hide_index=True, width="stretch")

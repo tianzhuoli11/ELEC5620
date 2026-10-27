@@ -4,7 +4,7 @@ Wed 09-11 Group 11 Stage 2 shared repository.
 
 **Option A: Python + LangGraph + Streamlit**, using the course API proxy and the `campus-qwen` model. All five domains reuse the same agents, models and user interface.
 
-The root `app.py` runs a Streamlit dashboard with interactive Pet Care and Home Security demonstrations. Both route through the shared coordinator and monitoring agent. Home Security SCRUM-15 records simulated risk assessments without owner alerts or device actions. The other three domain pages are pending their owners' implementations. The offline goal interpreter recognises only a fictional exact phrase, and real notification delivery is not connected yet.
+The root `app.py` runs a Streamlit dashboard with interactive Pet Care and Home Security demonstrations. Both route through the shared agents. Home Security now uses simulated homeowner notifications, confirmation and verified device actions for UC-04. The other three domain pages on this branch are pending their owners' implementations. Real notification delivery is not connected.
 
 ## Run the dashboard and framework demo
 
@@ -20,9 +20,9 @@ python -m venv .venv
 
 On macOS/Linux, use `.venv/bin/python` in place of `.venv\Scripts\python`. The framework demo needs no API key after dependencies are installed. Overview and Pet Care provide editable simulated readings, risk assessments and saved local history in the ignored `data/runtime/pet_events.jsonl` file. **Reset inputs** clears the current input and result without deleting history.
 
-Campus AI is optional for Pet Care and Home Security. Set `ELEC5620_API_KEY` in your local environment and connect to the university network or VPN, then enable the AI option in the relevant page. The key is not entered into the page or stored in the repository. If the proxy fails or disagrees with a safety rule, the rule-based result remains visible. Pet Care owner alerts are simulated locally for attention-worthy readings; Home Security SCRUM-15 sends no alerts or device commands.
+Campus AI is optional for Pet Care and Home Security. Set `ELEC5620_API_KEY` in your local environment and connect to the university network or VPN, then enable the AI option in the relevant page. The key is not entered into the page or stored in the repository. If the proxy fails or disagrees with a safety rule, the rule-based result remains visible. Pet Care and Home Security owner alerts are simulated locally; no real message is sent.
 
-For the Home Security command-line demonstration, run `.venv\Scripts\python -m simulation.security_demo --scenario smoke`. Other choices are `normal`, `gas`, `water_leak`, `unusual_door`, `suspicious_motion`, and `suspected_intrusion`. Add `--use-campus-llm` only when the local key and university network are available. The command prints the actual assessment and shared agent trace and saves a local JSONL record at `data/runtime/security_events.jsonl`. See [Home Security](domains/home_security/README.md) for rules and scope.
+For the Home Security command-line demonstration, run `.venv\Scripts\python -m simulation.security_demo --scenario smoke` for immediate HIGH response, `--scenario unusual_door --reply approve` for MEDIUM confirmation, or `--scenario device_failure` for failed simulated actions. `normal` demonstrates LOW. Add `--use-campus-llm` only when the local key and university network are available. The command prints the actual shared workflow result and saves local JSONL records at `data/runtime/security_events.jsonl`. See [Home Security](domains/home_security/README.md) for rules and scope.
 
 ## Project structure
 
@@ -67,7 +67,7 @@ The initial dashboard was created on Jinjing Huang's branch for the Pet Care dem
 
 The three shared roles are `HomeCoordinatorAgent`, `MonitoringAgent` and `DeviceAutomationAgent`.
 
-For sensor events, the coordinator routes to monitoring and domain policy, then optional device execution and notification. For direct user goals, it calls the configured interpreter and routes to a policy-validated domain plan, then optional device execution and notification; monitoring is skipped. Device plans execute in order, verify each returned state and stop after failure. The final result identifies complete, partial and failed outcomes, with an in-memory trace. The demo interpreter is deterministic; the campus model adapter still needs to implement the same `GoalInterpreter` contract.
+For sensor events, the coordinator routes to monitoring and domain policy, then optional confirmation, device execution and notification. For direct user goals, it calls the configured interpreter and routes to a policy-validated domain plan; monitoring is skipped. Device plans execute in order and verify each returned state. A plan may continue to a safe warning action after a failed protective command. The final result identifies complete, partial and failed outcomes, with an agent trace. The demo interpreter is deterministic; the campus model adapter still needs to implement the same `GoalInterpreter` contract.
 
 Sending a command is not proof of success. LLM proposals must not bypass safety rules. Domain modules must not directly operate physical devices. The implemented contracts are in [INTERFACES.md](docs/INTERFACES.md), and [INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md) shows how each owner connects their work.
 

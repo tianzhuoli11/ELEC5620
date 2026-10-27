@@ -12,11 +12,17 @@ from domains.home_security.monitoring import EVENT_TYPE, READING_TYPES
 SCENARIOS = {
     "normal": ("Normal safe state", {}, "HOME", "EXPECTED", True, "locked", "closed"),
     "smoke": ("Smoke or fire alarm", {"smoke_alarm": 1}, "HOME", "NONE", False, "locked", "closed"),
+    "device_failure": ("Smoke alarm with offline devices", {"smoke_alarm": 1}, "HOME", "NONE", False, "locked", "closed"),
     "gas": ("Gas leak alarm", {"gas_alarm": 1}, "HOME", "NONE", False, "locked", "closed"),
     "water_leak": ("Water leak with valve open", {"water_leak": 1}, "HOME", "NONE", False, "locked", "open"),
+    "appliance_overheat": ("Appliance overheat alarm", {"appliance_overheat_alarm": 1}, "HOME", "NONE", False, "locked", "closed"),
+    "appliance_unexpected_run": ("Appliance running unexpectedly", {"appliance_unexpected_run": 1}, "AWAY", "NONE", False, "locked", "closed"),
     "unusual_door": ("Unusual door opening", {"door_open": 1}, "AWAY", "NONE", False, "unlocked", "closed"),
+    "unusual_window": ("Unusual window opening", {"window_open": 1}, "AWAY", "NONE", False, "locked", "closed"),
+    "abnormal_lock_access": ("Abnormal smart-lock access", {"smart_lock_access_anomaly": 1}, "AWAY", "NONE", False, "locked", "closed"),
     "suspicious_motion": ("Suspicious motion", {"motion_detected": 1}, "AWAY", "NONE", False, "locked", "closed"),
     "suspected_intrusion": ("Door and motion while away", {"door_open": 1, "motion_detected": 1}, "AWAY", "NONE", False, "unlocked", "closed"),
+    "window_intrusion": ("Window and motion while away", {"window_open": 1, "motion_detected": 1}, "AWAY", "NONE", False, "locked", "closed"),
 }
 
 
@@ -25,7 +31,7 @@ def make_security_observation(
     recent_activity: str = "NONE", authorized_entry: bool = False,
     front_door_lock: str = "locked", water_valve: str = "closed",
 ) -> Event:
-    """Create all five binary sensor readings from editable fictional inputs."""
+    """Create all supported binary sensor readings from editable fictional inputs."""
     unknown = set(readings) - set(READING_TYPES)
     if unknown:
         raise ValueError(f"unknown security reading types: {sorted(unknown)}")
