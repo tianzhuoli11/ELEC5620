@@ -1,8 +1,10 @@
 """Run a SIMULATED elderly fall scenario through the shared workflow (SCRUM-12 evidence).
 
-No LLM call is made, so the assessment uses the documented rule-based MEDIUM
-fallback where applicable. No real device is operated, no real person is
-contacted.
+By default no LLM call is made, so the assessment uses the documented
+rule-based MEDIUM fallback where applicable. `--use-campus-llm` asks
+campus-qwen for the fall proposal and reply interpretation (needs
+ELEC5620_API_KEY and the campus network / VPN); rules still decide. No real
+device is operated, no real person is contacted.
 
     python -m simulation.elderly_demo --list
     python -m simulation.elderly_demo --scenario high_floor
@@ -15,6 +17,7 @@ contacted.
     python -m simulation.elderly_demo --scenario high_floor --ack                  # caregiver acknowledges
     python -m simulation.elderly_demo --scenario high_floor --ack-timeouts 1 --ack # secondary contact acknowledges
     python -m simulation.elderly_demo --scenario high_floor --ack-timeouts 2       # operator informed, event open
+    python -m simulation.elderly_demo --scenario medium_wait --reply "I'm okay, just resting" --use-campus-llm
 """
 
 from __future__ import annotations
@@ -37,6 +40,7 @@ def main() -> None:
     parser.add_argument("--timeout", action="store_true", help="no reply within the confirmation timeout")
     parser.add_argument("--ack-timeouts", type=int, default=0, help="acknowledgement timeouts before any ack (OR-04)")
     parser.add_argument("--ack", action="store_true", help="the contact reached after the timeouts acknowledges")
+    parser.add_argument("--use-campus-llm", action="store_true", help="use campus-qwen (needs ELEC5620_API_KEY)")
     parser.add_argument("--list", action="store_true", help="list scenarios and exit")
     args = parser.parse_args()
 
@@ -49,7 +53,11 @@ def main() -> None:
     devices = SimulatedDeviceTool(default_devices())
     if args.offline:
         devices.offline.update(devices.states)
-    handler = ElderlySafetyHandler()  # rule-only; pass a proposal provider to use the campus model
+    fall_provider = reply_interpreter = None
+    if args.use_campus_llm:
+        from services.elderly_llm import campus_providers
+        fall_provider, reply_interpreter = campus_providers()  # raises if no key is configured
+    handler = ElderlySafetyHandler(fall_provider, reply_interpreter)
     workflow = SmartHomeWorkflow([handler], devices, notifier=SimulatedNotificationService())
     result = workflow.run(event)
     replies = list(args.reply) + ([None] if args.timeout else [])
@@ -67,6 +75,8 @@ def main() -> None:
     print(f"assessment: {fall.risk_level} source={fall.evidence_source} fallback={fall.fallback_used} "
           f"override={fall.policy_override} confirm={fall.requires_confirmation} ({fall.classification_ms:.2f} ms)")
     print(f"  {fall.rationale}")
+    if fall.model_rationale:
+        print(f"  model: {fall.model_rationale}")
     if result.pending_confirmation:
         p = result.pending_confirmation
         print(f"waiting for resident ({p.attempt}/{p.max_attempts}, {p.timeout_seconds}s): {p.question}")

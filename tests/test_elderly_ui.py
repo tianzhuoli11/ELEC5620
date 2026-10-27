@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import os
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -24,6 +25,9 @@ class ElderlySafetyPageTests(unittest.TestCase):
         record_patch = patch.object(elderly_ui, "DEFAULT_RECORD_PATH", self.record_path)
         record_patch.start()
         self.addCleanup(record_patch.stop)
+        environment_patch = patch.dict(os.environ, {"ELEC5620_API_KEY": ""})
+        environment_patch.start()
+        self.addCleanup(environment_patch.stop)
         self.app = AppTest.from_file(str(APP_PATH), default_timeout=45)
 
     def open_page(self) -> None:
@@ -125,6 +129,18 @@ class ElderlySafetyPageTests(unittest.TestCase):
         self.run_scenario("Fall, then not moving (30 s)")
         self.app.button(key="quick-I'm fine").click().run()
         self.assertIsNone(self.app.session_state["elderly_result"]["escalation"])
+
+
+    def test_ai_requested_without_key_falls_back_and_says_so(self) -> None:
+        self.open_page()
+        self.app.toggle(key="elderly_use_ai").set_value(True).run()
+        self.app.button(key="run-elderly-scenario").click().run()
+        self.assertEqual(list(self.app.exception), [])
+        saved = self.app.session_state["elderly_result"]
+        self.assertTrue(saved["requested_ai"])
+        self.assertFalse(saved["ai_configured"])
+        self.assertEqual(saved["handler"].fall_assessment.evidence_source, "llm_fallback")
+        self.assertIn("no key was available", "\n".join(item.value for item in self.app.info))
 
 
 if __name__ == "__main__":
