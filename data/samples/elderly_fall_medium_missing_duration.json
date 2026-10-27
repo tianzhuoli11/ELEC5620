@@ -1,0 +1,33 @@
+{
+  "domain": "elderly_safety",
+  "requirement": "AR-01 / UC-01",
+  "simulated": true,
+  "purpose": "Impact with the inactivity reading missing: no value is invented; ask the resident.",
+  "event": {
+    "event_id": "evt-elderly-medium_missing_duration",
+    "event_type": "fall_detected",
+    "source": "simulated-fall-sensor-1",
+    "timestamp": "2026-10-20T14:00:00+00:00",
+    "context": {
+      "room": "bedroom",
+      "home_mode": "home",
+      "recent_activity": "walking",
+      "scenario": "medium_missing_duration"
+    },
+    "simulated": true,
+    "readings": [
+      {
+        "sensor_id": "simulated-fall-sensor-1",
+        "reading_type": "fall_impact",
+        "value": true,
+        "unit": "bool",
+        "observed_at": "2026-10-20T14:00:00+00:00"
+      }
+    ]
+  },
+  "expected": {
+    "rule_level": "MEDIUM",
+    "level_without_model": "MEDIUM",
+    "decision": "ask_resident (requires_human_review)"
+  }
+}

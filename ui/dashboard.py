@@ -12,6 +12,7 @@ from pathlib import Path
 import streamlit as st
 
 from domains.pet_care.integration import monitor_pet_workflow
+from domains.pet_care.feeder import SimulatedPetFeederTool
 from simulation.events import make_sensor_event
 from simulation.pet_demo import DEFAULT_RECORD_PATH
 
@@ -63,6 +64,10 @@ def _reset_inputs() -> None:
     st.session_state.pet_scenario = "Food bowl"
     st.session_state.pet_value = 0.0
     st.session_state.pet_use_ai = False
+    st.session_state.pet_feed_enabled = False
+    st.session_state.pet_feed_requested = False
+    st.session_state.pet_feed_grams = 20
+    st.session_state.pet_feeder_offline = False
     _clear_result()
 
 
@@ -141,9 +146,18 @@ def _check_workspace() -> None:
             value = st.number_input(f"{reading_label} ({unit})", min_value=0.0, max_value=100.0 if event_type == "pet_bowl_level" else 1440.0, step=1.0, key="pet_value", on_change=_clear_result)
             st.caption("Edit the reading to test a different situation.")
             with st.expander("AI options"):
-                use_ai = st.toggle("Include an AI explanation", value=False, key="pet_use_ai", on_change=_clear_result)
+                use_ai = st.toggle("Include an AI explanation", key="pet_use_ai", on_change=_clear_result)
                 if use_ai and not os.getenv("ELEC5620_API_KEY", "").strip():
                     st.caption("AI is not connected. Turn this option off to run a standard check.")
+            with st.expander("Optional feeding demo"):
+                feed_enabled = st.toggle("Enable simulated feeder", key="pet_feed_enabled", on_change=_clear_result)
+                feed_requested = st.checkbox("Request one feed portion", key="pet_feed_requested", on_change=_clear_result)
+                if "pet_feed_grams" not in st.session_state:
+                    st.session_state.pet_feed_grams = 20
+                feed_grams = st.number_input("Portion (grams)", min_value=1, max_value=50, step=1,
+                                             key="pet_feed_grams", on_change=_clear_result)
+                feeder_offline = st.checkbox("Simulate feeder offline", key="pet_feeder_offline", on_change=_clear_result)
+                st.caption("Only a low food-bowl reading with an explicit request can dispense. All feeder actions are simulated.")
             disabled = use_ai and not os.getenv("ELEC5620_API_KEY", "").strip()
             run, reset = st.columns([1.6, 1], gap="small")
             with run:
@@ -159,8 +173,16 @@ def _check_workspace() -> None:
                     provider = lambda observation: propose_pet_risk(observation, config)
                 try:
                     with st.spinner("Assessing and saving…"):
-                        checked = monitor_pet_workflow(event, record_path=DEFAULT_RECORD_PATH, proposal_provider=provider)
-                    st.session_state.pet_result = {"event": event, "assessment": checked.assessment, "workflow": checked.workflow, "requested_ai": use_ai, "observation": selected, "reading": f"{value:g} {unit}"}
+                        checked = monitor_pet_workflow(
+                            event, record_path=DEFAULT_RECORD_PATH, proposal_provider=provider,
+                            feeding_goal={"portion_grams": int(feed_grams)} if feed_requested else None,
+                            feeding_enabled=feed_enabled,
+                            feeder=SimulatedPetFeederTool(available=not feeder_offline),
+                        )
+                    st.session_state.pet_result = {"event": event, "assessment": checked.assessment,
+                                                   "workflow": checked.workflow, "feeding": checked.feeding,
+                                                   "requested_ai": use_ai, "observation": selected,
+                                                   "reading": f"{value:g} {unit}"}
                     st.rerun()
                 except OSError:
                     _clear_result()
@@ -188,11 +210,19 @@ def _check_workspace() -> None:
                     st.warning(f"Owner alert was not delivered: {notice.detail}")
                 else:
                     st.caption("No owner alert needed for this reading.")
+                feeding = result["feeding"]
+                if feeding.status == "VERIFIED":
+                    st.success(f"Simulated feeding verified: {feeding.portion_grams} g. No real feeder was used.")
+                elif feeding.status != "NOT_REQUESTED":
+                    st.warning(f"Optional feeding {feeding.status.lower()}: {feeding.detail}")
+                else:
+                    st.caption("No feeding action requested.")
                 st.markdown(f'<div class="completion-line">{icon("check")} Reading assessed <span>→</span> Record saved</div>', unsafe_allow_html=True)
                 st.caption(f'{result["observation"]} · {result.get("reading", "Sample reading")} · {_local_time(event.timestamp)}')
                 with st.expander("Event details"):
-                    st.caption("No feeder or other device was activated. Any owner alert is simulated only.")
-                    st.json({"event": event.to_dict(), "assessment": assessment.to_dict(), "workflow": workflow.to_dict()})
+                    st.caption("All device actions and owner alerts are simulated; no real message or feed was sent.")
+                    st.json({"event": event.to_dict(), "assessment": assessment.to_dict(),
+                             "workflow": workflow.to_dict(), "feeding": feeding.__dict__})
 
 
 def _history(records: list[dict]) -> None:
@@ -207,7 +237,7 @@ def _history(records: list[dict]) -> None:
         event, assessment = record["event"], record["assessment"]
         readings = event.get("readings", [])
         reading = readings[0] if isinstance(readings, list) and readings and isinstance(readings[0], dict) else {}
-        rows.append({"Time": _local_time(event.get("timestamp")), "Observation": "Food bowl" if event.get("event_type") == "pet_bowl_level" else "Activity", "Reading": f'{reading.get("value", "—")} {reading.get("unit", "")}'.strip(), "Risk": assessment.get("risk_level", "Unknown"), "Assessment": assessment.get("rationale", "Unavailable")})
+        rows.append({"Time": _local_time(event.get("timestamp")), "Observation": "Food bowl" if event.get("event_type") == "pet_bowl_level" else "Activity", "Reading": f'{reading.get("value", "—")} {reading.get("unit", "")}'.strip(), "Risk": assessment.get("risk_level", "Unknown"), "Feeding": record.get("feeding", {}).get("status", "Not recorded"), "Assessment": assessment.get("rationale", "Unavailable")})
     st.dataframe(rows, hide_index=True, use_container_width=True)
     if len(matching) > 20:
         st.caption(f"Showing the latest 20 of {len(matching)} matching checks.")
