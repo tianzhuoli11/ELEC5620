@@ -2,6 +2,8 @@
 
 These are the implemented interfaces in `models/`, `domains/base.py`, `tools/device.py`, `services/goals.py`, and `services/notifications.py`. Changes to public fields need a coordinated PR because every domain imports them.
 
+SCRUM-22 adds a backward-compatible candidate module at `models/context.py`: `HomeEnvironment`, `UserPreference`, `EnergyProfile`, `HomeMode`, `DeviceObservation` and aggregate `HomeContext`. It does not change existing Event or workflow constructor fields. For `energy_comfort_observation`, temperature and occupancy are readings; preference, energy policy input, mode, devices and the matching simulation marker are stored under `Event.context["energy_comfort"]`. Unknown values remain `None`. This candidate has local implementation coverage but still requires M2/M4 and framework-owner review; no team approval is implied.
+
 ## Input and ownership
 
 `Event(event_id, event_type, source, timestamp, context, simulated, readings)` has a timezone-aware ISO 8601 timestamp. `SensorReading(sensor_id, reading_type, value, unit, observed_at)` holds one observation. Event IDs must be preserved in every later message. `simulation.events.make_sensor_event(...)` creates a fresh simulated sensor event; `make_user_goal_event(text)` creates a direct simulated user request with `event_type="user_goal"` and `context["text"]`.
