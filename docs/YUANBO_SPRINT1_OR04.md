@@ -36,6 +36,32 @@ streamlit run app.py                                                            
 | `simulation/elderly_demo.py` | `--ack-timeouts N` and `--ack`. |
 | `tests/test_elderly_escalation.py`, `tests/test_elderly_ui.py` | 12 escalation tests; 3 more page tests. |
 
+## Campus model (UC-01 steps 3 and 6)
+
+`services/elderly_llm.py` calls campus-qwen for the fall risk proposal and the
+reply interpretation, reusing `CampusProxyConfig` from `services/campus_proxy.py`.
+Only `FallContext.for_llm()` (room category, timing, sensor values) and the
+reply text with its attempt number are sent (NFR-03). Rules keep the final
+say: a proposal may confirm or raise the risk, never lower it; a model may not
+turn an obvious help request into "safe"; timeouts, network errors and
+non-JSON output use the documented fallback.
+
+Enable it with the page's "AI options → Use campus AI when available" toggle or
+`python -m simulation.elderly_demo ... --use-campus-llm`. Without a key the
+page says so and runs rules only.
+
+Default tests patch the HTTP call (`tests/test_elderly_llm.py`, 10 tests).
+The live test is opt-in and must be run on the campus network / USYD VPN:
+
+```powershell
+$env:ELEC5620_API_KEY = "<your key>"
+$env:ELEC5620_RUN_REAL_PROXY = "1"
+python -m unittest tests.test_elderly_llm -v
+```
+
+Record the live result (date, model verdicts, whether rules overrode) in Jira;
+never paste the key.
+
 ## Not done yet
 
 - A real notification adapter that reports delivery and acknowledgement (Yan Li's `NotificationService`); the flow already reads `acknowledged` from it.

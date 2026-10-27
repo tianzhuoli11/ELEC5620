@@ -10,6 +10,7 @@ contacts a real person.
 from __future__ import annotations
 
 from html import escape
+import os
 
 import streamlit as st
 
@@ -26,6 +27,7 @@ from domains.elderly_safety.integration import (
     run_elderly_safety,
     start_escalation,
 )
+from services.elderly_llm import campus_providers
 from simulation.devices import SimulatedDeviceTool
 from simulation.elderly_scenarios import make_fall_scenario
 
@@ -71,6 +73,7 @@ def _reset_demo() -> None:
     st.session_state.elderly_scenario = next(iter(SCENARIOS))
     st.session_state.elderly_fault = "No simulated fault"
     st.session_state.elderly_reply = ""
+    st.session_state.elderly_use_ai = False
     _clear_result()
 
 
@@ -81,11 +84,17 @@ def _state_rows(states: dict[str, dict]) -> list[dict[str, str]]:
     ]
 
 
-def _run_scenario(scenario_label: str, fault_name: str) -> None:
+def _run_scenario(scenario_label: str, fault_name: str, use_ai: bool = False) -> None:
     device_tool = SimulatedDeviceTool(default_devices())
     if FAULTS[fault_name]:
         device_tool.offline.update(device_tool.states)
-    workflow, handler = build_workflow(device_tool=device_tool)
+    fall_provider = reply_interpreter = None
+    ai_configured = False
+    if use_ai and os.getenv("ELEC5620_API_KEY", "").strip():
+        fall_provider, reply_interpreter = campus_providers()
+        ai_configured = True
+    workflow, handler = build_workflow(device_tool=device_tool, proposal_provider=fall_provider,
+                                       reply_interpreter=reply_interpreter)
     event = make_fall_scenario(SCENARIOS[scenario_label])
     result = run_elderly_safety(event, workflow=workflow, handler=handler, record_path=DEFAULT_RECORD_PATH)
     st.session_state.elderly_result = {
@@ -95,6 +104,8 @@ def _run_scenario(scenario_label: str, fault_name: str) -> None:
         "device_tool": device_tool,
         "scenario": scenario_label,
         "fault": fault_name,
+        "requested_ai": use_ai,
+        "ai_configured": ai_configured,
         "escalation": start_escalation(result, workflow=workflow, record_path=DEFAULT_RECORD_PATH),
     }
 
@@ -208,10 +219,14 @@ def render_elderly_safety() -> None:
             )
             scenario = st.selectbox("Scenario", list(SCENARIOS), key="elderly_scenario", on_change=_clear_result)
             fault = st.selectbox("Failure simulation", list(FAULTS), key="elderly_fault", on_change=_clear_result)
-            st.caption(
-                "No model is called on this page, so the documented rule-based MEDIUM fallback applies: "
-                "a low rule result still asks the resident."
-            )
+            with st.expander("AI options"):
+                use_ai = st.toggle("Use campus AI when available", key="elderly_use_ai", value=False, on_change=_clear_result)
+                if use_ai and not os.getenv("ELEC5620_API_KEY", "").strip():
+                    st.caption("No API key is configured. The rule-based fallback will be used.")
+                st.caption(
+                    "The model only proposes a risk level and interprets replies from de-identified data; "
+                    "rules keep the final say. Without a model the documented MEDIUM fallback applies."
+                )
             run, reset = st.columns([1.6, 1], gap="small")
             with run:
                 submitted = st.button("Run scenario →", key="run-elderly-scenario", type="primary", width="stretch")
@@ -220,7 +235,7 @@ def render_elderly_safety() -> None:
             if submitted:
                 try:
                     with st.spinner("Assessing the fall…"):
-                        _run_scenario(scenario, fault)
+                        _run_scenario(scenario, fault, use_ai)
                     st.rerun()
                 except OSError:
                     _clear_result()
@@ -250,6 +265,10 @@ def render_elderly_safety() -> None:
                         f"{' · rules overrode model' if fall.policy_override else ''}"
                         f" · {fall.classification_ms:.2f} ms"
                     )
+                if saved.get("requested_ai") and not saved.get("ai_configured"):
+                    st.info("Campus AI was requested but no key was available; the rule-based fallback handled this event.")
+                elif saved.get("ai_configured") and fall is not None and fall.model_rationale:
+                    st.caption(f"Model rationale: {fall.model_rationale}")
                 if result.pending_confirmation is not None:
                     _confirmation_panel(result)
 
