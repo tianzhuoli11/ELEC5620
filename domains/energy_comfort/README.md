@@ -2,7 +2,7 @@
 
 Owner: Tianzhuo Li. Requirements: AR-05 / UC-05; optional OR-05, with UC-06 integration.
 
-Stage 1 implements SCRUM-22's provisional shared context and SCRUM-16's deterministic assessment slice. It does not control a device, send a notification, call an LLM, persist audit history or provide a Streamlit page. Local implementation and tests do not mean the work is merged or Jira Done.
+Stage 1 implements SCRUM-22's provisional shared context and SCRUM-16's deterministic assessment slice. The Streamlit page in `ui/energy_comfort.py` runs that assessment through the shared workflow, shows fail-closed eligibility and deterministic explanations, and records local assessment evidence. It does not control a device, send a notification, call an LLM, or claim formal Energy & Comfort device control. Formal control remains pending.
 
 Put shared HomeEnvironment, UserPreference, EnergyProfile and HomeMode types in `models/`. Reuse `tools/` and `services/`. Safety overrides comfort and energy goals; missing facts remain unknown. Put tests in `tests/` and views in `ui/`.
 
