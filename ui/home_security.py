@@ -10,6 +10,8 @@ import streamlit as st
 
 from domains.home_security.integration import monitor_security_workflow, resume_security_workflow
 from domains.home_security.monitoring import READING_TYPES
+from domains.home_security.external_warnings import HOUSEHOLD_AREA, WARNING_EVENT_TYPE
+from simulation.external_warning_scenarios import WARNING_SCENARIOS, make_warning_scenario
 from simulation.security_demo import DEFAULT_RECORD_PATH
 from simulation.security_scenarios import SCENARIOS, make_security_observation
 
@@ -29,6 +31,12 @@ SENSOR_LABELS = {
 CONFIRMATION_LABELS = {"help": "approved", "safe": "rejected", "timeout": "timeout", "unclear": "unclear"}
 
 
+def _warning_text(value: str) -> str:
+    """Shorten warning prose only for display; keep the audit unchanged."""
+    shortened = value.replace("SIMULATED ", "")
+    return shortened[0].upper() + shortened[1:] if value.startswith("SIMULATED ") and shortened else shortened
+
+
 def _display_workflow(workflow) -> dict:
     """Translate confirmation terms for this page without changing audit data."""
     displayed = workflow.to_dict()
@@ -45,6 +53,8 @@ def _display_workflow(workflow) -> dict:
         for entry in displayed["trace"]:
             if entry["outcome"] in (f"resident_reply:{internal}", f"escalated:{internal}"):
                 entry["outcome"] = entry["outcome"].replace(f":{internal}", f":{label}")
+    if workflow.event.event_type == WARNING_EVENT_TYPE:
+        assessment["rationale"] = _warning_text(assessment["rationale"])
     return displayed
 
 
@@ -63,6 +73,10 @@ def _load_preset() -> None:
 
 def _clear_result() -> None:
     st.session_state.pop("security_result", None)
+
+
+def _clear_warning_result() -> None:
+    st.session_state.pop("security_warning_result", None)
 
 
 def _recent_records(limit: int = 10) -> list[dict]:
@@ -192,6 +206,81 @@ def render_home_security() -> None:
                 st.write(assessment.evidence)
                 st.json(_display_workflow(result.workflow))
 
+    st.divider()
+    st.subheader("External Warning · SIMULATED")
+    st.caption(
+        f"Fictional warning feed and household area {HOUSEHOLD_AREA}. "
+        "No government API or real device is connected."
+    )
+    warning_controls, warning_outcome = st.columns([1, 1.2], gap="medium")
+    with warning_controls:
+        st.selectbox(
+            "Warning scenario", tuple(WARNING_SCENARIOS),
+            format_func=lambda name: WARNING_SCENARIOS[name][0].removesuffix(" · SIMULATED"),
+            key="security_warning_scenario", on_change=_clear_warning_result,
+        )
+        warning_use_ai = st.toggle(
+            "Request campus LLM advice for warning", key="security_warning_use_ai",
+            on_change=_clear_warning_result,
+        )
+        if warning_use_ai and not configured:
+            st.info("Set ELEC5620_API_KEY locally to enable optional campus advice.")
+        if st.button(
+            "Assess external warning", key="security_warning_run",
+            disabled=warning_use_ai and not configured,
+        ):
+            warning_event = make_warning_scenario(st.session_state.security_warning_scenario)
+            warning_provider = None
+            if warning_use_ai:
+                from domains.home_security.llm import propose_external_warning_risk
+                from services.campus_proxy import CampusProxyConfig
+
+                config = CampusProxyConfig.from_environment()
+                warning_provider = lambda observation: propose_external_warning_risk(observation, config)
+            try:
+                st.session_state.security_warning_result = monitor_security_workflow(
+                    warning_event, record_path=DEFAULT_RECORD_PATH,
+                    proposal_provider=warning_provider,
+                )
+            except OSError:
+                st.error("External warning result could not be saved locally.")
+    with warning_outcome:
+        warning_result = st.session_state.get("security_warning_result")
+        if warning_result is None:
+            st.info("Choose a warning and assess it to see source validation and response.")
+        else:
+            warning = warning_result.assessment
+            st.metric("Warning risk", warning.risk_level)
+            st.write(f"Validity: **{'VALID' if warning.valid else 'INVALID'}** · "
+                     f"Household relevance: **{'YES' if warning.relevant else 'NO'}**")
+            st.write(f"Workflow outcome: **{warning_result.workflow.outcome}**")
+            st.write(_warning_text(warning.rationale))
+            st.caption(f"Campus LLM: {warning.llm_status}")
+            if warning.model_rationale:
+                st.write(f"LLM explanation: {_warning_text(warning.model_rationale)}")
+            if warning.fallback_used:
+                st.warning("LLM advice was unavailable or conflicted with the fixed warning rules.")
+            if warning_result.notification_history:
+                st.write("Owner notifications:")
+                st.dataframe([
+                    {**item, "message": _warning_text(item["message"]),
+                     "status": "Recorded locally" if item["status"] == "SIMULATED" else item["status"]}
+                    for item in warning_result.notification_history
+                ], hide_index=True, width="stretch")
+            else:
+                st.caption("No owner notification was sent for this warning.")
+            if warning_result.workflow.action_results:
+                st.write("Emergency mode action:")
+                st.dataframe([
+                    {"Device": item.device_id, "Accepted": item.accepted,
+                     "Verified": item.verified, "Observed state": str(item.returned_state),
+                     "Result": "SUCCESS" if item.success else "FAILURE"}
+                    for item in warning_result.workflow.action_results
+                ], hide_index=True, width="stretch")
+            with st.expander("Warning details and audit trace"):
+                st.json(warning_result.workflow.event.context.get("warning"))
+                st.json(_display_workflow(warning_result.workflow))
+
     records = _recent_records()
     if records:
         st.subheader("Recent local workflow records")
@@ -199,6 +288,8 @@ def render_home_security() -> None:
             {"Time (UTC)": item.get("received_at"),
              "Risk": item.get("assessment", {}).get("risk_level"),
              "Outcome": item.get("workflow", {}).get("outcome"),
-             "Reason": item.get("assessment", {}).get("rationale")}
+             "Reason": _warning_text(item.get("assessment", {}).get("rationale", ""))
+             if item.get("record_type") == "external_warning_workflow"
+             else item.get("assessment", {}).get("rationale")}
             for item in records
         ], hide_index=True, width="stretch")

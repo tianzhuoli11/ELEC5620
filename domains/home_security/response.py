@@ -19,6 +19,7 @@ OWNER_REF = "simulated_homeowner"
 
 # The DeviceControlTool changes these in-memory fields and reads them back.
 INITIAL_DEVICE_STATES = {
+    "emergency_mode": {"active": False},
     "siren": {"power": "off"},
     "security_lights": {"power": "off"},
     "appliance": {"power": "on"},

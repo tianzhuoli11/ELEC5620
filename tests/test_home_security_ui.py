@@ -123,6 +123,43 @@ class HomeSecurityPageTests(unittest.TestCase):
         self.assertEqual(result.workflow.outcome, "FAILED")
         self.assertTrue(all(not item.success for item in result.workflow.action_results))
 
+    def test_external_warning_area_shows_relevant_irrelevant_and_invalid_results(self) -> None:
+        selector = self.app.selectbox(key="security_warning_scenario")
+        self.assertTrue(all("SIMULATED" not in option for option in selector.options))
+        self.assertIn("External Warning · SIMULATED", [item.value for item in self.app.subheader])
+        cases = (
+            ("relevant_bushfire", True, True, "HIGH", "COMPLETE", 1, 1),
+            ("irrelevant_flood", True, False, "LOW", "ASSESSED", 0, 0),
+            ("invalid_source", False, False, "LOW", "ASSESSED", 0, 0),
+        )
+        for name, valid, relevant, risk, outcome, actions, notices in cases:
+            with self.subTest(name=name):
+                self.app.selectbox(key="security_warning_scenario").set_value(name).run()
+                self.app.button(key="security_warning_run").click().run()
+                self.assertEqual(list(self.app.exception), [])
+                self.assertIn("Warning details and audit trace", [item.label for item in self.app.expander])
+                result = self.app.session_state["security_warning_result"]
+                self.assertEqual(result.assessment.valid, valid)
+                self.assertEqual(result.assessment.relevant, relevant)
+                self.assertEqual(result.assessment.risk_level, risk)
+                self.assertEqual(result.workflow.outcome, outcome)
+                self.assertEqual(len(result.workflow.action_results), actions)
+                self.assertEqual(len(result.notification_history), notices)
+                self.assertIn("SIMULATED", result.assessment.rationale)
+                visible_rationale = security_ui._warning_text(result.assessment.rationale)
+                self.assertIn(visible_rationale, [item.value for item in self.app.markdown])
+                self.assertNotIn("SIMULATED", visible_rationale)
+                self.assertNotIn("SIMULATED", security_ui._display_workflow(result.workflow)["assessment"]["rationale"])
+                if notices:
+                    self.assertEqual(self.app.dataframe[0].value.iloc[0]["status"], "Recorded locally")
+                    self.assertEqual(result.notification_history[0]["status"], "SIMULATED")
+        records = [json.loads(line) for line in self.record_path.read_text(encoding="utf-8").splitlines()]
+        self.assertEqual(len(records), len(cases))
+        self.assertTrue(all(item["record_type"] == "external_warning_workflow" for item in records))
+        self.assertTrue(all("SIMULATED" in item["assessment"]["rationale"] for item in records))
+        self.assertTrue(all(item["event"]["raw_warning"]["simulated"] for item in records))
+        self.assertTrue(all("SIMULATED" not in reason for reason in self.app.dataframe[-1].value["Reason"]))
+
 
 if __name__ == "__main__":
     unittest.main()

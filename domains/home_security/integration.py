@@ -16,6 +16,10 @@ from simulation.notifications import SimulatedNotificationService
 from tools.device import DeviceTool
 
 from . import response
+from .external_warnings import (
+    WARNING_EVENT_TYPE, ExternalWarningAssessment, assess_external_warning,
+    external_warning_decision,
+)
 from .monitoring import EVENT_TYPE, READING_TYPES, ProposalProvider, SecurityAssessment, assess_security_event
 
 
@@ -28,9 +32,15 @@ class HomeSecurityHandler:
         self.last_notification_request: NotificationRequest | None = None
 
     def supports(self, event: Event) -> bool:
-        return event.event_type == EVENT_TYPE
+        return event.event_type in (EVENT_TYPE, WARNING_EVENT_TYPE)
 
     def assess(self, event: Event) -> MonitoringDecision:
+        if event.event_type == WARNING_EVENT_TYPE:
+            warning = assess_external_warning(event, self.proposal_provider)
+            self.security_assessment = warning
+            decision = external_warning_decision(event, warning)
+            self.last_notification_request = decision.notification_request
+            return decision
         security = assess_security_event(event, self.proposal_provider)
         self.security_assessment = security
         assessment = RiskAssessment(
@@ -71,6 +81,13 @@ class SecurityWorkflowOutcome:
 
 def _recorded_event(event: Event) -> dict:
     """Persist only the fictional fields used by the security assessment."""
+    if event.event_type == WARNING_EVENT_TYPE:
+        return {
+            "event_id": event.event_id, "event_type": event.event_type,
+            "source": event.source, "timestamp": event.timestamp,
+            "simulated": event.simulated,
+            "raw_warning": event.context.get("warning"),
+        }
     context = event.context
     devices = context.get("device_status")
     devices = devices if isinstance(devices, dict) else {}
@@ -104,7 +121,7 @@ def _append_record(
     recorded_workflow = workflow.to_dict()
     recorded_workflow["event"] = recorded_event
     record = {
-        "record_type": "security_workflow",
+        "record_type": "external_warning_workflow" if event.event_type == WARNING_EVENT_TYPE else "security_workflow",
         "received_at": datetime.now(timezone.utc).isoformat(),
         "classification_ms": classification_ms,
         "event": recorded_event,

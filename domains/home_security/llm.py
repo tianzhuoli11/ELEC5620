@@ -9,6 +9,7 @@ from models import Event
 from services.campus_proxy import CampusProxyConfig, request_json_chat
 
 from .monitoring import EVENT_TYPE, READING_TYPES
+from .external_warnings import HOUSEHOLD_AREA, WARNING_EVENT_TYPE
 
 
 def propose_security_risk(event: Event, config: CampusProxyConfig) -> dict[str, Any]:
@@ -43,4 +44,28 @@ def propose_security_risk(event: Event, config: CampusProxyConfig) -> dict[str, 
             ),
         },
         {"role": "user", "content": json.dumps({"readings": observations, "context": safe_context})},
+    ], config)
+
+
+def propose_external_warning_risk(event: Event, config: CampusProxyConfig) -> dict[str, Any]:
+    """Ask the same campus client about validated fictional warning fields."""
+    if event.event_type != WARNING_EVENT_TYPE or not event.simulated:
+        raise ValueError("campus advice accepts simulated external warnings only")
+    payload = event.context.get("warning")
+    if not isinstance(payload, dict):
+        raise ValueError("warning payload is required")
+    safe_warning = {
+        key: payload.get(key)
+        for key in ("hazard_type", "severity", "areas", "issued_at", "expires_at")
+    }
+    return request_json_chat([
+        {
+            "role": "system",
+            "content": (
+                "Assess a fictional external disaster warning for a smart home. "
+                "Return one JSON object with risk_level (LOW, MEDIUM, HIGH) and a short rationale. "
+                "This is advice only; do not claim notification or device action occurred."
+            ),
+        },
+        {"role": "user", "content": json.dumps({"warning": safe_warning, "home_area": HOUSEHOLD_AREA})},
     ], config)
