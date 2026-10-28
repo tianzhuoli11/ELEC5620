@@ -2,7 +2,7 @@
 
 Owner: Tianzhuo Li. Requirements: AR-05 / UC-05; optional OR-05, with UC-06 integration.
 
-Stage 1 implements SCRUM-22's provisional shared context and SCRUM-16's deterministic assessment slice. It does not control a device, send a notification, call an LLM, persist audit history or provide a Streamlit page. Local implementation and tests do not mean the work is merged or Jira Done.
+Stage 1 implements SCRUM-22's provisional shared context and SCRUM-16's deterministic assessment slice. The Streamlit page in `ui/energy_comfort.py` runs that assessment through the shared workflow, shows fail-closed eligibility and deterministic explanations, and records local assessment evidence. It does not control a device, send a notification, call an LLM, or claim formal Energy & Comfort device control. Formal control remains pending.
 
 Put shared HomeEnvironment, UserPreference, EnergyProfile and HomeMode types in `models/`. Reuse `tools/` and `services/`. Safety overrides comfort and energy goals; missing facts remain unknown. Put tests in `tests/` and views in `ui/`.
 
@@ -73,6 +73,11 @@ Its device execution, readback, recovery and post-action environmental cases
 remain explicitly Pending until the M2 device and cross-domain safety contracts
 are approved. The runner's fictional trusted source exercises eligibility logic
 only; it is not a real authorization or team acceptance record.
+
+`evaluate_formal_control_attempt` applies the checked-in
+`ACTIVE_FORMAL_CONTROL_CONTRACT` gates after eligibility. Today every gate is
+false, so formal control status stays `PENDING`, zero `ActionRequest` values are
+created, and Elderly/Security protective devices remain on an explicit deny-list.
 
 The current `HomeCoordinatorAgent` has no UC-06 explanation-request route: it
 routes sensor events and user goals and coordinates notifications. Adding a

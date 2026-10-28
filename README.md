@@ -4,7 +4,7 @@ Wed 09-11 Group 11 Stage 2 shared repository.
 
 **Option A: Python + LangGraph + Streamlit**, using the course API proxy and the `campus-qwen` model. All five domains reuse the same agents, models and user interface.
 
-The root `app.py` runs one Streamlit dashboard with Pet Care, Smart Home Control, Elderly Safety and Home Security demonstrations. Each domain uses the shared agents and contracts. Pet Care includes simulated monitoring and feeding; Smart Home Control runs policy-validated multi-device plans; Elderly Safety handles fall assessment, confirmation and escalation; Home Security handles UC-04 monitoring, risk-based response and simulated OR-06 external warnings. Energy & Comfort is still pending. Real notification delivery and physical-device adapters are not connected.
+The root `app.py` runs one Streamlit dashboard with Pet Care, Smart Home Control, Elderly Safety, Home Security and Energy & Comfort demonstrations. Each domain uses the shared agents and contracts. Pet Care includes simulated monitoring and feeding; Smart Home Control runs policy-validated multi-device plans; Elderly Safety handles fall assessment, confirmation and escalation; Home Security handles UC-04 monitoring, risk-based response and simulated OR-06 external warnings; Energy & Comfort runs assessment-only shared-workflow evaluation with fail-closed eligibility and deterministic explanations. Formal Energy & Comfort device control remains pending. Real notification delivery and physical-device adapters are not connected.
 
 ## Run the dashboard and framework demo
 
@@ -26,6 +26,8 @@ Campus AI is optional in the implemented domain pages. Set `ELEC5620_API_KEY` in
 For a repeatable Pet Care acceptance check, run `python -m simulation.pet_demo --scenario empty_bowl` for core monitoring and notification, then `python -m simulation.pet_demo --scenario empty_bowl --enable-feeding --feed-grams 20` for one verified simulated feed. Add `--feeder-offline` or `--stale-readback` to check failure reporting. See [Jinjing's Sprint 2 evidence](docs/JINJING_SPRINT2.md) for the complete scenario list.
 
 For Home Security, run `.venv\Scripts\python -m simulation.security_demo --scenario smoke` for immediate HIGH response, `--scenario unusual_door --reply approve` for MEDIUM confirmation, or `--scenario device_failure` for failed simulated actions. `normal` demonstrates LOW. Its Streamlit page also provides simulated OR-06 external warning scenarios. Add `--use-campus-llm` only when the local key and university network are available. The command prints the shared workflow result and saves local JSONL records at `data/runtime/security_events.jsonl`. See [Home Security](domains/home_security/README.md) for rules and scope.
+
+For Energy & Comfort assessment preparation, run `.venv\Scripts\python -m simulation.energy_comfort_demo` and `.venv\Scripts\python -m simulation.energy_comfort_acceptance`. The Streamlit page assesses simulated temperature, occupancy, preference and energy context through the shared workflow, shows fail-closed eligibility and explanations, and labels the scope as assessment-only. It does not dispatch devices; formal control remains pending. Local assessment evidence is appended to ignored `data/runtime/energy_comfort.jsonl`.
 
 ## Project structure
 

@@ -14,28 +14,7 @@ Each domain can supply its own page without changing the application shell. `app
    - `Home Security`
    - `Energy & Comfort`
 
-For example, a future Energy & Comfort page could use `ui/energy_comfort.py`:
-
-```python
-import streamlit as st
-
-
-def render_energy_comfort() -> None:
-    st.header("Energy & Comfort")
-    # Collect inputs, call the domain handler, and display its actual result here.
-    st.info("This page is being connected. No monitoring is active yet.")
-```
-
-Then extend `ui/domain_views.py`:
-
-```python
-from ui.energy_comfort import render_energy_comfort
-
-# Add this entry inside the existing DOMAIN_VIEWS dictionary:
-"Energy & Comfort": render_energy_comfort,
-```
-
-The sidebar and Overview's Home services section will open the registered function automatically. Home services receives the registered domain names from `app.py`, so its availability labels follow the registry. Unregistered domains retain their pending page. Registration alone does not add a domain's readings to Overview metrics or history; coordinate those shared displays with the UI integration owner.
+Energy & Comfort is registered from `ui/energy_comfort.py` as `"Energy & Comfort": render_energy_comfort`. The sidebar and Overview's Home services section open the registered function automatically. Home services receives the registered domain names from `app.py`, so its availability labels follow the registry. Unregistered domains retain their pending page. Registration alone does not add a domain's readings to Overview metrics or history; coordinate those shared displays with the UI integration owner.
 
 ## Keep pages compatible
 
@@ -51,7 +30,7 @@ Overview and Pet Care share a working sample-input workspace. Presets initialise
 
 Smart Home Control is connected. Its page creates a direct user-goal event, runs the shared coordinator and automation agent, displays every command's accepted and verified flags, shows simulated device state, and exposes the agent trace. Pet Care's feeder demonstration is optional and requires an explicit simulated request; ordinary monitoring does not operate a feeder.
 
-Elderly Safety is connected with simulated fall assessment, resident confirmation and caregiver escalation. Home Security is connected with fictional sensor presets, LOW/MEDIUM/HIGH response, homeowner confirmation, verified simulated device actions and OR-06 external warning scenarios. Both use the shared agent workflow and show actual notification and action outcomes. Energy & Comfort remains pending. Each new page should connect through the shared workflow and show the returned assessment, action results, notification outcome and trace.
+Elderly Safety is connected with simulated fall assessment, resident confirmation and caregiver escalation. Home Security is connected with fictional sensor presets, LOW/MEDIUM/HIGH response, homeowner confirmation, verified simulated device actions and OR-06 external warning scenarios. Energy & Comfort is connected for assessment-only evaluation: simulated context inputs, shared-workflow assessment, fail-closed eligibility and deterministic explanations. It does not dispatch devices; formal Energy & Comfort control remains pending. Each new page should connect through the shared workflow and show the returned assessment, action results, notification outcome and trace.
 
 ## Before opening a pull request
 
