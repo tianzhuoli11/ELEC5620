@@ -11,7 +11,7 @@ team review, M2/M4 integration, merge to `main`, or physical-device operation.
 | --- | --- | --- |
 | SCRUM-22 / shared context | `models/context.py`; event round-trip and validation in `tests/test_energy_comfort.py` | Candidate names, namespace and `HomeMode` still need M2/M4 and framework-owner confirmation |
 | MR-08 / SCRUM-16 | Deterministic three-state assessment in `domains/energy_comfort/monitoring.py`; shared workflow adapter in `integration.py` | Assessment-only; no claim of whole-home safety or energy optimisation |
-| MR-09 / SCRUM-32 | Fail-closed non-executable eligibility in `control_policy.py`; assessment-to-eligibility integration; shared automation failure-path fixture | No formal device ID/schema, executable authorization, action generation, recovery, or environmental-effect verification |
+| MR-09 / SCRUM-32 | Fail-closed eligibility in `control_policy.py`; formal readiness gate in `control_readiness.py` / `evaluate_formal_control_attempt`; protected Elderly/Security deny-list; shared automation failure-path fixture | Formal control remains PENDING: M2 mapping/schema/authorization and M4 safety-feed contracts are unchecked in `ACTIVE_FORMAL_CONTROL_CONTRACT`; no ActionRequest planner is enabled |
 | OR-05 / SCRUM-33 | Evidence-bound deterministic explanations in `explanations.py` | Coordinator/UC-06 explanation request contract and persistent audit remain Pending |
 | UC-05 / SCRUM-38 | `simulation.energy_comfort_acceptance` records input, expected, actual, decision, trace and PASS/FAIL | Formal domain execution/readback and post-action observations remain Pending |
 
@@ -34,6 +34,16 @@ M2 must confirm the observation-to-control device ID mapping, command and
 `expected_state` schema, and executable authorization source. M4 must confirm how
 unknown or conflicting security/safety conditions are supplied. Until both are
 resolved, Energy & Comfort produces no executable `ActionRequest`.
+
+Repository evidence for the current blockers:
+
+- Candidate M2 light ID after review: `bedroom-light` (`domains/smart_home_control/devices.py`).
+- Protected deny-list derived from Elderly `ROOM_LIGHTS` and Home Security
+  `INITIAL_DEVICE_STATES` (includes `bathroom_light`, `security_lights`, `siren`, valves).
+- Checked-in gates: `ACTIVE_FORMAL_CONTROL_CONTRACT` in
+  `domains/energy_comfort/control_readiness.py` (all false).
+- Eligibility may be true for later planning; formal readiness stays `PENDING`
+  and `action_requests_created` remains 0.
 
 ## Reproducible evidence
 

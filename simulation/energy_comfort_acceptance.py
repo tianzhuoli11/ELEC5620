@@ -11,7 +11,8 @@ from domains.energy_comfort.control_policy import (
 )
 from domains.energy_comfort.explanations import explain_energy_comfort
 from domains.energy_comfort.integration import (
-    evaluate_light_shutdown_candidate, monitor_energy_comfort_workflow,
+    evaluate_formal_control_attempt, evaluate_light_shutdown_candidate,
+    monitor_energy_comfort_workflow,
 )
 from models import DeviceObservation, EnergyProfile, HomeContext, HomeEnvironment, SensorReading, UserPreference
 from simulation.energy_comfort_demo import make_energy_comfort_event
@@ -166,6 +167,60 @@ def _invalid_input_case() -> dict[str, Any]:
     }
 
 
+def _formal_control_pending_case() -> dict[str, Any]:
+    context = HomeContext(
+        HomeEnvironment(None, False), preference=None,
+        energy=EnergyProfile(900.0, 400.0),
+        devices=(DeviceObservation("observed-light", True, {"power": "on"}),),
+        simulated=True,
+    )
+    event = make_energy_comfort_event(context)
+    tool = _RejectDeviceUse()
+    trusted = frozenset({"fictional-reviewed-policy"})
+    policy = LightShutdownPolicyInput(
+        observed_device_id="observed-light",
+        shutdown_basis=EXPLICIT_LIGHT_SHUTDOWN_BASIS,
+        control_authorized=True,
+        authorization_source="fictional-reviewed-policy",
+        safety_policy_passed=True,
+    )
+    outcome = evaluate_formal_control_attempt(
+        event, policy, trusted_authorization_sources=trusted, device_tool=tool,
+    )
+    actual = {
+        "eligible": outcome.eligibility.eligible,
+        "ready": outcome.readiness.ready,
+        "status": outcome.readiness.status,
+        "action_requests_created": outcome.action_requests_created,
+        "dispatched": outcome.dispatched,
+        "dispatch_calls": tool.dispatch_calls,
+        "read_calls": tool.read_calls,
+        "has_m2_blocker": "m2_observation_to_control_mapping_unapproved" in outcome.readiness.blockers,
+        "has_m4_blocker": "m4_safety_conflict_feed_unapproved" in outcome.readiness.blockers,
+    }
+    expected = {
+        "eligible": True,
+        "ready": False,
+        "status": "PENDING",
+        "action_requests_created": 0,
+        "dispatched": False,
+        "dispatch_calls": 0,
+        "read_calls": 0,
+        "has_m2_blocker": True,
+        "has_m4_blocker": True,
+    }
+    return {
+        "case_id": "formal_control_pending_despite_eligibility",
+        "input": event.to_dict(),
+        "expected": expected,
+        "actual": actual,
+        "decision": outcome.assessment.to_dict(),
+        "trace": [item.outcome for item in outcome.workflow.trace],
+        "explanation": None,
+        "test_result": "PASS" if actual == expected else "FAIL",
+    }
+
+
 def run_uc05_acceptance_evidence() -> dict[str, Any]:
     """Run implemented UC-05 cases and label unimplemented execution evidence Pending."""
 
@@ -202,6 +257,7 @@ def run_uc05_acceptance_evidence() -> dict[str, Any]:
         _eligibility_case(
             "trusted_eligibility_non_executable", approved, trusted, True, None,
         ),
+        _formal_control_pending_case(),
     ]
     execution_cases = run_test_only_execution_cases()
     return {
@@ -229,8 +285,10 @@ def run_uc05_acceptance_evidence() -> dict[str, Any]:
             ),
         },
         "pending": [
-            "M2-approved device ID and command schema",
-            "Executable POLICY authorization and cross-domain safety interface",
+            "M2-approved observation-to-control device ID mapping",
+            "M2-approved command and expected_state schema",
+            "M2-approved executable authorization source",
+            "M4-approved safety-conflict feed into Energy & Comfort",
             "Formal Energy & Comfort device dispatch and independent readback acceptance evidence",
             "Failure recovery, timeout, and bounded replanning evidence",
             "Post-action temperature, power, and energy-savings verification",

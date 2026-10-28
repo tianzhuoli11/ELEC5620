@@ -74,6 +74,11 @@ remain explicitly Pending until the M2 device and cross-domain safety contracts
 are approved. The runner's fictional trusted source exercises eligibility logic
 only; it is not a real authorization or team acceptance record.
 
+`evaluate_formal_control_attempt` applies the checked-in
+`ACTIVE_FORMAL_CONTROL_CONTRACT` gates after eligibility. Today every gate is
+false, so formal control status stays `PENDING`, zero `ActionRequest` values are
+created, and Elderly/Security protective devices remain on an explicit deny-list.
+
 The current `HomeCoordinatorAgent` has no UC-06 explanation-request route: it
 routes sensor events and user goals and coordinates notifications. Adding a
 shared explanation request/response contract therefore remains a framework-owner

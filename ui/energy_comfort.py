@@ -14,7 +14,7 @@ from domains.energy_comfort.control_policy import (
     LightShutdownPolicyInput,
 )
 from domains.energy_comfort.explanations import explain_energy_comfort
-from domains.energy_comfort.integration import evaluate_light_shutdown_candidate
+from domains.energy_comfort.integration import evaluate_formal_control_attempt
 from models import (
     DeviceObservation,
     EnergyProfile,
@@ -200,7 +200,7 @@ def _run_assessment(record_path: Path | None = None) -> None:
     source = (st.session_state.get("energy_auth_source") or "").strip()
     if st.session_state.get("energy_trust_source") and source:
         trusted = frozenset({source})
-    outcome = evaluate_light_shutdown_candidate(
+    outcome = evaluate_formal_control_attempt(
         event,
         _policy_input(),
         trusted_authorization_sources=trusted,
@@ -215,7 +215,7 @@ def _run_assessment(record_path: Path | None = None) -> None:
         "scope": {
             "assessment": "ASSESSMENT_ONLY",
             "execution_fixture": "TEST_ONLY_SIMULATION_NOT_RUN_HERE",
-            "formal_energy_comfort_control": "PENDING",
+            "formal_energy_comfort_control": outcome.readiness.status,
         },
         "assessment": outcome.assessment.to_dict(),
         "eligibility": {
@@ -224,6 +224,11 @@ def _run_assessment(record_path: Path | None = None) -> None:
             "reasons": list(outcome.eligibility.reasons),
             "evidence": list(outcome.eligibility.evidence),
         },
+        "formal_control": {
+            **outcome.readiness.to_dict(),
+            "action_requests_created": outcome.action_requests_created,
+            "dispatched": outcome.dispatched,
+        },
         "explanation": explanation.to_dict(),
         "workflow": outcome.workflow.to_dict(),
     }
@@ -231,8 +236,11 @@ def _run_assessment(record_path: Path | None = None) -> None:
     st.session_state.energy_result = {
         "assessment": outcome.assessment,
         "eligibility": outcome.eligibility,
+        "readiness": outcome.readiness,
         "explanation": explanation,
         "workflow": outcome.workflow,
+        "action_requests_created": outcome.action_requests_created,
+        "dispatched": outcome.dispatched,
         "scope": payload["scope"],
     }
 
@@ -449,6 +457,7 @@ def render_energy_comfort() -> None:
             else:
                 assessment = saved["assessment"]
                 eligibility = saved["eligibility"]
+                readiness = saved["readiness"]
                 explanation = saved["explanation"]
                 workflow = saved["workflow"]
                 scope = saved["scope"]
@@ -484,6 +493,21 @@ def render_energy_comfort() -> None:
                 if eligibility.evidence:
                     st.caption("Eligibility evidence: " + "; ".join(eligibility.evidence))
 
+                st.subheader("SCRUM-32 formal control readiness")
+                st.write(
+                    f"Status: **{readiness.status}** · "
+                    f"ActionRequests created: **{saved['action_requests_created']}** · "
+                    f"Dispatched: **{saved['dispatched']}**"
+                )
+                if readiness.blockers:
+                    st.warning("Formal control blockers: " + ", ".join(readiness.blockers))
+                st.caption(
+                    f"Candidate M2 light after review: {readiness.candidate_m2_light_id}. "
+                    "Protected Elderly/Security devices are never Energy control targets."
+                )
+                with st.expander("Protected device deny-list"):
+                    st.write(", ".join(readiness.protected_device_ids))
+
                 st.subheader("Explanation")
                 st.write(explanation.summary)
                 st.caption(
@@ -516,6 +540,7 @@ def render_energy_comfort() -> None:
                             "reasons": list(eligibility.reasons),
                             "evidence": list(eligibility.evidence),
                         },
+                        "formal_control": readiness.to_dict(),
                         "explanation": explanation.to_dict(),
                         "workflow": workflow.to_dict(),
                         "scope": scope,
@@ -536,6 +561,7 @@ def render_energy_comfort() -> None:
                     "Eligible": item.get("eligibility", {}).get("eligible"),
                     "Execution": item.get("explanation", {}).get("execution_status", "—"),
                     "Formal control": item.get("scope", {}).get("formal_energy_comfort_control", "PENDING"),
+                    "Blockers": len(item.get("formal_control", {}).get("blockers", [])),
                 }
                 for item in records
             ],

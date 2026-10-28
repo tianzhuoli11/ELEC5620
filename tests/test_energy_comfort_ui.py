@@ -57,11 +57,16 @@ class EnergyComfortPageTests(unittest.TestCase):
         self.assertFalse(saved["eligibility"].eligible)
         self.assertEqual(saved["scope"]["assessment"], "ASSESSMENT_ONLY")
         self.assertEqual(saved["scope"]["formal_energy_comfort_control"], "PENDING")
+        self.assertFalse(saved["readiness"].ready)
+        self.assertEqual(saved["action_requests_created"], 0)
+        self.assertFalse(saved["dispatched"])
         record = self.records()[-1]
         self.assertEqual(record["assessment"]["decision"], "NO_ADJUSTMENT")
         self.assertEqual(record["workflow"]["outcome"], "ASSESSED")
         self.assertEqual(record["workflow"]["action_results"], [])
         self.assertFalse(record["eligibility"]["eligible"])
+        self.assertFalse(record["formal_control"]["ready"])
+        self.assertEqual(record["formal_control"]["action_requests_created"], 0)
 
     def test_edit_clears_stale_result_and_unoccupied_needs_adjustment(self) -> None:
         self.open_page()
@@ -94,7 +99,12 @@ class EnergyComfortPageTests(unittest.TestCase):
         self.assertEqual(saved["explanation"].safety_status, "ELIGIBLE_FOR_LATER_PLANNING")
         self.assertEqual(saved["workflow"].action_results, ())
         self.assertEqual(saved["scope"]["formal_energy_comfort_control"], "PENDING")
+        self.assertFalse(saved["readiness"].ready)
+        self.assertIn("m2_observation_to_control_mapping_unapproved", saved["readiness"].blockers)
+        self.assertEqual(saved["action_requests_created"], 0)
         record = self.records()[-1]
         self.assertTrue(record["eligibility"]["eligible"])
         self.assertEqual(record["explanation"]["execution_status"], "NOT_EXECUTED")
         self.assertEqual(record["scope"]["formal_energy_comfort_control"], "PENDING")
+        self.assertFalse(record["formal_control"]["ready"])
+        self.assertEqual(record["formal_control"]["action_requests_created"], 0)

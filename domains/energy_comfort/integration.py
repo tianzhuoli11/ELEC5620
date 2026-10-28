@@ -16,6 +16,9 @@ from .control_policy import (
     LightShutdownEligibility, LightShutdownPolicyInput,
     assess_light_shutdown_eligibility,
 )
+from .control_readiness import (
+    FormalControlReadiness, assess_formal_control_readiness,
+)
 from .monitoring import EnergyComfortAssessment, assess_energy_comfort
 
 
@@ -125,6 +128,18 @@ class EnergyComfortEligibilityOutcome:
     workflow: WorkflowResult
 
 
+@dataclass(frozen=True)
+class FormalControlAttemptOutcome:
+    """Assessment, eligibility and SCRUM-32 readiness without any ActionRequest."""
+
+    assessment: EnergyComfortAssessment
+    eligibility: LightShutdownEligibility
+    readiness: FormalControlReadiness
+    workflow: WorkflowResult
+    action_requests_created: int = 0
+    dispatched: bool = False
+
+
 def monitor_energy_comfort_workflow(
     event: Event, *, device_tool: DeviceTool | None = None,
 ) -> EnergyComfortWorkflowOutcome:
@@ -157,4 +172,38 @@ def evaluate_light_shutdown_candidate(
     )
     return EnergyComfortEligibilityOutcome(
         outcome.assessment, eligibility, outcome.workflow,
+    )
+
+
+def evaluate_formal_control_attempt(
+    event: Event,
+    policy_input: LightShutdownPolicyInput | None = None,
+    *,
+    trusted_authorization_sources: frozenset[str] = frozenset(),
+    device_tool: DeviceTool | None = None,
+) -> FormalControlAttemptOutcome:
+    """Run assessment and eligibility, then apply formal-control contract gates.
+
+    Until M2/M4 approve the checked-in contract gates, this path stays PENDING
+    and creates zero ActionRequest values even when eligibility is true.
+    """
+
+    outcome = evaluate_light_shutdown_candidate(
+        event,
+        policy_input,
+        trusted_authorization_sources=trusted_authorization_sources,
+        device_tool=device_tool,
+    )
+    readiness = assess_formal_control_readiness(outcome.assessment, outcome.eligibility)
+    if readiness.ready:
+        # Reserved for a future reviewed contract. The active repository contract
+        # keeps ready=False, so this branch is unreachable today.
+        raise RuntimeError("formal control ready without an implemented planner")
+    return FormalControlAttemptOutcome(
+        assessment=outcome.assessment,
+        eligibility=outcome.eligibility,
+        readiness=readiness,
+        workflow=outcome.workflow,
+        action_requests_created=0,
+        dispatched=False,
     )

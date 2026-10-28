@@ -11,7 +11,7 @@ class EnergyComfortAcceptanceEvidenceTests(unittest.TestCase):
     def test_all_implemented_cases_pass_with_zero_device_side_effects(self) -> None:
         evidence = run_uc05_acceptance_evidence()
         self.assertEqual(evidence["summary"], {
-            "passed": 10, "failed": 0, "test_only_execution_passed": 2,
+            "passed": 11, "failed": 0, "test_only_execution_passed": 2,
         })
         self.assertTrue(evidence["pending"])
         for case in evidence["cases"]:
@@ -48,6 +48,10 @@ class EnergyComfortAcceptanceEvidenceTests(unittest.TestCase):
             by_id["trusted_eligibility_non_executable"]["explanation"]["execution_status"],
             "NOT_EXECUTED",
         )
+        formal = by_id["formal_control_pending_despite_eligibility"]
+        self.assertFalse(formal["actual"]["ready"])
+        self.assertEqual(formal["actual"]["status"], "PENDING")
+        self.assertEqual(formal["actual"]["action_requests_created"], 0)
 
 
 if __name__ == "__main__":
