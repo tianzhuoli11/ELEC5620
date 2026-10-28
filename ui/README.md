@@ -1,5 +1,7 @@
 # Streamlit user interface
 
+Energy & Comfort now also has a separate explicitly approved simulated-control panel. It uses the context entered above, requires a clear fictional safety snapshot, saves actual action outcomes, and exposes offline failures. Its original assessment button remains assessment-only. See [integrated control review](../docs/INTEGRATED_CONTROL_REVIEW.md).
+
 Each domain can supply its own page without changing the application shell. `app.py` owns navigation, page configuration, and styling. `ui/domain_views.py` is the registration point for domain pages. `ui/dashboard.py` supplies the operational Overview and Pet Care workspace, with editable sample readings, saved results, and filtered history.
 
 ## Add a domain page

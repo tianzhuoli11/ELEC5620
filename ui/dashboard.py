@@ -161,9 +161,9 @@ def _check_workspace() -> None:
             disabled = use_ai and not os.getenv("ELEC5620_API_KEY", "").strip()
             run, reset = st.columns([1.6, 1], gap="small")
             with run:
-                submitted = st.button("Run check →", key="run-pet-check", type="primary", disabled=disabled, use_container_width=True)
+                submitted = st.button("Run check →", key="run-pet-check", type="primary", disabled=disabled, width="stretch")
             with reset:
-                st.button("Reset inputs", on_click=_reset_inputs, use_container_width=True)
+                st.button("Reset inputs", on_click=_reset_inputs, width="stretch")
             if submitted:
                 event = make_sensor_event(event_type, reading_type, value, unit, sensor_id="simulated-pet-bowl" if event_type == "pet_bowl_level" else "simulated-pet-motion", context={"pet_id": "fictional-pet-1"})
                 provider = None
@@ -238,7 +238,7 @@ def _history(records: list[dict]) -> None:
         readings = event.get("readings", [])
         reading = readings[0] if isinstance(readings, list) and readings and isinstance(readings[0], dict) else {}
         rows.append({"Time": _local_time(event.get("timestamp")), "Observation": "Food bowl" if event.get("event_type") == "pet_bowl_level" else "Activity", "Reading": f'{reading.get("value", "—")} {reading.get("unit", "")}'.strip(), "Risk": assessment.get("risk_level", "Unknown"), "Feeding": record.get("feeding", {}).get("status", "Not recorded"), "Assessment": assessment.get("rationale", "Unavailable")})
-    st.dataframe(rows, hide_index=True, use_container_width=True)
+    st.dataframe(rows, hide_index=True, width="stretch")
     if len(matching) > 20:
         st.caption(f"Showing the latest 20 of {len(matching)} matching checks.")
 
@@ -251,7 +251,7 @@ def _services(available: set[str]) -> None:
                 status = "View available" if name in available else "Not available in this version"
                 st.markdown(f'<div class="service-row"><span class="icon-bubble {tint}">{icon(symbol)}</span><div><strong>{escape(name)}</strong><small>{escape(subtitle)} · {status}</small></div></div>', unsafe_allow_html=True)
             with action:
-                st.button("Open →", key="open-" + name, on_click=_navigate, args=(name,), use_container_width=True)
+                st.button("Open →", key="open-" + name, on_click=_navigate, args=(name,), width="stretch")
 
 
 def render_home(available: set[str] | None = None) -> None:

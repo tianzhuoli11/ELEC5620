@@ -1,4 +1,4 @@
-"""UC-05 Energy & Comfort page: assessment, eligibility and explanation only."""
+"""UC-05 assessment and explicitly approved simulated control."""
 
 from __future__ import annotations
 
@@ -260,7 +260,7 @@ def render_energy_comfort() -> None:
     st.markdown(
         '<div class="page-heading"><h1>Energy &amp; Comfort</h1>'
         "<p>Assess simulated temperature, occupancy, preference and energy context through the shared agents. "
-        "No device command is authorized or dispatched from this page.</p></div>",
+        "Review an assessment or explicitly run a simulated device plan below.</p></div>",
         unsafe_allow_html=True,
     )
 
@@ -493,14 +493,14 @@ def render_energy_comfort() -> None:
                 if eligibility.evidence:
                     st.caption("Eligibility evidence: " + "; ".join(eligibility.evidence))
 
-                st.subheader("SCRUM-32 formal control readiness")
+                st.subheader("Legacy automatic-control readiness checklist")
                 st.write(
                     f"Status: **{readiness.status}** · "
                     f"ActionRequests created: **{saved['action_requests_created']}** · "
                     f"Dispatched: **{saved['dispatched']}**"
                 )
                 if readiness.blockers:
-                    st.warning("Formal control blockers: " + ", ".join(readiness.blockers))
+                    st.warning("Automatic integration blockers: " + ", ".join(readiness.blockers))
                 st.caption(
                     f"Candidate M2 light after review: {readiness.candidate_m2_light_id}. "
                     "Protected Elderly/Security devices are never Energy control targets."
@@ -580,9 +580,46 @@ def render_energy_comfort() -> None:
         "- **ADJUSTMENT_NEEDED**: occupied temperature outside preference, or unoccupied power "
         "above the limit with an available device observed `power=on`.\n"
         "- **INSUFFICIENT_DATA**: occupancy unknown, or required temperature/preference/energy facts missing.\n"
-        "- Eligibility is fail-closed preparation only. Formal Energy & Comfort device control remains **PENDING**."
+        "- Eligibility is fail-closed preparation only. Automatic control remains **PENDING**; the separate panel below runs explicitly approved simulated adjustments."
     )
     st.caption(
         "All readings and devices on this page are simulated. "
         f"Each run appends local evidence to {escape(str(DEFAULT_RECORD_PATH))}."
     )
+    _render_control_demo()
+
+
+def _render_control_demo() -> None:
+    from domains.energy_comfort.control import run_energy_control
+    from domains.smart_home_control import default_device_states
+    from simulation.devices import SimulatedDeviceTool
+
+    st.subheader("Run a simulated adjustment")
+    st.caption("Uses the context above. Device state is verified; temperature improvement and energy savings are not measured. Safety below is a fictional snapshot, not a live security feed.")
+    safety = st.selectbox("Simulated safety status", ["Unknown", "Clear", "Conflict"], key="energy_execution_safety")
+    approved = st.checkbox("Approve this simulated adjustment", key="energy_execution_approval")
+    fault = st.selectbox("Control device fault", ["None", "AC offline", "All devices offline"], key="energy_execution_fault")
+    if st.button("Run simulated adjustment", key="run-energy-control"):
+        try:
+            event = make_energy_comfort_event(_build_context())
+            tool = SimulatedDeviceTool(default_device_states())
+            if fault == "AC offline":
+                tool.offline.add("living-room-ac")
+            elif fault == "All devices offline":
+                tool.offline.update(tool.states)
+            result = run_energy_control(event, approved=approved,
+                                        safety_clear={"Unknown": None, "Clear": True, "Conflict": False}[safety], device_tool=tool)
+            payload = {"record_type": "energy_comfort_control", "scope": {"assessment": "SIMULATED_CONTROL", "formal_energy_comfort_control": "EXPLICIT_SIMULATION"},
+                       "event": event.to_dict(), "approval": approved, "safety_snapshot": safety,
+                       "reason": result.reason, "planned": result.planned, "workflow": result.workflow.to_dict()}
+            _append_record(payload, DEFAULT_RECORD_PATH)
+            st.info(result.reason)
+            st.write("Workflow outcome: " + result.workflow.outcome)
+            if result.workflow.action_results:
+                st.dataframe([r.to_dict() for r in result.workflow.action_results], width="stretch")
+            else:
+                st.warning("No device action was executed.")
+            with st.expander("Control audit and returned states"):
+                st.json(payload)
+        except (ValueError, OSError) as exc:
+            st.error("Adjustment could not complete: " + str(exc))

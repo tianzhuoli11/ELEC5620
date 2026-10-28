@@ -223,6 +223,12 @@ class SmartHomeGoalInterpreter:
     def interpret(self, event: Event) -> GoalInterpretation:
         if event.event_type != "user_goal":
             raise ValueError("goal interpreter requires a user_goal event")
+        text = str(event.context.get("text", "")).strip().casefold()
+        # Conservatively clarify negation even when the model understands a
+        # paraphrase that the small deterministic phrase parser does not.
+        if re.search(r"\b(?:not|don't|dont|never)\b|不要|别|不许|不能|不用|不需要|不必", text):
+            return _clarification(event, "Negated request blocked before AI interpretation",
+                                  "The request negates an action. Please state the desired final device states or home mode.")
         if self.proposal_provider is None:
             return interpret_smart_home_goal_by_rules(event)
         try:
@@ -258,6 +264,12 @@ class SmartHomeGoalInterpreter:
         if intent not in SUPPORTED_INTENTS:
             raise ValueError("goal proposal has an unsupported intent")
         validated = validate_smart_home_parameters(intent, parameters)
+        explicit = interpret_smart_home_goal_by_rules(event)
+        if explicit.intent != "clarify":
+            if explicit.intent != intent:
+                raise ValueError("AI intent conflicts with the explicit request")
+            if any(validated.get(key) != value for key, value in explicit.parameters.items()):
+                raise ValueError("AI target state conflicts with the explicit request")
         return GoalInterpretation(
             event_id=event.event_id,
             domain=domain,

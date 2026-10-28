@@ -45,6 +45,23 @@ class EnergyComfortPageTests(unittest.TestCase):
             "\n".join(item.value for item in self.app.info),
         )
 
+    def test_control_panel_requires_safety_and_records_verified_or_partial_actions(self):
+        self.open_page()
+        self.app.selectbox(key="energy_scenario").set_value("Too warm (occupied)").run()
+        self.app.checkbox(key="energy_execution_approval").set_value(True).run()
+        self.app.button(key="run-energy-control").click().run()
+        self.assertEqual(self.records()[-1]["workflow"]["action_results"], [])
+        self.app.selectbox(key="energy_execution_safety").set_value("Clear").run()
+        self.app.button(key="run-energy-control").click().run()
+        self.assertEqual(list(self.app.exception), [])
+        self.assertEqual(self.records()[-1]["workflow"]["outcome"], "COMPLETE")
+        self.app.selectbox(key="energy_execution_fault").set_value("AC offline").run()
+        self.app.button(key="run-energy-control").click().run()
+        self.assertEqual(self.records()[-1]["workflow"]["outcome"], "PARTIAL")
+        self.app.selectbox(key="energy_execution_safety").set_value("Conflict").run()
+        self.app.button(key="run-energy-control").click().run()
+        self.assertEqual(self.records()[-1]["workflow"]["action_results"], [])
+
     def test_comfort_ok_runs_assessment_only_without_dispatch(self) -> None:
         self.open_page()
         self.app.button(key="run-energy-assessment").click().run()
