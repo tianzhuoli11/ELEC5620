@@ -30,11 +30,19 @@ class HomeSecurityHandler:
         self.proposal_provider = proposal_provider
         self.security_assessment: SecurityAssessment | None = None
         self.last_notification_request: NotificationRequest | None = None
+        self.classification_ms: float | None = None
 
     def supports(self, event: Event) -> bool:
         return event.event_type in (EVENT_TYPE, WARNING_EVENT_TYPE)
 
     def assess(self, event: Event) -> MonitoringDecision:
+        started = perf_counter()
+        try:
+            return self._assess(event)
+        finally:
+            self.classification_ms = round((perf_counter() - started) * 1000, 3)
+
+    def _assess(self, event: Event) -> MonitoringDecision:
         if event.event_type == WARNING_EVENT_TYPE:
             warning = assess_external_warning(event, self.proposal_provider)
             self.security_assessment = warning
@@ -73,6 +81,7 @@ class SecurityWorkflowOutcome:
     assessment: SecurityAssessment
     workflow: WorkflowResult
     classification_ms: float
+    workflow_ms: float
     workflow_engine: SmartHomeWorkflow
     handler: HomeSecurityHandler
     device_tool: DeviceTool
@@ -114,7 +123,7 @@ def _recorded_event(event: Event) -> dict:
 
 def _append_record(
     event: Event, security: SecurityAssessment, workflow: WorkflowResult,
-    classification_ms: float, record_path: str | Path,
+    classification_ms: float, workflow_ms: float, record_path: str | Path,
     notification_history: tuple[dict[str, str], ...],
 ) -> None:
     recorded_event = _recorded_event(event)
@@ -124,6 +133,7 @@ def _append_record(
         "record_type": "external_warning_workflow" if event.event_type == WARNING_EVENT_TYPE else "security_workflow",
         "received_at": datetime.now(timezone.utc).isoformat(),
         "classification_ms": classification_ms,
+        "workflow_ms": workflow_ms,
         "event": recorded_event,
         "assessment": security.to_dict(),
         "workflow": recorded_workflow,
@@ -203,12 +213,13 @@ def monitor_security_workflow(
     history = _notice_entry(workflow, "confirmation" if workflow.pending_confirmation else "response", initial_message)
     workflow, failure_notice = _alert_failed_actions(engine, workflow)
     history += failure_notice
-    classification_ms = round((perf_counter() - started) * 1000, 3)
+    workflow_ms = round((perf_counter() - started) * 1000, 3)
+    classification_ms = handler.classification_ms
     security = handler.security_assessment
-    if security is None:
+    if security is None or classification_ms is None:
         raise RuntimeError("Home Security handler did not produce an assessment")
-    _append_record(event, security, workflow, classification_ms, record_path, history)
-    return SecurityWorkflowOutcome(security, workflow, classification_ms, engine, handler, tool, history)
+    _append_record(event, security, workflow, classification_ms, workflow_ms, record_path, history)
+    return SecurityWorkflowOutcome(security, workflow, classification_ms, workflow_ms, engine, handler, tool, history)
 
 
 def resume_security_workflow(
@@ -217,6 +228,7 @@ def resume_security_workflow(
     """Continue the same event; None represents an expired confirmation timer."""
     if previous.workflow.pending_confirmation is None:
         raise ValueError("no Home Security confirmation is pending")
+    started = perf_counter()
     resumed = previous.workflow_engine.resume(previous.workflow, reply)
     resumed = _notify_confirmation(previous.workflow_engine, resumed)
     message = (
@@ -230,5 +242,6 @@ def resume_security_workflow(
     history += failure_notice
     if resumed.notification_result is None:
         resumed = replace(resumed, notification_result=previous.workflow.notification_result)
-    _append_record(resumed.event, previous.assessment, resumed, previous.classification_ms, record_path, history)
-    return replace(previous, workflow=resumed, notification_history=history)
+    workflow_ms = round((perf_counter() - started) * 1000, 3)
+    _append_record(resumed.event, previous.assessment, resumed, previous.classification_ms, workflow_ms, record_path, history)
+    return replace(previous, workflow=resumed, workflow_ms=workflow_ms, notification_history=history)

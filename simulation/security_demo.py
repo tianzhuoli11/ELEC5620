@@ -51,6 +51,7 @@ def main() -> None:
         "assessment": result.assessment.to_dict(),
         "workflow": result.workflow.to_dict(),
         "classification_ms": result.classification_ms,
+        "workflow_ms": result.workflow_ms,
         "record_path": str(args.output),
     }, indent=2))
     print("Fictional simulated sensors, notifications and devices; no real hardware or owner message.")

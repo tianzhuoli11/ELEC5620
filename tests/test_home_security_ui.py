@@ -114,6 +114,38 @@ class HomeSecurityPageTests(unittest.TestCase):
         self.assertIn("Confirmation: timeout", [item.value for item in self.app.markdown])
         self.assertEqual(result.workflow.action_results, ())
 
+    def test_failed_confirmation_notice_is_explicit_without_authorizing_actions(self) -> None:
+        class BrokenNotifier:
+            def send(self, request):
+                raise TimeoutError("fictional notification outage")
+
+        real_workflow = security_ui.monitor_security_workflow
+
+        def with_failed_notice(event, **kwargs):
+            return real_workflow(event, notifier=BrokenNotifier(), **kwargs)
+
+        self.app.selectbox(key="security_scenario").set_value("unusual_door").run()
+        with patch.object(security_ui, "monitor_security_workflow", side_effect=with_failed_notice):
+            self.app.button(key="security_run").click().run()
+
+        self.assertEqual(list(self.app.exception), [])
+        result = self.app.session_state["security_result"]
+        self.assertEqual(result.workflow.outcome, "AWAITING_CONFIRMATION")
+        self.assertEqual(result.workflow.notification_result.status, "FAILED")
+        self.assertEqual(result.device_tool.dispatch_count, 0)
+        self.assertIn(
+            "Workflow outcome: **AWAITING_CONFIRMATION (confirmation notification FAILED)**",
+            [item.value for item in self.app.markdown],
+        )
+        self.assertIn(
+            "No homeowner delivery is confirmed",
+            "\n".join(item.value for item in self.app.error),
+        )
+        record = json.loads(self.record_path.read_text(encoding="utf-8"))
+        self.assertEqual(record["workflow"]["outcome"], "AWAITING_CONFIRMATION")
+        self.assertEqual(record["workflow"]["notification_result"]["status"], "FAILED")
+        self.assertEqual(record["notifications"][0]["status"], "FAILED")
+
     def test_device_failure_preset_is_reported_as_failed(self) -> None:
         self.app.selectbox(key="security_scenario").set_value("device_failure").run()
         self.assertTrue(self.app.checkbox(key="security_failure").value)
