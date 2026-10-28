@@ -595,8 +595,15 @@ def _render_control_demo() -> None:
     from simulation.devices import SimulatedDeviceTool
 
     st.subheader("Run a simulated adjustment")
-    st.caption("Uses the context above. Device state is verified; temperature improvement and energy savings are not measured. Safety below is a fictional snapshot, not a live security feed.")
-    safety = st.selectbox("Simulated safety status", ["Unknown", "Clear", "Conflict"], key="energy_execution_safety")
+    st.caption("Uses the context above. Device state is verified; temperature improvement and energy savings are not measured. Run the safety pages first; their actual workflow results supply clearance.")
+    from ui.safety_state import current_safety
+    safety = current_safety()
+    snapshot = safety.snapshot()
+    st.caption("Safety is derived from Elderly Safety and Home Security assessments in this session. Clear evidence expires after five minutes; active external warnings also block control.")
+    if snapshot["clear"]:
+        st.success("Both safety domains are clear and current.")
+    else:
+        st.warning("Energy control blocked: " + "; ".join(snapshot["reasons"]))
     approved = st.checkbox("Approve this simulated adjustment", key="energy_execution_approval")
     fault = st.selectbox("Control device fault", ["None", "AC offline", "All devices offline"], key="energy_execution_fault")
     if st.button("Run simulated adjustment", key="run-energy-control"):
@@ -608,9 +615,10 @@ def _render_control_demo() -> None:
             elif fault == "All devices offline":
                 tool.offline.update(tool.states)
             result = run_energy_control(event, approved=approved,
-                                        safety_clear={"Unknown": None, "Clear": True, "Conflict": False}[safety], device_tool=tool)
+                                        safety_state=safety, device_tool=tool)
             payload = {"record_type": "energy_comfort_control", "scope": {"assessment": "SIMULATED_CONTROL", "formal_energy_comfort_control": "EXPLICIT_SIMULATION"},
-                       "event": event.to_dict(), "approval": approved, "safety_snapshot": safety,
+                       "event": event.to_dict(), "approval": approved, "safety_snapshot": result.safety_before,
+                       "safety_after": result.safety_after,
                        "reason": result.reason, "planned": result.planned, "workflow": result.workflow.to_dict()}
             _append_record(payload, DEFAULT_RECORD_PATH)
             st.info(result.reason)

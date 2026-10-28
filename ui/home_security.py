@@ -7,6 +7,7 @@ import json
 import os
 
 import streamlit as st
+from ui.safety_state import current_safety
 
 from domains.home_security.integration import monitor_security_workflow, resume_security_workflow
 from domains.home_security.monitoring import READING_TYPES
@@ -68,10 +69,12 @@ def _load_preset() -> None:
     st.session_state.security_lock = lock
     st.session_state.security_valve = valve
     st.session_state.security_failure = st.session_state.security_scenario == "device_failure"
+    current_safety().invalidate("home_security")
     st.session_state.pop("security_result", None)
 
 
 def _clear_result() -> None:
+    current_safety().invalidate("home_security")
     st.session_state.pop("security_result", None)
 
 
@@ -135,11 +138,13 @@ def render_home_security() -> None:
                 config = CampusProxyConfig.from_environment()
                 provider = lambda observation: propose_security_risk(observation, config)
             try:
+                current_safety().invalidate("home_security")
                 result = monitor_security_workflow(
                     event, record_path=DEFAULT_RECORD_PATH, proposal_provider=provider,
                     offline_devices=("appliance", "gas_valve", "water_valve", "security_lights", "siren") if failure else (),
                 )
                 st.session_state.security_result = result
+                current_safety().observe(result.workflow)
             except OSError:
                 st.error("Assessment could not be saved locally. Check the record path.")
 
@@ -195,6 +200,7 @@ def render_home_security() -> None:
                             record_path=DEFAULT_RECORD_PATH,
                         )
                         st.session_state.security_result = result
+                        current_safety().observe(result.workflow)
                         st.rerun()
                     except OSError:
                         st.error("Confirmation result could not be saved locally.")
@@ -259,6 +265,7 @@ def render_home_security() -> None:
                     warning_event, record_path=DEFAULT_RECORD_PATH,
                     proposal_provider=warning_provider,
                 )
+                current_safety().observe(st.session_state.security_warning_result.workflow)
             except OSError:
                 st.error("External warning result could not be saved locally.")
     with warning_outcome:

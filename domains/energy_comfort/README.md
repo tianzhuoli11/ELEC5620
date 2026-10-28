@@ -1,6 +1,6 @@
 # Energy and Comfort
 
-Update (29 October): the separate `control.run_energy_control` API and **Run a simulated adjustment** panel now execute explicitly approved plans through the shared agents and existing simulated device inventory. See [control review and demonstration steps](../../docs/INTEGRATED_CONTROL_REVIEW.md). The historical assessment/readiness APIs below remain non-executable; their unchecked approval flags do not govern the separate explicit simulation path. Automatic cross-domain safety integration remains pending.
+Update (29 October): the separate `control.run_energy_control` API and **Run a simulated adjustment** panel now execute explicitly approved plans through the shared agents and existing simulated device inventory. See [control review and demonstration steps](../../docs/INTEGRATED_CONTROL_REVIEW.md). The historical assessment/readiness APIs below remain non-executable; their unchecked approval flags do not govern the separate explicit simulation path. The simulation now automatically derives safety clearance from fresh same-session Elderly Safety and Home Security results, with active external warnings also blocking execution.
 
 Owner: Tianzhuo Li. Requirements: AR-05 / UC-05; optional OR-05, with UC-06 integration.
 

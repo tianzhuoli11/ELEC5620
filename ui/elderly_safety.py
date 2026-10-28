@@ -28,6 +28,7 @@ from domains.elderly_safety.integration import (
     start_escalation,
 )
 from services.elderly_llm import campus_providers
+from ui.safety_state import current_safety
 from simulation.devices import SimulatedDeviceTool
 from simulation.elderly_scenarios import make_fall_scenario
 
@@ -66,6 +67,7 @@ OUTCOME_LABELS = {
 
 
 def _clear_result() -> None:
+    current_safety().invalidate("elderly_safety")
     st.session_state.pop("elderly_result", None)
 
 
@@ -85,6 +87,7 @@ def _state_rows(states: dict[str, dict]) -> list[dict[str, str]]:
 
 
 def _run_scenario(scenario_label: str, fault_name: str, use_ai: bool = False) -> None:
+    current_safety().invalidate("elderly_safety")
     device_tool = SimulatedDeviceTool(default_devices())
     if FAULTS[fault_name]:
         device_tool.offline.update(device_tool.states)
@@ -109,6 +112,8 @@ def _run_scenario(scenario_label: str, fault_name: str, use_ai: bool = False) ->
         "escalation": start_escalation(result, workflow=workflow, record_path=DEFAULT_RECORD_PATH),
     }
 
+    current_safety().observe(result)
+
 
 def _respond(reply: str | None) -> None:
     saved = st.session_state.get("elderly_result")
@@ -119,6 +124,7 @@ def _respond(reply: str | None) -> None:
         workflow=saved["engine"], handler=saved["handler"], record_path=DEFAULT_RECORD_PATH,
     )
     saved["escalation"] = start_escalation(saved["workflow"], workflow=saved["engine"], record_path=DEFAULT_RECORD_PATH)
+    current_safety().observe(saved["workflow"])
     st.session_state.elderly_reply = ""
 
 

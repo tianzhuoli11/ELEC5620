@@ -115,7 +115,8 @@ def collect_context(event: Event) -> FallContext:
         seconds_without_motion=seconds,
         posture=posture,
         location=location,
-        time_of_day=time_of_day_for(event.timestamp),
+        time_of_day=(ctx["simulated_time_of_day"] if event.simulated and ctx.get("simulated_time_of_day") in TIME_OF_DAY
+                     else time_of_day_for(event.timestamp)),
         home_mode=home_mode,
         recent_activity=recent,
         simulated=event.simulated,
