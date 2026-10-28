@@ -160,6 +160,52 @@ class SecurityIntegrationTests(unittest.TestCase):
         self.assertTrue(record["workflow"]["action_results"][0]["verified"])
         self.assertGreaterEqual(record["classification_ms"], 0)
 
+    def test_classification_and_workflow_durations_are_recorded_separately(self) -> None:
+        # The notification and device steps occur after the handler's assessment.
+        with patch("domains.home_security.integration.perf_counter",
+                   side_effect=(10.0, 10.005, 10.015, 10.1)):
+            result = monitor_security_workflow(make_security_scenario("smoke"), record_path=self.path)
+        record = json.loads(self.path.read_text(encoding="utf-8"))
+        self.assertEqual(result.classification_ms, 10.0)
+        self.assertEqual(result.workflow_ms, 100.0)
+        self.assertEqual(record["classification_ms"], 10.0)
+        self.assertEqual(record["workflow_ms"], 100.0)
+
+    def test_failed_smoke_notification_is_recorded_as_partial(self) -> None:
+        class BrokenNotifier:
+            def send(self, request):
+                raise TimeoutError("fictional notification outage")
+
+        result = monitor_security_workflow(
+            make_security_scenario("smoke"), record_path=self.path,
+            notifier=BrokenNotifier(),
+        )
+        self.assertTrue(all(item.success for item in result.workflow.action_results))
+        self.assertEqual(result.workflow.notification_result.status, "FAILED")
+        self.assertEqual(result.workflow.outcome, "PARTIAL")
+        record = json.loads(self.path.read_text(encoding="utf-8"))
+        self.assertEqual(record["notifications"][0]["status"], "FAILED")
+        self.assertEqual(record["workflow"]["outcome"], "PARTIAL")
+
+    def test_failed_confirmation_notice_never_authorizes_medium_actions(self) -> None:
+        class BrokenNotifier:
+            def send(self, request):
+                raise TimeoutError("fictional notification outage")
+
+        first = monitor_security_workflow(
+            make_security_scenario("unusual_door"), record_path=self.path,
+            notifier=BrokenNotifier(),
+        )
+        self.assertEqual(first.workflow.notification_result.status, "FAILED")
+        self.assertEqual(first.workflow.action_results, ())
+        final = resume_security_workflow(first, None, record_path=self.path)
+        self.assertEqual(final.workflow.confirmation_replies[-1].verdict, "timeout")
+        self.assertEqual(final.device_tool.dispatch_count, 0)
+        self.assertEqual([item["status"] for item in final.notification_history], ["FAILED", "FAILED"])
+        records = [json.loads(line) for line in self.path.read_text(encoding="utf-8").splitlines()]
+        self.assertEqual(records[0]["workflow"]["outcome"], "AWAITING_CONFIRMATION")
+        self.assertEqual(records[1]["workflow"]["outcome"], "FAILED")
+
     def test_each_preset_runs_through_shared_workflow(self) -> None:
         expected = {
             "normal": "LOW", "smoke": "HIGH", "gas": "HIGH",
@@ -228,6 +274,8 @@ class SecurityIntegrationTests(unittest.TestCase):
         self.assertIn("approved", records[1]["notifications"][1]["message"])
         self.assertEqual(records[0]["workflow"]["outcome"], "AWAITING_CONFIRMATION")
         self.assertEqual(records[1]["workflow"]["confirmation_replies"][0]["verdict"], "help")
+        self.assertEqual(records[0]["classification_ms"], records[1]["classification_ms"])
+        self.assertGreaterEqual(records[1]["workflow_ms"], 0)
 
     def test_rejection_closes_without_device_action(self) -> None:
         first = monitor_security_workflow(make_security_scenario("unusual_door"), record_path=self.path)

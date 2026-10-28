@@ -150,17 +150,34 @@ def render_home_security() -> None:
             st.info("Choose a scenario and assess it to see the actual workflow result.")
         else:
             assessment = result.assessment
+            pending = result.workflow.pending_confirmation
+            notice = result.workflow.notification_result
+            confirmation_notice_failed = (
+                pending is not None and notice is not None
+                and notice.status in ("FAILED", "UNAVAILABLE")
+            )
             st.metric("Risk level", assessment.risk_level)
-            st.write(f"Workflow outcome: **{result.workflow.outcome}**")
+            outcome_label = result.workflow.outcome
+            if confirmation_notice_failed:
+                outcome_label += f" (confirmation notification {notice.status})"
+            st.write(f"Workflow outcome: **{outcome_label}**")
             st.write(assessment.rationale)
-            st.caption(f"Workflow time: {result.classification_ms:.1f} ms")
+            st.caption(
+                f"Risk classification: {result.classification_ms:.1f} ms · "
+                f"Workflow stage: {result.workflow_ms:.1f} ms"
+            )
             st.caption(f"Campus LLM: {assessment.llm_status}")
             if assessment.model_rationale:
                 st.write(f"LLM explanation: {assessment.model_rationale}")
             if assessment.fallback_used:
                 st.warning("LLM advice was unavailable, invalid or conflicted with fixed rules; the rule result was kept.")
-            pending = result.workflow.pending_confirmation
             if pending:
+                if confirmation_notice_failed:
+                    st.error(
+                        "Confirmation notification failed or was unavailable. "
+                        "No homeowner delivery is confirmed. This workflow is only paused; "
+                        "no protective device action is authorized without an explicit reply."
+                    )
                 st.warning(pending.question)
                 st.caption(f"Attempt {pending.attempt}/{pending.max_attempts}; timeout {pending.timeout_seconds} s. The timeout button simulates expiry.")
                 approve, reject, timeout = st.columns(3)
