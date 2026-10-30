@@ -265,7 +265,7 @@ def run_uc05_acceptance_evidence() -> dict[str, Any]:
         "coverage_layers": {
             "assessment_and_eligibility": "ASSESSMENT_ONLY",
             "execution_fixture": "TEST_ONLY_SIMULATION",
-            "formal_energy_comfort_control": "PENDING",
+            "formal_energy_comfort_control": "FORMAL_CONTROL_PENDING",
         },
         "cases": cases,
         "test_only_execution_cases": execution_cases,
@@ -289,9 +289,8 @@ def run_uc05_acceptance_evidence() -> dict[str, Any]:
             "M2-approved command and expected_state schema",
             "M2-approved executable authorization source",
             "M4-approved safety-conflict feed into Energy & Comfort",
-            "Formal Energy & Comfort device dispatch and independent readback acceptance evidence",
-            "Failure recovery, timeout, and bounded replanning evidence",
-            "Post-action temperature, power, and energy-savings verification",
+            "Formal Energy & Comfort automatic dispatch via evaluate_formal_control_attempt",
+            "Independent post-action room environment sensor feed (device readback is covered)",
         ],
     }
 

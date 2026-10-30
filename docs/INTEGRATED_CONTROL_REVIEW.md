@@ -13,7 +13,10 @@ Energy & Comfort keeps its assessment-only button and adds **Run a simulated adj
 - Comfort boundaries outside 18–28 C are blocked rather than silently clamped.
 - Unoccupied and above the configured power limit: only the specifically observed, available, powered bedroom light may be switched off after explicit approval. Whole-home watts are not device-level power attribution.
 - Shared agents dispatch idempotent set-state commands, allow at most two attempts, continue independent steps after failure and independently verify returned state. Partial/failed results remain visible.
+- Post-action **room** temperature, occupancy, and whole-home power are **`UNKNOWN_NOT_MEASURED`** unless a separate probe is supplied (`domains/energy_comfort/post_action.py`); device readback success does not claim comfort or energy savings.
 - Protective Elderly/Security devices and door locks are outside this plan's target set. No safety feed or approval is inferred from an event dictionary.
+
+The page uses three UI modes: **`ASSESSMENT_ONLY`** (formal integration checklist), **`EXPLICIT_SIMULATION`** (approved panel with live session SafetyState), and **`FORMAL_CONTROL_PENDING`** for unchecked M2/M4 automatic contracts. Eligibility worksheet fields are demo-only and do not replace SafetyState.
 
 The page saves inputs, the approval, cross-domain safety evidence, planned count and actual workflow results to ignored `data/runtime/energy_comfort.jsonl`. Results disappear on rerun when inputs change, preventing a previous outcome being shown as the result of new inputs.
 

@@ -9,6 +9,7 @@ from models import WorkflowResult
 
 from .control_policy import LightShutdownEligibility
 from .monitoring import EnergyComfortAssessment
+from .post_action import PostActionEnvironmentObservation, environment_effect_text
 
 
 EvidenceStatus = Literal["CONSISTENT", "MISSING", "CONFLICTING"]
@@ -51,6 +52,7 @@ def explain_energy_comfort(
     *,
     workflow: WorkflowResult | None = None,
     eligibility: LightShutdownEligibility | None = None,
+    post_action_environment: PostActionEnvironmentObservation | None = None,
 ) -> EnergyComfortExplanation:
     """Explain an assessment without inferring actions or environmental effects."""
 
@@ -105,6 +107,14 @@ def explain_energy_comfort(
             safety_status = "NOT_ELIGIBLE"
             safety_detail = "Control eligibility was denied by the recorded domain conditions."
 
+    if post_action_environment is not None:
+        environment_effect = environment_effect_text(post_action_environment)
+    else:
+        environment_effect = (
+            "UNKNOWN_NOT_MEASURED: no post-action temperature, power, or energy-savings "
+            "evidence is represented by this explanation."
+        )
+
     return EnergyComfortExplanation(
         decision=assessment.decision,
         summary=_decision_summary(assessment),
@@ -115,10 +125,7 @@ def explain_energy_comfort(
         execution_detail=execution_detail,
         safety_status=safety_status,
         safety_detail=safety_detail,
-        environment_effect=(
-            "UNKNOWN_NOT_MEASURED: no post-action temperature, power, or energy-savings "
-            "evidence is represented by this explanation."
-        ),
+        environment_effect=environment_effect,
         trace=trace,
         limitations=(
             "Workflow trace is in-memory and is not persistent audit history.",

@@ -20,7 +20,7 @@ class EnergyComfortAcceptanceEvidenceTests(unittest.TestCase):
                 self.assertEqual(case["actual"]["dispatch_calls"], 0)
                 self.assertEqual(case["actual"]["read_calls"], 0)
         self.assertEqual(
-            evidence["coverage_layers"]["formal_energy_comfort_control"], "PENDING",
+            evidence["coverage_layers"]["formal_energy_comfort_control"], "FORMAL_CONTROL_PENDING",
         )
         self.assertTrue(all(
             case["scope"] == "TEST_ONLY_SIMULATION"

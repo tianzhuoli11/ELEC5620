@@ -73,10 +73,11 @@ preparation runner can be invoked with:
 .venv\Scripts\python -m simulation.energy_comfort_acceptance
 ```
 
-Its device execution, readback, recovery and post-action environmental cases
-remain explicitly Pending until the M2 device and cross-domain safety contracts
-are approved. The runner's fictional trusted source exercises eligibility logic
-only; it is not a real authorization or team acceptance record.
+`run_energy_control` (PR #17 **EXPLICIT_SIMULATION** path) verifies device readback and
+records post-action room environment as **`UNKNOWN_NOT_MEASURED`** via
+`post_action.assess_post_action_environment` unless an independent probe is wired.
+Formal automatic integration remains **`FORMAL_CONTROL_PENDING`** while
+`ACTIVE_FORMAL_CONTROL_CONTRACT` gates are false.
 
 `evaluate_formal_control_attempt` applies the checked-in
 `ACTIVE_FORMAL_CONTROL_CONTRACT` gates after eligibility. Today every gate is

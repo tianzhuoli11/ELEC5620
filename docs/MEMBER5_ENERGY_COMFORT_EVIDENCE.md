@@ -11,9 +11,9 @@ team review, M2/M4 integration, merge to `main`, or physical-device operation.
 | --- | --- | --- |
 | SCRUM-22 / shared context | `models/context.py`; event round-trip and validation in `tests/test_energy_comfort.py` | Candidate names, namespace and `HomeMode` still need M2/M4 and framework-owner confirmation |
 | MR-08 / SCRUM-16 | Deterministic three-state assessment in `domains/energy_comfort/monitoring.py`; shared workflow adapter in `integration.py` | Assessment-only; no claim of whole-home safety or energy optimisation |
-| MR-09 / SCRUM-32 | Fail-closed eligibility in `control_policy.py`; formal readiness gate in `control_readiness.py` / `evaluate_formal_control_attempt`; protected Elderly/Security deny-list; shared automation failure-path fixture | Formal control remains PENDING: M2 mapping/schema/authorization and M4 safety-feed contracts are unchecked in `ACTIVE_FORMAL_CONTROL_CONTRACT`; no ActionRequest planner is enabled |
+| MR-09 / SCRUM-32 | Fail-closed eligibility; formal readiness gate; PR #17 `run_energy_control` with cross-domain `SafetyState`; `post_action.py` records `UNKNOWN_NOT_MEASURED` for room environment | Formal automatic integration stays **FORMAL_CONTROL_PENDING** until M2/M4 flip `ACTIVE_FORMAL_CONTROL_CONTRACT` |
 | OR-05 / SCRUM-33 | Evidence-bound deterministic explanations in `explanations.py` | Coordinator/UC-06 explanation request contract and persistent audit remain Pending |
-| UC-05 / SCRUM-38 | `simulation.energy_comfort_acceptance` records input, expected, actual, decision, trace and PASS/FAIL | Formal domain execution/readback and post-action observations remain Pending |
+| UC-05 / SCRUM-38 | `simulation.energy_comfort_acceptance` records input, expected, actual, decision, trace and PASS/FAIL | Post-action room environment remains `UNKNOWN_NOT_MEASURED` unless an independent probe is wired; device readback is verified separately |
 
 The acceptance output separates `ASSESSMENT_ONLY`, `TEST_ONLY_SIMULATION`, and
 formal Energy & Comfort control (`PENDING`). Test fixture device identifiers and
