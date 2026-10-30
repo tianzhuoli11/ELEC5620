@@ -23,7 +23,7 @@ SCENARIOS = {
 
 def make_fall_scenario(name: str, observed_at: str | None = None) -> Event:
     impact, seconds, posture, room, hour, _expected = SCENARIOS[name]
-    timestamp = observed_at or datetime(2026, 10, 20, hour, 0, tzinfo=timezone.utc).isoformat()
+    timestamp = observed_at or datetime.now(timezone.utc).isoformat()
     readings = [SensorReading("simulated-fall-sensor-1", "fall_impact", impact, "bool", timestamp)]
     if seconds is not None:
         readings.append(SensorReading("simulated-motion-sensor-1", "seconds_without_motion", seconds, "s", timestamp))
@@ -34,7 +34,8 @@ def make_fall_scenario(name: str, observed_at: str | None = None) -> Event:
         event_type="fall_detected",
         source="simulated-fall-sensor-1",
         timestamp=timestamp,
-        context={"room": room, "home_mode": "home", "recent_activity": "walking", "scenario": name},
+        context={"room": room, "home_mode": "home", "recent_activity": "walking", "scenario": name,
+                 "simulated_time_of_day": "night" if hour < 6 else "day"},
         simulated=True,
         readings=tuple(readings),
     )

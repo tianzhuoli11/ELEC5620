@@ -6,12 +6,15 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from safety_fixtures import safety_fixture
 from unittest.mock import patch
 
 from streamlit.testing.v1 import AppTest
 
 import ui.domain_views as domain_views
 import ui.energy_comfort as energy_ui
+import ui.home_security as security_ui
+import ui.elderly_safety as elderly_ui
 
 
 APP_PATH = Path(__file__).resolve().parents[1] / "app.py"
@@ -25,6 +28,10 @@ class EnergyComfortPageTests(unittest.TestCase):
         record_patch = patch.object(energy_ui, "DEFAULT_RECORD_PATH", self.record_path)
         record_patch.start()
         self.addCleanup(record_patch.stop)
+        for module, name in ((security_ui, "security.jsonl"), (elderly_ui, "elderly.jsonl")):
+            domain_patch = patch.object(module, "DEFAULT_RECORD_PATH", Path(temporary.name) / name)
+            domain_patch.start()
+            self.addCleanup(domain_patch.stop)
         self.app = AppTest.from_file(str(APP_PATH), default_timeout=120)
 
     def open_page(self) -> None:
@@ -44,6 +51,50 @@ class EnergyComfortPageTests(unittest.TestCase):
             "not available in this version",
             "\n".join(item.value for item in self.app.info),
         )
+
+    def test_actual_safety_pages_enable_energy_then_smoke_blocks_it(self):
+        self.open_page()
+        self.app.sidebar.radio[0].set_value("Home Security").run()
+        self.app.button(key="security_run").click().run()
+        self.app.sidebar.radio[0].set_value("Elderly Safety").run()
+        self.app.selectbox(key="elderly_scenario").set_value("Fall, then not moving (30 s)").run()
+        self.app.button(key="run-elderly-scenario").click().run()
+        self.assertFalse(self.app.session_state["home_safety_state"].snapshot()["clear"])
+        self.app.button(key="quick-I'm fine").click().run()
+        self.assertTrue(self.app.session_state["home_safety_state"].snapshot()["clear"])
+        self.app.sidebar.radio[0].set_value("Energy & Comfort").run()
+        self.app.selectbox(key="energy_scenario").set_value("Too warm (occupied)").run()
+        self.app.checkbox(key="energy_execution_approval").set_value(True).run()
+        self.app.button(key="run-energy-control").click().run()
+        self.assertEqual(self.records()[-1]["workflow"]["outcome"], "COMPLETE")
+        self.app.sidebar.radio[0].set_value("Home Security").run()
+        self.app.selectbox(key="security_scenario").set_value("smoke").run()
+        self.app.button(key="security_run").click().run()
+        self.app.sidebar.radio[0].set_value("Energy & Comfort").run()
+        self.app.checkbox(key="energy_execution_approval").set_value(True).run()
+        self.app.button(key="run-energy-control").click().run()
+        self.assertEqual(list(self.app.exception), [])
+        self.assertEqual(self.records()[-1]["workflow"]["action_results"], [])
+        self.assertFalse(self.records()[-1]["safety_snapshot"]["clear"])
+
+    def test_control_panel_requires_safety_and_records_verified_or_partial_actions(self):
+        self.open_page()
+        self.app.selectbox(key="energy_scenario").set_value("Too warm (occupied)").run()
+        self.app.checkbox(key="energy_execution_approval").set_value(True).run()
+        self.app.button(key="run-energy-control").click().run()
+        self.assertEqual(self.records()[-1]["workflow"]["action_results"], [])
+        self.app.session_state["home_safety_state"] = safety_fixture()
+        self.app.run()
+        self.app.button(key="run-energy-control").click().run()
+        self.assertEqual(list(self.app.exception), [])
+        self.assertEqual(self.records()[-1]["workflow"]["outcome"], "COMPLETE")
+        self.app.selectbox(key="energy_execution_fault").set_value("AC offline").run()
+        self.app.button(key="run-energy-control").click().run()
+        self.assertEqual(self.records()[-1]["workflow"]["outcome"], "PARTIAL")
+        self.app.session_state["home_safety_state"] = safety_fixture(blocked=True)
+        self.app.run()
+        self.app.button(key="run-energy-control").click().run()
+        self.assertEqual(self.records()[-1]["workflow"]["action_results"], [])
 
     def test_comfort_ok_runs_assessment_only_without_dispatch(self) -> None:
         self.open_page()
