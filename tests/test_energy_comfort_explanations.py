@@ -7,6 +7,7 @@ import unittest
 
 from domains.energy_comfort.control_policy import LightShutdownEligibility
 from domains.energy_comfort.explanations import explain_energy_comfort
+from domains.energy_comfort.post_action import assess_post_action_environment
 from domains.energy_comfort.integration import monitor_energy_comfort_workflow
 from models import ActionResult
 from simulation.energy_comfort_demo import example_contexts, make_energy_comfort_event
@@ -75,6 +76,14 @@ class EnergyComfortExplanationTests(unittest.TestCase):
         )
         self.assertEqual(explanation.execution_status, "VERIFIED")
         self.assertIn("UNKNOWN_NOT_MEASURED", explanation.environment_effect)
+
+    def test_post_action_observation_overrides_environment_effect(self) -> None:
+        outcome = self.outcome("adjustment_needed")
+        post = assess_post_action_environment(workflow=outcome.workflow, planned_actions=0)
+        explanation = explain_energy_comfort(
+            outcome.assessment, workflow=outcome.workflow, post_action_environment=post,
+        )
+        self.assertIn("not_applicable_no_device_execution", explanation.environment_effect)
 
 
 if __name__ == "__main__":

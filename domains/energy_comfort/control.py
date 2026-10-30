@@ -11,6 +11,8 @@ from simulation.devices import SimulatedDeviceTool
 from domains.smart_home_control.devices import BEDROOM_LIGHT, BEDROOM_CURTAIN, LIVING_ROOM_AC
 from domains.smart_home_control import default_device_states
 from .integration import EnergyComfortHandler, context_from_event
+from .monitoring import EnergyComfortAssessment
+from .post_action import PostActionEnvironmentObservation, assess_post_action_environment
 from services.safety_state import SafetyState
 from tools.device import DispatchResult
 
@@ -22,6 +24,8 @@ class ControlOutcome:
     planned: int
     safety_before: dict
     safety_after: dict
+    post_action_environment: PostActionEnvironmentObservation
+    energy_assessment: EnergyComfortAssessment
 
 
 def run_energy_control(event: Event, *, approved: bool = False,
@@ -90,8 +94,22 @@ def run_energy_control(event: Event, *, approved: bool = False,
 
     handler = Handler()
     result = SmartHomeWorkflow([handler], GuardedTool()).run(event)
+    if handler.energy_assessment is None:
+        raise RuntimeError("Energy control handler did not produce an assessment")
     final_safety = safety.snapshot()
     reason = handler.reason
     if handler.planned and not final_safety["clear"]:
         reason = "Safety evidence changed during execution; further energy actions are blocked."
-    return ControlOutcome(result, reason, handler.planned, handler.safety_before, final_safety)
+    post_action = assess_post_action_environment(
+        workflow=result,
+        planned_actions=handler.planned,
+    )
+    return ControlOutcome(
+        result,
+        reason,
+        handler.planned,
+        handler.safety_before,
+        final_safety,
+        post_action,
+        handler.energy_assessment,
+    )

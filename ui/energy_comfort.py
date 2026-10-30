@@ -26,6 +26,10 @@ from models import (
 from simulation.energy_comfort_demo import make_energy_comfort_event
 
 
+FORMAL_CONTROL_LABEL = "FORMAL_CONTROL_PENDING"
+UI_MODE_ASSESSMENT = "ASSESSMENT_ONLY"
+UI_MODE_SIMULATION = "EXPLICIT_SIMULATION"
+
 DEFAULT_RECORD_PATH = Path("data/runtime/energy_comfort.jsonl")
 
 SCENARIOS = {
@@ -213,9 +217,8 @@ def _run_assessment(record_path: Path | None = None) -> None:
     payload = {
         "record_type": "energy_comfort_assessment",
         "scope": {
-            "assessment": "ASSESSMENT_ONLY",
-            "execution_fixture": "TEST_ONLY_SIMULATION_NOT_RUN_HERE",
-            "formal_energy_comfort_control": outcome.readiness.status,
+            "ui_mode": UI_MODE_ASSESSMENT,
+            "formal_control": FORMAL_CONTROL_LABEL,
         },
         "assessment": outcome.assessment.to_dict(),
         "eligibility": {
@@ -273,9 +276,19 @@ def render_energy_comfort() -> None:
         with st.container(border=True, key="energy-controls"):
             st.markdown(
                 '<div class="panel-heading"><h2>Simulated context</h2>'
-                '<span class="small-badge">ASSESSMENT ONLY</span></div>',
+                f'<span class="small-badge">{UI_MODE_ASSESSMENT}</span></div>',
                 unsafe_allow_html=True,
             )
+            from ui.safety_state import current_safety
+            safety_snapshot = current_safety().snapshot()
+            st.markdown("**Session safety (Elderly + Home Security)** — live registry, not editable here.")
+            if safety_snapshot["clear"]:
+                st.success("Clear for simulated control panel only; this assessment path does not dispatch.")
+            else:
+                st.info(
+                    "Not clear: " + "; ".join(safety_snapshot["reasons"])
+                    + ". Run the safety pages to refresh evidence."
+                )
             st.selectbox(
                 "Scenario",
                 list(SCENARIOS),
@@ -375,10 +388,11 @@ def render_energy_comfort() -> None:
                     on_change=_clear_result,
                 )
 
-            with st.expander("Light-shutdown eligibility inputs (non-executable)"):
+            with st.expander("Eligibility worksheet (non-executable demo only)"):
                 st.caption(
-                    "These fields only feed fail-closed eligibility. They never create an ActionRequest "
-                    "and never dispatch a device."
+                    "These fields feed fail-closed **eligibility preparation** only. "
+                    "They do not dispatch devices, are not M2/M4 authorization, and do "
+                    "not replace the live session SafetyState shown above."
                 )
                 st.checkbox(
                     "Explicit unoccupied light-shutdown basis",
@@ -386,23 +400,23 @@ def render_energy_comfort() -> None:
                     on_change=_clear_result,
                 )
                 st.checkbox(
-                    "Eligibility authorization metadata confirmed",
+                    "Demo: eligibility authorization metadata ticked",
                     key="energy_control_authorized",
                     on_change=_clear_result,
                 )
                 st.text_input(
-                    "Authorization source label",
+                    "Demo: authorization source label (not team-approved)",
                     key="energy_auth_source",
-                    placeholder="fictional-team-source",
+                    placeholder="fictional-eligibility-demo",
                     on_change=_clear_result,
                 )
                 st.checkbox(
-                    "Treat source as trusted for eligibility demo only",
+                    "Demo: treat label as trusted for eligibility worksheet only",
                     key="energy_trust_source",
                     on_change=_clear_result,
                 )
                 st.selectbox(
-                    "Safety policy check",
+                    "Demo: fictional safety-policy flag for eligibility only",
                     ("Unknown", "Passed", "Rejected"),
                     key="energy_safety_passed",
                     on_change=_clear_result,
@@ -463,9 +477,9 @@ def render_energy_comfort() -> None:
                 scope = saved["scope"]
 
                 st.info(
-                    f"**Scope:** `{scope['assessment']}` · "
-                    f"formal control `{scope['formal_energy_comfort_control']}` · "
-                    "TEST_ONLY_SIMULATION is not run from this page."
+                    f"**UI mode:** `{scope['ui_mode']}` · "
+                    f"**Formal control:** `{scope['formal_control']}` · "
+                    f"readiness `{readiness.status}` (no ActionRequest from this button)."
                 )
                 st.metric("Decision", assessment.decision)
                 st.write(f"Workflow outcome: **{workflow.outcome}**")
@@ -560,7 +574,8 @@ def render_energy_comfort() -> None:
                     "Workflow": item.get("workflow", {}).get("outcome", "—"),
                     "Eligible": item.get("eligibility", {}).get("eligible"),
                     "Execution": item.get("explanation", {}).get("execution_status", "—"),
-                    "Formal control": item.get("scope", {}).get("formal_energy_comfort_control", "PENDING"),
+                    "Formal control": item.get("scope", {}).get("formal_control", "—"),
+                    "UI mode": item.get("scope", {}).get("ui_mode", "—"),
                     "Blockers": len(item.get("formal_control", {}).get("blockers", [])),
                 }
                 for item in records
@@ -580,7 +595,8 @@ def render_energy_comfort() -> None:
         "- **ADJUSTMENT_NEEDED**: occupied temperature outside preference, or unoccupied power "
         "above the limit with an available device observed `power=on`.\n"
         "- **INSUFFICIENT_DATA**: occupancy unknown, or required temperature/preference/energy facts missing.\n"
-        "- Eligibility is fail-closed preparation only. Automatic control remains **PENDING**; the separate panel below runs explicitly approved simulated adjustments."
+        "- Eligibility worksheet is fail-closed preparation only. Automatic integration remains "
+        f"**{FORMAL_CONTROL_LABEL}**; use **{UI_MODE_SIMULATION}** below for approved simulated adjustments."
     )
     st.caption(
         "All readings and devices on this page are simulated. "
@@ -591,11 +607,16 @@ def render_energy_comfort() -> None:
 
 def _render_control_demo() -> None:
     from domains.energy_comfort.control import run_energy_control
+    from domains.energy_comfort.explanations import explain_energy_comfort
     from domains.smart_home_control import default_device_states
     from simulation.devices import SimulatedDeviceTool
 
-    st.subheader("Run a simulated adjustment")
-    st.caption("Uses the context above. Device state is verified; temperature improvement and energy savings are not measured. Run the safety pages first; their actual workflow results supply clearance.")
+    st.subheader(f"Run a simulated adjustment ({UI_MODE_SIMULATION})")
+    st.caption(
+        f"**{UI_MODE_SIMULATION}** uses explicit UI approval plus live session SafetyState. "
+        f"**{FORMAL_CONTROL_LABEL}** still applies to automatic formal integration. "
+        "Device state is verified; temperature improvement and energy savings are not measured."
+    )
     from ui.safety_state import current_safety
     safety = current_safety()
     snapshot = safety.snapshot()
@@ -616,13 +637,34 @@ def _render_control_demo() -> None:
                 tool.offline.update(tool.states)
             result = run_energy_control(event, approved=approved,
                                         safety_state=safety, device_tool=tool)
-            payload = {"record_type": "energy_comfort_control", "scope": {"assessment": "SIMULATED_CONTROL", "formal_energy_comfort_control": "EXPLICIT_SIMULATION"},
-                       "event": event.to_dict(), "approval": approved, "safety_snapshot": result.safety_before,
-                       "safety_after": result.safety_after,
-                       "reason": result.reason, "planned": result.planned, "workflow": result.workflow.to_dict()}
+            explanation = explain_energy_comfort(
+                result.energy_assessment,
+                workflow=result.workflow,
+                post_action_environment=result.post_action_environment,
+            )
+            payload = {
+                "record_type": "energy_comfort_control",
+                "scope": {
+                    "ui_mode": UI_MODE_SIMULATION,
+                    "formal_control": FORMAL_CONTROL_LABEL,
+                },
+                "event": event.to_dict(),
+                "approval": approved,
+                "safety_snapshot": result.safety_before,
+                "safety_after": result.safety_after,
+                "reason": result.reason,
+                "planned": result.planned,
+                "post_action_environment": result.post_action_environment.to_dict(),
+                "environment_effect": explanation.environment_effect,
+                "workflow": result.workflow.to_dict(),
+            }
             _append_record(payload, DEFAULT_RECORD_PATH)
             st.info(result.reason)
-            st.write("Workflow outcome: " + result.workflow.outcome)
+            st.write(
+                f"UI mode: **{UI_MODE_SIMULATION}** · Formal control: **{FORMAL_CONTROL_LABEL}** · "
+                f"Workflow outcome: **{result.workflow.outcome}**"
+            )
+            st.caption(explanation.environment_effect)
             if result.workflow.action_results:
                 st.dataframe([r.to_dict() for r in result.workflow.action_results], width="stretch")
             else:
