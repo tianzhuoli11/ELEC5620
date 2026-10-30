@@ -1,0 +1,61 @@
+{
+  "collected_at_utc": "2026-10-30T11:20:44.263085+00:00",
+  "source": "GitHub API, selected real PR metadata and reviews",
+  "pull_requests": [
+    {
+      "number": 7,
+      "title": "SCRUM-26 SCRUM-27: complete Smart Home Control workflows",
+      "url": "https://github.com/tianzhuoli11/ELEC5620/pull/7",
+      "created_at": "2026-10-24T04:14:05Z",
+      "merged_at": "2026-10-24T07:03:00Z",
+      "head": "b8d1da94bfbf3ca6bf47d52fafee2454bd834120",
+      "merge_commit": "a9b3a99890c2d7be5ae2b35a7b308373a2236170",
+      "reviews": []
+    },
+    {
+      "number": 8,
+      "title": "SCRUM-36 / SCRUM-29: Pet Care Sprint 2 acceptance and optional feeding",
+      "url": "https://github.com/tianzhuoli11/ELEC5620/pull/8",
+      "created_at": "2026-10-24T07:19:34Z",
+      "merged_at": "2026-10-25T00:04:27Z",
+      "head": "dd5a7e2fe9285fdc28aeb96ffd72a089a1c4e309",
+      "merge_commit": "26ba3055ea4d05aee91935d5e710ac517a477423",
+      "reviews": [
+        {
+          "author": "Yang-Yang-yy",
+          "state": "CHANGES_REQUESTED",
+          "submitted_at": "2026-10-24T07:52:31Z",
+          "url": "https://github.com/tianzhuoli11/ELEC5620/pull/8#pullrequestreview-5637402410",
+          "body": "The implementation is well structured, and all 132 repository tests passed locally.\n\nI found one blocking failure path in `domains/pet_care/feeder.py` around the `feeder.read_state()` preflight: it runs before the core monitoring workflow, but only `ConnectionError` and `KeyError` are caught. A realistic adapter timeout or I/O failure therefore propagates and prevents the Pet Care assessment, simulated owner alert, and event record from completing. I reproduced this with a feeder whose `read_state()` raises `TimeoutError`.\n\nPlease treat feeder read failures or malformed returned state as `UNAVAILABLE`, allowing core monitoring and notification to continue, and add a regression test with a timeout-raising feeder stub.\n\nNon-blocking:\n- Please add the relevant Jira issue key/link to the PR title or Development section as required by `CONTRIBUTING.md`.\n- Resetting the UI produces a Streamlit warning because `pet_feed_grams` is set through Session State while the widget also specifies `value=20`."
+        },
+        {
+          "author": "Yang-Yang-yy",
+          "state": "APPROVED",
+          "submitted_at": "2026-10-25T00:02:31Z",
+          "url": "https://github.com/tianzhuoli11/ELEC5620/pull/8#pullrequestreview-5640680543",
+          "body": "Re-reviewed after commits `ce5a131` and `dd5a7e2`. The feeder timeout and malformed-state paths now report `UNAVAILABLE` while core monitoring, the simulated owner alert, and event recording continue. The Streamlit reset warning is resolved, and the Jira references are included.\n\nI reran all 11 Pet Care Sprint 2 tests and the complete 134-test repository suite locally; all passed. Approved."
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "title": "SCRUM-39 / SCRUM-32: guard AI goals and interlock Energy with safety domains",
+      "url": "https://github.com/tianzhuoli11/ELEC5620/pull/17",
+      "created_at": "2026-10-28T16:01:03Z",
+      "merged_at": "2026-10-30T10:51:12Z",
+      "head": "4e7607e683b9ec40573717aaf69164b0b5641108",
+      "merge_commit": "55ba029cfea93b33d87ea024b5344a1bafa6e4a6",
+      "reviews": []
+    },
+    {
+      "number": 19,
+      "title": "SCRUM-34: rerun Elderly Safety acceptance on integrated main",
+      "url": "https://github.com/tianzhuoli11/ELEC5620/pull/19",
+      "created_at": "2026-10-30T10:55:42Z",
+      "merged_at": "2026-10-30T10:55:51Z",
+      "head": "c0ec9d2f8dd5618c33f0d0bdb382a4cac73601ab",
+      "merge_commit": "c4c8ebe029bb92c01496d6cdd3c2c320a802bdbf",
+      "reviews": []
+    }
+  ]
+}

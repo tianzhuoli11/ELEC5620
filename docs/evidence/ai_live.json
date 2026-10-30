@@ -1,0 +1,481 @@
+{
+  "run_at_utc": "2026-10-30T11:21:27.300966+00:00",
+  "python": "3.13.5",
+  "live": true,
+  "repeats": 1,
+  "cases": [
+    {
+      "domain": "pet",
+      "scenario": "empty_bowl",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.004,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 3247.384,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "MEDIUM",
+            "rationale": "Food level is 0%, indicating an empty bowl, though a single reading could be transient or post-meal."
+          },
+          "elapsed_ms": 3247.365
+        }
+      ]
+    },
+    {
+      "domain": "pet",
+      "scenario": "normal_activity",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "LOW",
+      "baseline": "LOW",
+      "baseline_ms": 0.009,
+      "final": "LOW",
+      "agrees_with_reference": true,
+      "elapsed_ms": 2820.774,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "LOW",
+            "rationale": "Five minutes of inactivity is brief and commonly within normal pet behavior, so it does not by itself indicate a safety concern."
+          },
+          "elapsed_ms": 2820.755
+        }
+      ]
+    },
+    {
+      "domain": "pet",
+      "scenario": "unusual_inactivity",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.009,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 3204.673,
+      "fallback_used": true,
+      "policy_override": true,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "MEDIUM",
+            "rationale": "150 minutes of inactivity may be normal rest for some pets, but it is long enough to warrant monitoring for unusual lethargy or health concerns."
+          },
+          "elapsed_ms": 3204.653
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "high_floor",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.064,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 4670.036,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "HIGH",
+            "rationale": "An impact, floor posture, and 90 seconds without motion in the bathroom indicate a likely fall needing help now."
+          },
+          "elapsed_ms": 4669.973
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "medium_wait",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.023,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 5352.793,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "MEDIUM",
+            "rationale": "An impact followed by 30 seconds of stillness after walking warrants asking the resident if they are okay."
+          },
+          "elapsed_ms": 5352.73
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "low_dropped_object",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "LOW",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.026,
+      "final": "MEDIUM",
+      "agrees_with_reference": false,
+      "elapsed_ms": 5586.511,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "MEDIUM",
+            "rationale": "An impact was detected while walking, but the resident remains upright after only a brief pause, so a check-in is reasonable."
+          },
+          "elapsed_ms": 5586.458
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "medium_missing_duration",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.019,
+      "final": "HIGH",
+      "agrees_with_reference": false,
+      "elapsed_ms": 9435.654,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "HIGH",
+            "rationale": "An impact was detected while the resident was walking and posture is unknown, suggesting a possible fall that may need immediate assistance."
+          },
+          "elapsed_ms": 9435.6
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "medium_night_uplift",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.027,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 3959.12,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "MEDIUM",
+            "rationale": "An impact was detected after recent walking at night in the bedroom, warranting a check-in."
+          },
+          "elapsed_ms": 3959.073
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "normal",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "LOW",
+      "baseline": "LOW",
+      "baseline_ms": 0.028,
+      "final": "LOW",
+      "agrees_with_reference": true,
+      "elapsed_ms": 3082.44,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "LOW",
+            "rationale": "All provided sensors report no detected issues, and the home context shows an expected, authorized state with the front door locked and water valve closed."
+          },
+          "elapsed_ms": 3082.403
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "smoke",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.031,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 3078.486,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "HIGH",
+            "rationale": "The smoke_alarm reading is 1, indicating a potentially serious smoke or fire-related condition that should be verified by a human immediately."
+          },
+          "elapsed_ms": 3078.449
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "gas",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.026,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 2974.52,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "HIGH",
+            "rationale": "The gas_alarm reading is 1, suggesting a potential gas-leak condition, which is an immediate safety risk even with the home locked and no motion detected."
+          },
+          "elapsed_ms": 2974.484
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "unusual_door",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.027,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 5522.501,
+      "fallback_used": true,
+      "policy_override": true,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "HIGH",
+            "rationale": "Front door is open and unlocked while the home is in AWAY mode with no authorized entry, creating a possible unauthorized access risk; no motion or other hazard indicators are currently present."
+          },
+          "elapsed_ms": 5522.468
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "suspected_intrusion",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.026,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 4605.837,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "HIGH",
+            "rationale": "Home mode is AWAY with an open, unlocked front door and motion detected, while no recent authorized activity is present, indicating possible unauthorized presence or entry anomaly."
+          },
+          "elapsed_ms": 4605.799
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "water_leak",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.035,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 6166.532,
+      "fallback_used": true,
+      "policy_override": true,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "MEDIUM",
+            "rationale": "A water-leak reading is present while the water valve is open, which could lead to property damage; however, no door, window, lock, motion, or other intrusion indicators are elevated."
+          },
+          "elapsed_ms": 6166.491
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Good night",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "night_mode",
+      "baseline": "night_mode",
+      "baseline_ms": 0.287,
+      "final": "night_mode",
+      "agrees_with_reference": true,
+      "elapsed_ms": 4160.842,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "domain": "smart_home_control",
+            "intent": "night_mode",
+            "parameters": {}
+          },
+          "elapsed_ms": 4160.784
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Turn on the bedroom light",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "direct_control",
+      "baseline": "direct_control",
+      "baseline_ms": 0.303,
+      "final": "direct_control",
+      "agrees_with_reference": true,
+      "elapsed_ms": 2256.802,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "domain": "smart_home_control",
+            "intent": "direct_control",
+            "parameters": {
+              "light_power": "on"
+            }
+          },
+          "elapsed_ms": 2256.732
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Do not turn off the bedroom light",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "clarify",
+      "baseline": "clarify",
+      "baseline_ms": 0.005,
+      "final": "clarify",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.003,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": []
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Make the house better",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "clarify",
+      "baseline": "clarify",
+      "baseline_ms": 0.017,
+      "final": "clarify",
+      "agrees_with_reference": true,
+      "elapsed_ms": 5481.375,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "domain": "smart_home_control",
+            "intent": "clarify",
+            "parameters": {
+              "clarification_question": "What would you like me to improve: lights, temperature, curtains, or a preset mode?"
+            }
+          },
+          "elapsed_ms": 5481.311
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Prepare the house for me to retire for the evening",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "night_mode",
+      "baseline": "clarify",
+      "baseline_ms": 0.024,
+      "final": "night_mode",
+      "agrees_with_reference": true,
+      "elapsed_ms": 4896.387,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "domain": "smart_home_control",
+            "intent": "night_mode",
+            "parameters": {}
+          },
+          "elapsed_ms": 4896.327
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Please secure the home while I am out for the day",
+      "repeat": 1,
+      "mode": "live",
+      "policy_reference_or_curated_intent": "away_mode",
+      "baseline": "clarify",
+      "baseline_ms": 0.02,
+      "final": "away_mode",
+      "agrees_with_reference": true,
+      "elapsed_ms": 3408.358,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "domain": "smart_home_control",
+            "intent": "away_mode",
+            "parameters": {}
+          },
+          "elapsed_ms": 3408.287
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "cases": 20,
+    "provider_calls": 19,
+    "provider_errors": 0,
+    "fallback_cases": 4,
+    "reference_agreements": 18,
+    "mean_workflow_ms": 4195.551
+  },
+  "limitations": "Curated fictional sample; reference agreement is not general accuracy. Baseline uses actual no-model behavior, including the Elderly MEDIUM fallback. Injected timeout measures recovery overhead, not a 15-second network wait. Negation may bypass the provider entirely. No device execution occurs in this assessment evaluation.",
+  "git_commit": "c4c8ebe029bb92c01496d6cdd3c2c320a802bdbf",
+  "runner_sha256": "f830a46f01cd53f999f71b0a704e8c35055a33b2e98dd8a5c55f636b9cb341e9",
+  "source_state": "Evaluation runner added in the assessment-evidence worktree based on git_commit; not present in that base commit."
+}

@@ -1,0 +1,867 @@
+{
+  "run_at_utc": "2026-10-30T11:20:02.626274+00:00",
+  "python": "3.13.5",
+  "live": false,
+  "repeats": 1,
+  "cases": [
+    {
+      "domain": "pet",
+      "scenario": "empty_bowl",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.007,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.01,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "pet",
+      "scenario": "empty_bowl",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.007,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.007,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.003
+        }
+      ]
+    },
+    {
+      "domain": "pet",
+      "scenario": "normal_activity",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "LOW",
+      "baseline": "LOW",
+      "baseline_ms": 0.003,
+      "final": "LOW",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.007,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.002
+        }
+      ]
+    },
+    {
+      "domain": "pet",
+      "scenario": "normal_activity",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "LOW",
+      "baseline": "LOW",
+      "baseline_ms": 0.003,
+      "final": "LOW",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.004,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "pet",
+      "scenario": "unusual_inactivity",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.002,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.003,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "pet",
+      "scenario": "unusual_inactivity",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.002,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.003,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "high_floor",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.027,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.023,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "high_floor",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.027,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.012,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "medium_wait",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.009,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.011,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "medium_wait",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.009,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.01,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "low_dropped_object",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "LOW",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.01,
+      "final": "MEDIUM",
+      "agrees_with_reference": false,
+      "elapsed_ms": 0.01,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "low_dropped_object",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "LOW",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.01,
+      "final": "MEDIUM",
+      "agrees_with_reference": false,
+      "elapsed_ms": 0.01,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "medium_missing_duration",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.008,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.009,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "medium_missing_duration",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.008,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.008,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "medium_night_uplift",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.011,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.009,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "elderly",
+      "scenario": "medium_night_uplift",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.011,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.01,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "normal",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "LOW",
+      "baseline": "LOW",
+      "baseline_ms": 0.011,
+      "final": "LOW",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.011,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "normal",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "LOW",
+      "baseline": "LOW",
+      "baseline_ms": 0.011,
+      "final": "LOW",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.011,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "smoke",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.008,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.01,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "smoke",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.008,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.011,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "gas",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.008,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.01,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "gas",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.008,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.009,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "unusual_door",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.008,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.009,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "unusual_door",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "MEDIUM",
+      "baseline": "MEDIUM",
+      "baseline_ms": 0.008,
+      "final": "MEDIUM",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.009,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "suspected_intrusion",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.008,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.009,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "suspected_intrusion",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.008,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.009,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "water_leak",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.008,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.009,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "security",
+      "scenario": "water_leak",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "HIGH",
+      "baseline": "HIGH",
+      "baseline_ms": 0.008,
+      "final": "HIGH",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.009,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Good night",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "night_mode",
+      "baseline": "night_mode",
+      "baseline_ms": 0.166,
+      "final": "night_mode",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.016,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Good night",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "night_mode",
+      "baseline": "night_mode",
+      "baseline_ms": 0.166,
+      "final": "night_mode",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.009,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Turn on the bedroom light",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "direct_control",
+      "baseline": "direct_control",
+      "baseline_ms": 0.214,
+      "final": "direct_control",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.026,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Turn on the bedroom light",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "direct_control",
+      "baseline": "direct_control",
+      "baseline_ms": 0.214,
+      "final": "direct_control",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.017,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Do not turn off the bedroom light",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "clarify",
+      "baseline": "clarify",
+      "baseline_ms": 0.005,
+      "final": "clarify",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.002,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": []
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Do not turn off the bedroom light",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "clarify",
+      "baseline": "clarify",
+      "baseline_ms": 0.005,
+      "final": "clarify",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.002,
+      "fallback_used": false,
+      "policy_override": false,
+      "calls": []
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Make the house better",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "clarify",
+      "baseline": "clarify",
+      "baseline_ms": 0.013,
+      "final": "clarify",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.015,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Make the house better",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "clarify",
+      "baseline": "clarify",
+      "baseline_ms": 0.013,
+      "final": "clarify",
+      "agrees_with_reference": true,
+      "elapsed_ms": 0.013,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.001
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Prepare the house for me to retire for the evening",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "night_mode",
+      "baseline": "clarify",
+      "baseline_ms": 0.015,
+      "final": "clarify",
+      "agrees_with_reference": false,
+      "elapsed_ms": 0.015,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Prepare the house for me to retire for the evening",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "night_mode",
+      "baseline": "clarify",
+      "baseline_ms": 0.015,
+      "final": "clarify",
+      "agrees_with_reference": false,
+      "elapsed_ms": 0.014,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Please secure the home while I am out for the day",
+      "repeat": 1,
+      "mode": "invalid_output",
+      "policy_reference_or_curated_intent": "away_mode",
+      "baseline": "clarify",
+      "baseline_ms": 0.014,
+      "final": "clarify",
+      "agrees_with_reference": false,
+      "elapsed_ms": 0.015,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "proposal": {
+            "risk_level": "INVALID",
+            "intent": "INVALID"
+          },
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "domain": "smart_home",
+      "scenario": "Please secure the home while I am out for the day",
+      "repeat": 1,
+      "mode": "injected_timeout",
+      "policy_reference_or_curated_intent": "away_mode",
+      "baseline": "clarify",
+      "baseline_ms": 0.014,
+      "final": "clarify",
+      "agrees_with_reference": false,
+      "elapsed_ms": 0.014,
+      "fallback_used": true,
+      "policy_override": false,
+      "calls": [
+        {
+          "error_type": "TimeoutError",
+          "elapsed_ms": 0.0
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "cases": 40,
+    "provider_calls": 38,
+    "provider_errors": 19,
+    "fallback_cases": 38,
+    "reference_agreements": 34,
+    "mean_workflow_ms": 0.01
+  },
+  "limitations": "Curated fictional sample; reference agreement is not general accuracy. Baseline uses actual no-model behavior, including the Elderly MEDIUM fallback. Injected timeout measures recovery overhead, not a 15-second network wait. Negation may bypass the provider entirely. No device execution occurs in this assessment evaluation.",
+  "git_commit": "c4c8ebe029bb92c01496d6cdd3c2c320a802bdbf",
+  "runner_sha256": "f830a46f01cd53f999f71b0a704e8c35055a33b2e98dd8a5c55f636b9cb341e9",
+  "source_state": "Evaluation runner added in the assessment-evidence worktree based on git_commit; not present in that base commit."
+}

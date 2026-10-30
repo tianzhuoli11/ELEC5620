@@ -1,5 +1,15 @@
 # ELEC5620 Smart Home
 
+## Demonstration evidence
+
+- [Stage 1 requirements and honest implementation limits](docs/REQUIREMENTS_TRACEABILITY.md)
+- [AI evaluation: real model proposals, policy agreement and latency](docs/AI_EVALUATION.md)
+- [Agile: actual issue ownership, PR feedback and missing historical evidence](docs/AGILE.md)
+- [Advanced technologies and measured support](docs/ADVANCED_TECHNOLOGIES.md)
+- [Python/Docker deployment and CI verification](docs/DEPLOYMENT.md)
+
+The GitHub **Actions** tab runs the repository verification pipeline for pushes and pull requests. Campus AI tests remain local opt-in checks; credentials are not sent to public CI.
+
 Wed 09-11 Group 11 Stage 2 shared repository.
 
 **Option A: Python + LangGraph + Streamlit**, using the course API proxy and the `campus-qwen` model. All five domains reuse the same agents, models and user interface.
