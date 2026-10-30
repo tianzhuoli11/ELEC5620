@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import deque
+from dataclasses import asdict
 from html import escape
 import json
 from pathlib import Path
@@ -617,6 +618,8 @@ def _render_control_demo() -> None:
             result = run_energy_control(event, approved=approved,
                                         safety_state=safety, device_tool=tool)
             payload = {"record_type": "energy_comfort_control", "scope": {"assessment": "SIMULATED_CONTROL", "formal_energy_comfort_control": "EXPLICIT_SIMULATION"},
+                       "assessment": result.assessment.to_dict(),
+                       "selected_plan": [asdict(step) for step in result.selected_plan],
                        "event": event.to_dict(), "approval": approved, "safety_snapshot": result.safety_before,
                        "safety_after": result.safety_after,
                        "reason": result.reason, "planned": result.planned, "workflow": result.workflow.to_dict()}

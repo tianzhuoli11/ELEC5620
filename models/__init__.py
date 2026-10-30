@@ -1,6 +1,7 @@
 """Shared data contracts used by the five smart-home domains."""
 
 from .events import Event, SensorReading
+from .explanations import ExplanationRequest, ExplanationFact, ExplanationResult
 from .context import (
     DeviceObservation,
     EnergyProfile,
@@ -25,6 +26,7 @@ from .workflow import (
 )
 
 __all__ = [
+    "ExplanationRequest", "ExplanationFact", "ExplanationResult",
     "Event", "SensorReading", "RiskAssessment", "ActionRequest", "ActionResult",
     "NotificationRequest", "NotificationResult", "MonitoringDecision", "AuditEntry",
     "WorkflowResult",

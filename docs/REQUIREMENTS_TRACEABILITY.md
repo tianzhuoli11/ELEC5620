@@ -20,16 +20,16 @@ Source: Group 11 Stage 1 report, sections 2, 3 and 5. Status describes the curre
 | AR-05 / UC-05 energy/comfort | Energy page and approved control panel | Energy assessment/control/cross-domain tests | Bounded plan implemented. Updated environmental sensors, quantified savings and general alternative-plan search remain incomplete |
 | OR-01 intelligent feeding | `domains/pet_care/feeder.py` | `test_pet_sprint2.py` | Implemented simulated, explicit portion/flag; no physical feeder |
 | OR-02 / UC-07 home modes | Smart Home modes and simulated state | Mode and multi-device tests | Partial: commands and mode state implemented; not one automatically synchronized mode across all independently editable pages |
-| OR-03 / UC-06 important AI explanations | Model rationale, recorded trace, energy explanation helper | Campus prompt/validation and energy explanation tests | Partial: evidence displayed locally; no general coordinator explanation-request route covering every domain |
+| OR-03 / UC-06 important AI explanations | Model rationale, recorded trace, energy explanation helper | Campus prompt/validation and energy explanation tests | Implemented bounded local flow: shared coordinator request route, source-version checks, optional AI card organization, operator review, simpler responses and persistent request/history; see EXPLANATIONS.md |
 | OR-04 multilevel escalation | Elderly escalation module/page | `test_elderly_escalation.py`, acceptance report | Implemented with simulated contacts/acknowledgements |
-| OR-05 comfort/energy/safety explanation | `domains/energy_comfort/explanations.py`, Energy UI | `test_energy_comfort_explanations.py` | Partial: evidence-bound helper exists; generic UC-06 route and full post-control trade-off request/history flow are incomplete |
+| OR-05 comfort/energy/safety explanation | `domains/energy_comfort/explanations.py`, Energy UI | `test_energy_comfort_explanations.py` | Implemented for recorded prototype evidence: context, selected strategy, safety priority, verified outcomes, missing effects, user request and persistent reviewed history |
 | OR-06 external warnings | Warning source/area/time validation and security response | `test_external_warnings.py`, Home Security page tests | Implemented fictional trusted-feed simulation; no government warning subscription |
 | NFR-01 safety | Parameter allowlists, sensitive confirmation, safety interlocks | Forgery/negation/protected-device/cross-domain tests | Passed tested cases; no real-home safety certification |
 | NFR-02 classification performance | Elderly/security classification timing, AI evaluation | `docs/AI_EVALUATION.md` and raw fictional measurements | Measured; team must approve and document the final demonstration response budget. Do not call live AI subsecond |
 | NFR-03 privacy | De-identified prompts, local credentials, ignored runtime logs | LLM payload/privacy tests | Tested for predefined fictional private fields; no raw camera integration |
 | NFR-04 reliability | Failure reporting, fallback and independent readback | Shared/device/domain fault tests and AI fault evaluation | Passed defined failures; injected timeout is distinct from real network timeout |
 | NFR-05 usability | Supported-goal interpretation or clarification | Smart Home/page tests and curated live evaluation | Tested sample coverage, not unrestricted language understanding |
-| NFR-06 factual explanations | Evidence-bound explanations and uncertainty labels | Energy explanation tests | Partial overall because OR-03/UC-06 integration is partial |
+| NFR-06 factual explanations | Evidence-bound explanations and uncertainty labels | Energy explanation tests | Evidence-bound explanation flow implemented and tested; missing measurements remain explicitly unknown |
 
 ## Demonstration use
 

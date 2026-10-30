@@ -1,5 +1,9 @@
 # Shared Python contracts (baseline 2)
 
+## Explanation request route (UC-06)
+
+`models.ExplanationRequest(request_id, event_id, source_sha256, question, style="detailed")` identifies a specific stored decision stage. `HomeCoordinatorAgent.explain(request, record=..., proposal_provider=...)` returns `ExplanationResult` with source-referenced facts, evidence/AI status and review status. It is read-only and has no device dependency. `services.explanations.submit_explanation` persists the request/result; `review_explanation` appends an explicit local operator approval/rejection. Model callbacks receive anonymous fact categories and may return only `{"fact_ids": [...]}`; they cannot supply prose or human approval. See [EXPLANATIONS.md](EXPLANATIONS.md) for privacy, missing/conflicting records, simpler responses and historical stages.
+
 These are the implemented interfaces in `models/`, `domains/base.py`, `tools/device.py`, `services/goals.py`, and `services/notifications.py`. Changes to public fields need a coordinated PR because every domain imports them.
 
 SCRUM-22 adds a backward-compatible candidate module at `models/context.py`: `HomeEnvironment`, `UserPreference`, `EnergyProfile`, `HomeMode`, `DeviceObservation` and aggregate `HomeContext`. It does not change existing Event or workflow constructor fields. For `energy_comfort_observation`, temperature and occupancy are readings; preference, energy policy input, mode, devices and the matching simulation marker are stored under `Event.context["energy_comfort"]`. Unknown values remain `None`. This candidate has local implementation coverage but still requires M2/M4 and framework-owner review; no team approval is implied.

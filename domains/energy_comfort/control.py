@@ -11,6 +11,7 @@ from simulation.devices import SimulatedDeviceTool
 from domains.smart_home_control.devices import BEDROOM_LIGHT, BEDROOM_CURTAIN, LIVING_ROOM_AC
 from domains.smart_home_control import default_device_states
 from .integration import EnergyComfortHandler, context_from_event
+from .monitoring import EnergyComfortAssessment
 from services.safety_state import SafetyState
 from tools.device import DispatchResult
 
@@ -22,6 +23,8 @@ class ControlOutcome:
     planned: int
     safety_before: dict
     safety_after: dict
+    assessment: EnergyComfortAssessment
+    selected_plan: tuple[ActionRequest, ...]
 
 
 def run_energy_control(event: Event, *, approved: bool = False,
@@ -55,6 +58,7 @@ def run_energy_control(event: Event, *, approved: bool = False,
         reason = "No adjustment required"
         planned = 0
         safety_before = None
+        selected_plan = ()
 
         def assess(self, observation):
             decision = super().assess(observation)
@@ -86,6 +90,7 @@ def run_energy_control(event: Event, *, approved: bool = False,
             actions = tuple(ActionRequest(observation.event_id, device, "set_state", state, state.copy(),
                                           "POLICY", True, continue_on_failure=True, max_attempts=2)
                             for device, state in targets)
+            self.selected_plan = actions
             return replace(decision, action_requests=actions)
 
     handler = Handler()
@@ -94,4 +99,5 @@ def run_energy_control(event: Event, *, approved: bool = False,
     reason = handler.reason
     if handler.planned and not final_safety["clear"]:
         reason = "Safety evidence changed during execution; further energy actions are blocked."
-    return ControlOutcome(result, reason, handler.planned, handler.safety_before, final_safety)
+    return ControlOutcome(result, reason, handler.planned, handler.safety_before, final_safety,
+                          handler.energy_assessment, handler.selected_plan)

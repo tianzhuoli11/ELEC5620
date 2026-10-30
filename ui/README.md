@@ -37,3 +37,5 @@ Elderly Safety is connected with simulated fall assessment, resident confirmatio
 ## Before opening a pull request
 
 Use the project's configured Python environment and start the app from the repository root with `python -m streamlit run app.py`. Open your page from the sidebar and Home services. Confirm that edited inputs reach the handler, changing an input clears any stale result, a new run displays its own outcome, and errors are shown honestly. Check that Overview and Pet Care still work, history filters select the expected saved records, widget keys do not collide, and simulated behavior remains labelled. Include the scenario tested and a screenshot in the pull request.
+
+The sidebar Decision explanations page routes OR-03 / UC-06 / OR-05 requests over stored records through HomeCoordinatorAgent, provides explicit local operator review for sensitive cases, and restores persistent request history. See [explanation workflow](../docs/EXPLANATIONS.md).
