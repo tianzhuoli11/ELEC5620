@@ -283,7 +283,7 @@ class SmartHomeWorkflowTests(unittest.TestCase):
         self.assertIn("declined", declined.assessment.rationale)
 
     def test_workflow_record_contains_verified_results_and_trace(self) -> None:
-        with tempfile.TemporaryDirectory(dir=Path.cwd()) as directory:
+        with tempfile.TemporaryDirectory() as directory:
             record_path = Path(directory) / "smart_home.jsonl"
             result = run_smart_home_control(
                 make_user_goal_event("Good night"),

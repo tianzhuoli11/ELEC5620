@@ -115,7 +115,7 @@ class PetMonitoringTests(unittest.TestCase):
             assess_pet_event(event)
 
     def test_result_records_event_and_assessment(self) -> None:
-        with tempfile.TemporaryDirectory(dir=Path.cwd()) as directory:
+        with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "pet_events.jsonl"
             event = make_pet_scenario("empty_bowl")
             result = monitor_pet_event(event, record_path=path)

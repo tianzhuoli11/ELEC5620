@@ -22,7 +22,7 @@ APP_PATH = Path(__file__).resolve().parents[1] / "app.py"
 
 class EnergyComfortPageTests(unittest.TestCase):
     def setUp(self) -> None:
-        temporary = tempfile.TemporaryDirectory(dir=Path.cwd())
+        temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.record_path = Path(temporary.name) / "energy_comfort.jsonl"
         record_patch = patch.object(energy_ui, "DEFAULT_RECORD_PATH", self.record_path)

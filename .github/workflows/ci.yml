@@ -1,0 +1,50 @@
+name: Prototype verification
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pip check
+      - run: python -m unittest discover -s tests -q
+        env:
+          PYTHONUTF8: '1'
+          ELEC5620_API_KEY: ''
+          ELEC5620_RUN_REAL_PROXY: '0'
+      - run: python -m simulation.ai_evaluation --output data/runtime/ci-ai-evaluation.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: offline-evaluation-python-${{ matrix.python }}
+          path: data/runtime/ci-ai-evaluation.json
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t elec5620:ci .
+      - name: Start and verify container
+        run: |
+          docker run -d --name haven -p 127.0.0.1:8501:8501 elec5620:ci
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:8501/_stcore/health; then exit 0; fi
+            sleep 2
+          done
+          docker logs haven
+          exit 1
+      - name: Run repository tests inside container
+        run: docker exec haven python -m unittest discover -s tests -q
+      - name: Container logs
+        if: always()
+        run: docker logs haven || true
