@@ -157,6 +157,33 @@ def _notify_confirmation(engine: SmartHomeWorkflow, result: WorkflowResult) -> W
     return replace(result, notification_result=notice, trace=trace)
 
 
+def _notify_explicit_rejection(
+    engine: SmartHomeWorkflow, handler: HomeSecurityHandler, result: WorkflowResult,
+) -> WorkflowResult:
+    """Record the Home Security rejection policy that the shared safe branch closes."""
+
+    if (
+        result.pending_confirmation is not None
+        or not result.confirmation_replies
+        or result.confirmation_replies[-1].verdict != "safe"
+        or result.notification_result is not None
+    ):
+        return result
+    decision = handler.escalate(result.event, result.assessment, result.confirmation_replies)
+    if decision.action_requests or decision.action_request is not None:
+        raise ValueError("a rejected Home Security response must not authorize device actions")
+    if decision.notification_request is None:
+        return replace(result, assessment=decision.assessment)
+    notice = engine.notify(decision.notification_request)
+    trace = result.trace + (AuditEntry(
+        result.event.event_id,
+        "HomeCoordinatorAgent",
+        f"rejection_notification:{notice.status}",
+        datetime.now(timezone.utc).isoformat(),
+    ),)
+    return replace(result, assessment=decision.assessment, notification_result=notice, trace=trace)
+
+
 def _notice_entry(result: WorkflowResult, purpose: str, message: str) -> tuple[dict[str, str], ...]:
     notice = result.notification_result
     if notice is None:
@@ -231,6 +258,7 @@ def resume_security_workflow(
     started = perf_counter()
     resumed = previous.workflow_engine.resume(previous.workflow, reply)
     resumed = _notify_confirmation(previous.workflow_engine, resumed)
+    resumed = _notify_explicit_rejection(previous.workflow_engine, previous.handler, resumed)
     message = (
         resumed.pending_confirmation.question if resumed.pending_confirmation
         else previous.handler.last_notification_request.message if previous.handler.last_notification_request else ""
