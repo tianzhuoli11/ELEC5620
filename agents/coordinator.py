@@ -25,6 +25,14 @@ class HomeCoordinatorAgent:
     def route(self, event: Event) -> str:
         return self.registry.resolve(event).domain
 
+    def explain(self, request, *, record, proposal_provider=None):
+        """UC-06 routes a read-only explanation request using recorded evidence."""
+        from models.explanations import ExplanationRequest
+        from services.explanations import explain_record
+        if not isinstance(request, ExplanationRequest):
+            raise ValueError("Explanation route requires ExplanationRequest")
+        return explain_record(request, record, proposal_provider)
+
     def route_goal(self, event: Event) -> GoalInterpretation:
         if self.goal_interpreter is None:
             raise ValueError("goal interpreter is not configured")

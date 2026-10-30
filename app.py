@@ -16,7 +16,7 @@ apply_styles()
 with st.sidebar:
     st.markdown(f'<div class="brand"><span class="brand-icon">{icon("home")}</span>haven<span class="brand-dot">.</span></div>', unsafe_allow_html=True)
     st.markdown('<div class="home-picker"><span class="home-avatar">H</span><div><strong>My home</strong><small>Home controls</small></div></div>', unsafe_allow_html=True)
-    pages = ["Overview", *DOMAINS]
+    pages = ["Overview", *DOMAINS, "Decision explanations"]
     if "page" not in st.session_state:
         st.session_state.page = "Overview"
     if "navigation" not in st.session_state:
@@ -32,5 +32,8 @@ st.markdown(f'<div class="topbar"><div><span class="breadcrumb">MY HOME /</span>
 
 if st.session_state.page == "Overview":
     render_home(set(DOMAIN_VIEWS))
+elif st.session_state.page == "Decision explanations":
+    from ui.explanations import render_explanations
+    render_explanations()
 else:
     render_domain(st.session_state.page)

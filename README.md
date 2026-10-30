@@ -2,6 +2,7 @@
 
 ## Demonstration evidence
 
+- [Decision explanations, human review and Energy trade-offs](docs/EXPLANATIONS.md)
 - [Stage 1 requirements and honest implementation limits](docs/REQUIREMENTS_TRACEABILITY.md)
 - [AI evaluation: real model proposals, policy agreement and latency](docs/AI_EVALUATION.md)
 - [Agile: actual issue ownership, PR feedback and missing historical evidence](docs/AGILE.md)
