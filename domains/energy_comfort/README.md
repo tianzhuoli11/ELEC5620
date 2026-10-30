@@ -1,5 +1,7 @@
 # Energy and Comfort
 
+OR-05 update: the shared Decision explanations page now handles stored Energy control records, selected plans, verified results and missing environmental effects through the coordinator, with optional AI assistance, simpler responses and persistent human review/history. See [EXPLANATIONS.md](../../docs/EXPLANATIONS.md). Historical assessment-only helper notes below describe the older API, not the full explanation route.
+
 Update (29 October): the separate `control.run_energy_control` API and **Run a simulated adjustment** panel now execute explicitly approved plans through the shared agents and existing simulated device inventory. See [control review and demonstration steps](../../docs/INTEGRATED_CONTROL_REVIEW.md). The historical assessment/readiness APIs below remain non-executable; their unchecked approval flags do not govern the separate explicit simulation path. The simulation now automatically derives safety clearance from fresh same-session Elderly Safety and Home Security results, with active external warnings also blocking execution.
 
 Owner: Tianzhuo Li. Requirements: AR-05 / UC-05; optional OR-05, with UC-06 integration.

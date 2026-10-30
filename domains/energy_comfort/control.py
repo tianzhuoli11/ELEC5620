@@ -24,8 +24,9 @@ class ControlOutcome:
     planned: int
     safety_before: dict
     safety_after: dict
+    assessment: EnergyComfortAssessment
+    selected_plan: tuple[ActionRequest, ...]
     post_action_environment: PostActionEnvironmentObservation
-    energy_assessment: EnergyComfortAssessment
 
 
 def run_energy_control(event: Event, *, approved: bool = False,
@@ -59,6 +60,7 @@ def run_energy_control(event: Event, *, approved: bool = False,
         reason = "No adjustment required"
         planned = 0
         safety_before = None
+        selected_plan = ()
 
         def assess(self, observation):
             decision = super().assess(observation)
@@ -90,6 +92,7 @@ def run_energy_control(event: Event, *, approved: bool = False,
             actions = tuple(ActionRequest(observation.event_id, device, "set_state", state, state.copy(),
                                           "POLICY", True, continue_on_failure=True, max_attempts=2)
                             for device, state in targets)
+            self.selected_plan = actions
             return replace(decision, action_requests=actions)
 
     handler = Handler()
@@ -105,11 +108,12 @@ def run_energy_control(event: Event, *, approved: bool = False,
         planned_actions=handler.planned,
     )
     return ControlOutcome(
-        result,
-        reason,
-        handler.planned,
-        handler.safety_before,
-        final_safety,
-        post_action,
-        handler.energy_assessment,
+        workflow=result,
+        reason=reason,
+        planned=handler.planned,
+        safety_before=handler.safety_before,
+        safety_after=final_safety,
+        assessment=handler.energy_assessment,
+        selected_plan=handler.selected_plan,
+        post_action_environment=post_action,
     )

@@ -38,7 +38,7 @@ class CampusProxyConfig:
         )
 
 
-def request_json_chat(messages: list[dict[str, str]], config: CampusProxyConfig) -> dict[str, Any]:
+def request_json_chat(messages: list[dict[str, str]], config: CampusProxyConfig, *, max_completion_tokens: int = 1024) -> dict[str, Any]:
     """Send one JSON chat request through the shared course proxy client.
 
     The caller owns the domain prompt and must validate the untrusted reply.
@@ -46,7 +46,7 @@ def request_json_chat(messages: list[dict[str, str]], config: CampusProxyConfig)
     payload = {
         "model": config.model,
         "messages": messages,
-        "max_completion_tokens": 1024,
+        "max_completion_tokens": max_completion_tokens,
         "stream": False,
     }
     request = Request(
@@ -67,6 +67,14 @@ def request_json_chat(messages: list[dict[str, str]], config: CampusProxyConfig)
     if not isinstance(proposal, dict):
         raise ValueError("campus proxy proposal must be a JSON object")
     return proposal
+
+
+def propose_explanation_order(payload: dict[str, Any], config: CampusProxyConfig) -> dict[str, Any]:
+    """UC-06: organize anonymous fact categories, never generate factual claims."""
+    return request_json_chat([
+        {"role":"system", "content":"Choose up to three supplied fact_ids most relevant to the topic. Reply only with JSON {\"fact_ids\":[...]} using unique supplied IDs. All other facts will be appended locally. No prose, approvals, or new IDs."},
+        {"role":"user", "content":json.dumps(payload)},
+    ], config, max_completion_tokens=2048)
 
 
 def propose_pet_risk(event: Event, config: CampusProxyConfig) -> dict[str, Any]:
