@@ -13,6 +13,8 @@ The supplied rubric requires at least five advanced technologies for Good and si
 
 ## What the data supports
 
+Actual independent verification of executable commit `986de17` completed successfully on 30 October: [PR CI run](https://github.com/tianzhuoli11/ELEC5620/actions/runs/41048545525), [push CI run](https://github.com/tianzhuoli11/ELEC5620/actions/runs/41048539820). Both Python matrix jobs passed, and the Docker job passed image build, HTTP health check and tests inside the non-root container. Offline CI intentionally skips the one campus/VPN test; it reports 277 run, 276 passed and one skip. The local live run below includes that case.
+
 The 30 October local full suite passed **277 tests with zero skips**, including the opt-in real campus fall/reply test. The separate AI evaluation measured 20 fictional cases, 19 model calls, 18 final policy/curated-intent agreements and a mean end-to-end assessment time of about 4195.6 ms. Safety tests establish specific rejected commands and preserved verified outcomes; they do not establish real-home certification or scalability.
 
 CI adds a repeatable independent environment gate, and Docker adds one reproducible packaging route. Neither is claimed to improve runtime response latency. Their measurable outcomes are build/test/health-check success and reproducibility on the recorded runner. No invented percentage improvement, cloud scalability result, deployed Kubernetes service, physical sensor or fine-tuned model is claimed.

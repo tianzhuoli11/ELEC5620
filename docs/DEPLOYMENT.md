@@ -25,6 +25,8 @@ The shell variable must already exist. Host VPN access does not guarantee the co
 
 ## Automated verification
 
+Verified execution on 30 October: [Actions run 41048545525](https://github.com/tianzhuoli11/ELEC5620/actions/runs/41048545525), source `986de17`. Python 3.11/3.13 jobs, image build, container startup/health and the in-container repository suite all passed. Earlier container tests exposed fixtures writing temporary files into the read-only source root; those fixtures now use the system temporary directory. The fix preserves non-root execution rather than granting broad source-directory write access.
+
 `.github/workflows/ci.yml` runs the offline suite on Python 3.11 and 3.13, uploads a deterministic fault-evaluation artifact, builds Docker, checks the container health endpoint and runs all offline tests inside it. Public CI does not receive the personal campus key or claim live VPN connectivity. Actual run URLs and conclusions belong in the evidence documentation after completion, not before it.
 
 The final required rehearsal is still the exact archive uploaded to Canvas on the demonstration machine. A CI build from a branch cannot certify a different submission archive or the venue network.
