@@ -12,6 +12,8 @@ This is a retrospective compilation of existing evidence on 30 October 2026, not
 
 These buttons are actual observed UI states, not proof the planned sprints ran on those dates. The observed board has no story-point estimates on the visible tasks. The reports view was not available in its current navigation, and a direct report-view attempt returned 404. No authentic historical burndown chart was obtained. This repository therefore contains **no fabricated burndown**, and makes no claim that Git commits substitute for Jira sprint reports. The team should reconcile present task statuses with owners and attach any genuine report available in Jira. Do not backdate work or estimates to manufacture a trend.
 
+![Actual Jira sprint state, captured 30 October; not a burndown chart](evidence/jira-sprint-state.png)
+
 ## User stories and ownership
 
 The following are current reformulations of existing issue scope, not claims these exact sentences were written at sprint inception. Jira remains authoritative for assignment and acceptance criteria.
