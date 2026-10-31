@@ -30,12 +30,20 @@ ReplyInterpreter = Callable[[Mapping[str, Any]], Mapping[str, Any]]
 # (simulation/elderly_reply_evaluation.py) showed "No, I can't move" being closed as safe;
 # "breath", "blood", "broken", "chest" and "hit my head" after the second showed
 # "okay, I can't breathe" being closed as safe.
-_HELP = ("help", "can't get up", "cant get up", "cannot get up", "can't move", "cant move", "cannot move", "unable to",
+_HELP = ("help", "can't get up", "cant get up", "cannot get up", "can't move", "cant move", "cannot move", "can't stand", "cant stand", "cannot stand", "unable to",
          "not ok", "hurt", "pain", "bleeding", "blood", "broken", "breath", "chest", "hit my head", "call", "ambulance",
          "emergency", "dizzy", "faint", "stuck")
 _SAFE = ("i'm ok", "im ok", "i am ok", "i'm fine", "im fine", "i am fine", "i'm okay", "im okay", "i am okay", "ok", "okay", "fine", "all good", "no help", "false alarm", "dropped", "nothing happened")
-# A reply that sounds safe but also contains one of these words is not trusted as safe.
-_CONCERN_WORDS = frozenset({"but", "though", "however", "not", "fell", "fall", "can't", "cant", "cannot", "can", "unsure", "sure", "maybe"})
+# After a leading safe/no phrase, the rest of the reply may only contain these words.
+# Anything else ("No idea", "No, wait", "okay but I fell") makes the reply unclear:
+# a whitelist, because a list of worrying words can never be complete (PR #26 review).
+_SAFE_REST_WORDS = frozenset({
+    "i", "i'm", "im", "am", "it's", "its", "is", "a", "to", "with", "me", "my", "the",
+    "fine", "ok", "okay", "alright", "all", "good", "really", "thanks", "thank", "you",
+    "just", "sat", "sit", "down", "rest", "resting", "dropped", "cup", "something",
+    "son", "daughter", "husband", "wife", "family", "neighbour", "neighbor", "friend", "nurse", "carer",
+    "already", "here",
+})
 _YES_WORDS = frozenset({"yes", "yeah", "yep", "please", "contact", "need", "come"})
 _NO_START = ("no", "nope", "nah", "don't", "dont", "not needed", "no need", "no thanks")
 
@@ -52,15 +60,15 @@ def _after_phrase(text: str, phrases: tuple[str, ...]) -> str | None:
     return None
 
 
-def _raises_concern(rest: str) -> bool:
-    return any(w in _CONCERN_WORDS for w in _words(rest))
+def _only_reassurance(rest: str) -> bool:
+    return all(w in _SAFE_REST_WORDS for w in _words(rest))
 
 
 def interpret_by_rules(attempt: int, reply: str) -> str:
     """Deterministic verdict. Help words win; silence or ambiguity is never 'safe'.
 
     A reply is only 'safe' when it starts with a clear safe/no phrase and the
-    rest says nothing that raises concern; mixed replies are 'unclear'.
+    rest is only reassurance (see _SAFE_REST_WORDS); anything else is 'unclear'.
     """
     text = reply.strip().lower()
     if not text:
@@ -71,14 +79,12 @@ def interpret_by_rules(attempt: int, reply: str) -> str:
     if attempt >= 2:
         rest = _after_phrase(text, _NO_START)
         if rest is not None:
-            if _raises_concern(rest) or any(w in _YES_WORDS for w in _words(rest)):
-                return "unclear"
-            return "safe"
+            return "safe" if _only_reassurance(rest) else "unclear"
         if words and (words[0] in _YES_WORDS or text.startswith("do it")):
             return "help"
         return "unclear"
     rest = _after_phrase(text, _SAFE)
-    if rest is not None and not _raises_concern(rest):
+    if rest is not None and _only_reassurance(rest):
         return "safe"
     return "unclear"
 

@@ -26,6 +26,15 @@ class ElderlyReplyEvaluationTests(unittest.TestCase):
         self.assertEqual(evaluation.interpret_by_rules(1, "Okay but I fell"), "unclear")
         self.assertEqual(evaluation.interpret_by_rules(1, "I'm fine, I just sat down."), "safe")
 
+    def test_only_an_unambiguous_no_closes_the_event(self):
+        # Examples from the PR #26 review: none of these may close the event.
+        for reply in ("Not sure", "No idea", "Nothing makes sense", "No, I fell again", "No, I cannot stand up",
+                      "No, wait", "no, where am I", "no... what happened", "No I don't know", "no no no"):
+            self.assertNotEqual(evaluation.interpret_by_rules(2, reply), "safe", reply)
+        self.assertEqual(evaluation.interpret_by_rules(2, "No, I cannot stand up"), "help")
+        for reply in ("No", "nope", "no thanks", "No, I'm fine", "Not needed, my son is already here"):
+            self.assertEqual(evaluation.interpret_by_rules(2, reply), "safe", reply)
+
     def test_second_answer_no_is_a_whole_word_and_not_mixed(self):
         self.assertEqual(evaluation.interpret_by_rules(2, "Not sure"), "unclear")
         self.assertEqual(evaluation.interpret_by_rules(2, "No, please come"), "unclear")

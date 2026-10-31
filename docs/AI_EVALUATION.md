@@ -53,8 +53,9 @@ Interpretation:
 
 - **The evaluation found safety gaps in the rules, twice.**
   - Fix 1: on the second question "No, I can't move" was closed as safe because the reply starts with "No"; "I'm not okay", "I can't move my leg" and "I feel faint" needed an extra question. Help phrases were extended.
-  - Fix 2: six replies were added that start reassuringly but report a problem. "Okay, I can't breathe", "Ok but I hit my head", "Okay, there is blood" and "Fine... I think my wrist is broken" were closed as safe because only the start was checked; "No, please come" counted as a plain "no". The rules now match the leading phrase as a whole word, check the rest of the reply for concern words, and treat mixed answers as unclear (which escalates on the last question).
-  - Both fixes protect the default demonstration, which runs without a model. A known remaining limitation is over-caution: "fine, not hurt" is classed help because it contains "hurt".
+  - Fix 2: six replies were added that start reassuringly but report a problem. "Okay, I can't breathe", "Ok but I hit my head", "Okay, there is blood" and "Fine... I think my wrist is broken" were closed as safe because only the start was checked; "No, please come" counted as a plain "no". The rules now match the leading phrase as a whole word, and mixed answers are unclear (which escalates on the last question).
+  - Fix 3 (PR #26 review by Yang Yang): a list of worrying words still let "No idea", "No, wait" and "no, where am I" close the event. A reply is now safe only if everything after the leading safe/no phrase is plain reassurance from a short whitelist ("thanks", "I'm fine", "my son is already here"); anything else is unclear. The reviewer's examples are regression tests. Rule verdicts on the 26 evaluation replies did not change, so the table above still applies.
+  - All three fixes protect the default demonstration, which runs without a model. A known remaining limitation is over-caution: "fine, not hurt" is classed help because it contains "hurt".
 - **With the model,** natural replies the rules cannot parse ("Everything is under control", "I sat down on purpose", "I'm back on my feet", "No, please come") were understood, so no clear reply needed a second question.
 - **The guard held.** For "Please don't, I'm fine" the rules say help; the model's different verdict was not accepted because a model may never turn a rule "help" into "safe". This stays a false alert by design.
 - **The model is more cautious in one case.** A bare "No" to the second question was classed unclear, which escalates on the last attempt. The model did not close any help request as safe.
@@ -65,6 +66,7 @@ Interpretation:
 | --- | --- | --- | --- |
 | Reply evaluation, rules only (20 replies) | A help reply was closed as safe; three help replies were delayed | Help phrases extended | Closed or delayed help: 4 → 0 on those replies |
 | Reply evaluation, 6 added replies | A reassuring start hid a reported injury; "not sure" counted as "no" | Whole-word leading match, concern check on the rest, mixed answers unclear | Help closed as safe: 5 → 0 on 26 replies; offline tests guard it |
+| PR #26 review (Yang Yang) | "No idea", "Nothing makes sense", "No, I fell again" closed the event on the second question | Whitelist for the rest of a safe/no reply instead of a list of worrying words | Reviewer's five examples and five more never close the event; 26-reply results unchanged |
 | First live run | A rejected key made every call fall back silently, producing a table with no model involvement | One test call before a live run; stop with the reason | Rejected key now stops with "HTTP 401" |
 | Second live run | The thinking model spent the whole token budget on reasoning and returned empty text | Opt-in `ELEC5620_DISABLE_THINKING=1` sends `enable_thinking=false`; empty answers raise a clear error | 25/26 model verdicts used |
 
