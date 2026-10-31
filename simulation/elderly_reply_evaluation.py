@@ -191,7 +191,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         result = run(live=args.live)
-    except ModelUnavailable as error:
+    except (ModelUnavailable, ValueError) as error:  # ValueError: no key configured
         print(f"Live evaluation stopped: {error}")
         return 2
     for path, text in ((args.output, json.dumps(result, indent=2, ensure_ascii=False)), (args.report, markdown(result))):

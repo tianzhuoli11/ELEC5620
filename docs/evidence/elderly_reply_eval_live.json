@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-10-31T04:24:51.473689+00:00",
+  "run_at": "2026-10-31T05:18:49.009345+00:00",
   "python": "3.13.7",
   "mode": "live",
   "note": "Fictional replies labelled by the domain owner; small sample, not a general benchmark.",
@@ -10,26 +10,26 @@
   },
   "summary": {
     "rules": {
-      "cases": 20,
-      "verdict_correct": 15,
-      "outcome_correct": 15,
+      "cases": 26,
+      "verdict_correct": 20,
+      "outcome_correct": 21,
       "help_closed_as_safe": 0,
       "unneeded_escalation": 1,
       "extra_follow_up_question": 4,
       "help_delayed_by_follow_up": 0
     },
     "with_ai": {
-      "cases": 20,
-      "verdict_correct": 18,
-      "outcome_correct": 18,
+      "cases": 26,
+      "verdict_correct": 24,
+      "outcome_correct": 24,
       "help_closed_as_safe": 0,
       "unneeded_escalation": 2,
       "extra_follow_up_question": 0,
       "help_delayed_by_follow_up": 0,
-      "model_used": 19,
+      "model_used": 25,
       "fallback_to_rules": 1,
-      "mean_ms": 2818.4,
-      "max_ms": 4849.7
+      "mean_ms": 3963.0,
+      "max_ms": 17943.4
     }
   },
   "cases": [
@@ -45,7 +45,7 @@
         "verdict": "safe",
         "outcome": "close",
         "interpreted_by": "llm",
-        "ms": 2439.4
+        "ms": 4432.6
       }
     },
     {
@@ -60,7 +60,7 @@
         "verdict": "safe",
         "outcome": "close",
         "interpreted_by": "llm",
-        "ms": 2671.5
+        "ms": 3546.4
       }
     },
     {
@@ -75,7 +75,7 @@
         "verdict": "help",
         "outcome": "escalate",
         "interpreted_by": "llm",
-        "ms": 2198.1
+        "ms": 2468.4
       }
     },
     {
@@ -90,7 +90,7 @@
         "verdict": "help",
         "outcome": "escalate",
         "interpreted_by": "llm",
-        "ms": 2253.2
+        "ms": 3539.8
       }
     },
     {
@@ -105,7 +105,7 @@
         "verdict": "safe",
         "outcome": "close",
         "interpreted_by": "llm",
-        "ms": 3204.1
+        "ms": 2264.9
       }
     },
     {
@@ -120,7 +120,7 @@
         "verdict": "safe",
         "outcome": "close",
         "interpreted_by": "llm",
-        "ms": 4062.2
+        "ms": 2793.0
       }
     },
     {
@@ -135,7 +135,7 @@
         "verdict": "help",
         "outcome": "escalate",
         "interpreted_by": "llm",
-        "ms": 3678.3
+        "ms": 2258.1
       }
     },
     {
@@ -150,7 +150,7 @@
         "verdict": "help",
         "outcome": "escalate",
         "interpreted_by": "llm",
-        "ms": 2154.3
+        "ms": 2886.7
       }
     },
     {
@@ -165,7 +165,7 @@
         "verdict": "help",
         "outcome": "escalate",
         "interpreted_by": "llm",
-        "ms": 2355.5
+        "ms": 2428.9
       }
     },
     {
@@ -180,7 +180,7 @@
         "verdict": "safe",
         "outcome": "close",
         "interpreted_by": "llm",
-        "ms": 2117.3
+        "ms": 2417.7
       }
     },
     {
@@ -195,7 +195,7 @@
         "verdict": "safe",
         "outcome": "close",
         "interpreted_by": "llm",
-        "ms": 4232.9
+        "ms": 2735.9
       }
     },
     {
@@ -210,7 +210,7 @@
         "verdict": "unclear",
         "outcome": "ask_again",
         "interpreted_by": "llm",
-        "ms": 2150.1
+        "ms": 2442.1
       }
     },
     {
@@ -225,7 +225,7 @@
         "verdict": "unclear",
         "outcome": "ask_again",
         "interpreted_by": "llm",
-        "ms": 2216.7
+        "ms": 2187.8
       }
     },
     {
@@ -240,7 +240,7 @@
         "verdict": "unclear",
         "outcome": "escalate",
         "interpreted_by": "llm",
-        "ms": 2902.5
+        "ms": 17121.1
       }
     },
     {
@@ -255,7 +255,7 @@
         "verdict": "help",
         "outcome": "escalate",
         "interpreted_by": "llm",
-        "ms": 2315.7
+        "ms": 3267.0
       }
     },
     {
@@ -270,7 +270,7 @@
         "verdict": "help",
         "outcome": "escalate",
         "interpreted_by": "llm",
-        "ms": 2268.0
+        "ms": 2206.0
       }
     },
     {
@@ -285,7 +285,7 @@
         "verdict": "help",
         "outcome": "escalate",
         "interpreted_by": "rules (llm fallback)",
-        "ms": 4849.7
+        "ms": 2618.7
       }
     },
     {
@@ -300,7 +300,7 @@
         "verdict": "safe",
         "outcome": "close",
         "interpreted_by": "llm",
-        "ms": 3902.6
+        "ms": 2534.5
       }
     },
     {
@@ -315,7 +315,7 @@
         "verdict": "help",
         "outcome": "escalate",
         "interpreted_by": "llm",
-        "ms": 2211.5
+        "ms": 2832.5
       }
     },
     {
@@ -330,7 +330,97 @@
         "verdict": "help",
         "outcome": "escalate",
         "interpreted_by": "llm",
-        "ms": 2184.2
+        "ms": 2859.7
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "Okay, I can't breathe",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 5461.8
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "Ok but I hit my head",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 2377.7
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "Fine... I think my wrist is broken",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 2276.6
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "Okay, there is blood",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 1980.8
+      }
+    },
+    {
+      "attempt": 2,
+      "reply": "Not sure",
+      "expected": "unclear",
+      "rules": {
+        "verdict": "unclear",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "unclear",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 17943.4
+      }
+    },
+    {
+      "attempt": 2,
+      "reply": "No, please come",
+      "expected": "help",
+      "rules": {
+        "verdict": "unclear",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 3155.2
       }
     }
   ]
