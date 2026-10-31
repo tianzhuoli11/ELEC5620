@@ -53,7 +53,8 @@ Interpretation:
 - **With the model,** four natural replies the rules cannot parse ("Everything is under control", "I sat down on purpose", "I'm back on my feet", "I just slipped a little") were understood, so no clear reply needed a second question.
 - **The guard held.** For "Please don't, I'm fine" the rules say help (the reply starts with "please"); the model's different verdict was not accepted because a model may never turn a rule "help" into "safe". The case therefore stays a false alert by design.
 - **The model is more cautious in one case.** A bare "No" to the second question was classed unclear, which escalates on the last attempt. The model did not close any help request as safe.
-- Model latency (about 3 s on average) is spent inside the 30 s confirmation window; the initial fall classification is still made by the rules.
+- Model latency (about 3 s on average) is spent inside the 30 s confirmation window.
+- **This table measures the reply step in isolation, not the end-to-end page.** A reply is only interpreted when the fall itself is assessed MEDIUM. In a Streamlit run on 31 Oct with the same model, "Fall, then not moving (30 s)" was raised from MEDIUM to HIGH (model rationale: impact followed by 30 s of immobility), so the caregiver was alerted and the light switched on without asking the resident. Policy allows a model to raise risk, never lower it. With this model the reply improvement therefore applies to fewer events, and the trade-off is more caregiver alerts. In the earlier campus-qwen run (table above) two of the three MEDIUM fall scenarios stayed MEDIUM, so the effect depends on the model.
 
 | Evidence | Observation | Refinement | Retest |
 | --- | --- | --- | --- |
