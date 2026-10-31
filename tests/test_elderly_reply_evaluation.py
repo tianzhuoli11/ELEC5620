@@ -35,6 +35,17 @@ class ElderlyReplyEvaluationTests(unittest.TestCase):
         for reply in ("No", "nope", "no thanks", "No, I'm fine", "Not needed, my son is already here"):
             self.assertEqual(evaluation.interpret_by_rules(2, reply), "safe", reply)
 
+    def test_only_complete_listed_replies_are_safe(self):
+        # Second PR #26 review (Yang Yang, Jinjing Huang): a word whitelist accepted "I am down".
+        for attempt, reply in ((1, "Okay, I am down"), (1, "I am fine, I am down"),
+                               (2, "No, I am down"), (2, "No thanks, I am down")):
+            self.assertEqual(evaluation.interpret_by_rules(attempt, reply), "unclear", reply)
+        # Non-English content after a safe start is not readable by the rules, so never safe.
+        self.assertEqual(evaluation.interpret_by_rules(1, "Okay, \u6211\u6454\u5012\u4e86\u8d77\u4e0d\u6765"), "unclear")
+        self.assertEqual(evaluation.interpret_by_rules(2, "No, \u6211\u8d77\u4e0d\u6765"), "unclear")
+        self.assertEqual(evaluation.interpret_by_rules(1, "I'm fine, I just sat down."), "safe")
+        self.assertEqual(evaluation.interpret_by_rules(1, "I\u2019m fine!"), "safe")
+
     def test_second_answer_no_is_a_whole_word_and_not_mixed(self):
         self.assertEqual(evaluation.interpret_by_rules(2, "Not sure"), "unclear")
         self.assertEqual(evaluation.interpret_by_rules(2, "No, please come"), "unclear")
