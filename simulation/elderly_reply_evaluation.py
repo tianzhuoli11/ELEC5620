@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import platform
 import statistics
 from datetime import datetime, timezone
@@ -97,6 +98,15 @@ def preflight(interpreter) -> None:
         raise ModelUnavailable(f"campus-qwen returned an unusable test reply: {proposal!r}")
 
 
+def _model_used() -> dict:
+    """Model name and provider host only; never the key."""
+    from urllib.parse import urlparse
+    from services.campus_proxy import DEFAULT_BASE_URL, DEFAULT_MODEL
+    return {"model": os.getenv("ELEC5620_MODEL", DEFAULT_MODEL),
+            "provider_host": urlparse(os.getenv("ELEC5620_BASE_URL", DEFAULT_BASE_URL)).hostname,
+            "thinking_disabled": os.getenv("ELEC5620_DISABLE_THINKING", "").strip() == "1"}
+
+
 def run(live: bool = False) -> dict:
     interpreter = None
     if live:
@@ -120,6 +130,7 @@ def run(live: bool = False) -> dict:
         "python": platform.python_version(),
         "mode": "live" if live else "rules_only",
         "note": "Fictional replies labelled by the domain owner; small sample, not a general benchmark.",
+        "model": _model_used() if live else None,
         "summary": {"rules": _summary(rows, "rules")},
         "cases": rows,
     }
@@ -137,7 +148,8 @@ def run(live: bool = False) -> dict:
 def markdown(result: dict) -> str:
     live = "with_ai" in result["summary"]
     cols = ["rules"] + (["with_ai"] if live else [])
-    names = {"rules": "Rules only", "with_ai": "Rules + campus-qwen"}
+    model = (result.get("model") or {}).get("model", "model")
+    names = {"rules": "Rules only", "with_ai": f"Rules + {model}"}
     metrics = [
         ("verdict_correct", "Verdict matches label"),
         ("outcome_correct", "Workflow outcome matches label"),
@@ -146,7 +158,9 @@ def markdown(result: dict) -> str:
         ("unneeded_escalation", "Resident fine but caregiver alerted"),
         ("extra_follow_up_question", "Clear reply but asked again"),
     ]
-    lines = [f"Run {result['run_at'][:16]} UTC, mode `{result['mode']}`, {result['summary']['rules']['cases']} fictional replies. {result['note']}", "",
+    used = result.get("model")
+    where = f" Model `{used['model']}` at `{used['provider_host']}`." if used else ""
+    lines = [f"Run {result['run_at'][:16]} UTC, mode `{result['mode']}`, {result['summary']['rules']['cases']} fictional replies.{where} {result['note']}", "",
              "| Metric | " + " | ".join(names[c] for c in cols) + " |", "| --- |" + " --- |" * len(cols)]
     for key, label in metrics:
         lines.append(f"| {label} | " + " | ".join(str(result["summary"][c][key]) for c in cols) + " |")
