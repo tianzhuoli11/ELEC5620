@@ -1,0 +1,337 @@
+{
+  "run_at": "2026-10-31T04:24:51.473689+00:00",
+  "python": "3.13.7",
+  "mode": "live",
+  "note": "Fictional replies labelled by the domain owner; small sample, not a general benchmark.",
+  "model": {
+    "model": "qwen3.7-plus",
+    "provider_host": "dashscope.aliyuncs.com",
+    "thinking_disabled": true
+  },
+  "summary": {
+    "rules": {
+      "cases": 20,
+      "verdict_correct": 15,
+      "outcome_correct": 15,
+      "help_closed_as_safe": 0,
+      "unneeded_escalation": 1,
+      "extra_follow_up_question": 4,
+      "help_delayed_by_follow_up": 0
+    },
+    "with_ai": {
+      "cases": 20,
+      "verdict_correct": 18,
+      "outcome_correct": 18,
+      "help_closed_as_safe": 0,
+      "unneeded_escalation": 2,
+      "extra_follow_up_question": 0,
+      "help_delayed_by_follow_up": 0,
+      "model_used": 19,
+      "fallback_to_rules": 1,
+      "mean_ms": 2818.4,
+      "max_ms": 4849.7
+    }
+  },
+  "cases": [
+    {
+      "attempt": 1,
+      "reply": "I'm fine",
+      "expected": "safe",
+      "rules": {
+        "verdict": "safe",
+        "outcome": "close"
+      },
+      "with_ai": {
+        "verdict": "safe",
+        "outcome": "close",
+        "interpreted_by": "llm",
+        "ms": 2439.4
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "I'm okay, just resting",
+      "expected": "safe",
+      "rules": {
+        "verdict": "safe",
+        "outcome": "close"
+      },
+      "with_ai": {
+        "verdict": "safe",
+        "outcome": "close",
+        "interpreted_by": "llm",
+        "ms": 2671.5
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "Help, I can't get up",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 2198.1
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "My hip hurts",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 2253.2
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "Yes, I'm alright, I just slipped a little",
+      "expected": "safe",
+      "rules": {
+        "verdict": "unclear",
+        "outcome": "ask_again"
+      },
+      "with_ai": {
+        "verdict": "safe",
+        "outcome": "close",
+        "interpreted_by": "llm",
+        "ms": 3204.1
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "No worries, I'm back on my feet",
+      "expected": "safe",
+      "rules": {
+        "verdict": "unclear",
+        "outcome": "ask_again"
+      },
+      "with_ai": {
+        "verdict": "safe",
+        "outcome": "close",
+        "interpreted_by": "llm",
+        "ms": 4062.2
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "I'm not okay",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 3678.3
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "I can't move my leg",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 2154.3
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "I fell and I feel faint",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 2355.5
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "Don't worry about me, I sat down on purpose",
+      "expected": "safe",
+      "rules": {
+        "verdict": "unclear",
+        "outcome": "ask_again"
+      },
+      "with_ai": {
+        "verdict": "safe",
+        "outcome": "close",
+        "interpreted_by": "llm",
+        "ms": 2117.3
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "Everything is under control",
+      "expected": "safe",
+      "rules": {
+        "verdict": "unclear",
+        "outcome": "ask_again"
+      },
+      "with_ai": {
+        "verdict": "safe",
+        "outcome": "close",
+        "interpreted_by": "llm",
+        "ms": 4232.9
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "hmm",
+      "expected": "unclear",
+      "rules": {
+        "verdict": "unclear",
+        "outcome": "ask_again"
+      },
+      "with_ai": {
+        "verdict": "unclear",
+        "outcome": "ask_again",
+        "interpreted_by": "llm",
+        "ms": 2150.1
+      }
+    },
+    {
+      "attempt": 1,
+      "reply": "What?",
+      "expected": "unclear",
+      "rules": {
+        "verdict": "unclear",
+        "outcome": "ask_again"
+      },
+      "with_ai": {
+        "verdict": "unclear",
+        "outcome": "ask_again",
+        "interpreted_by": "llm",
+        "ms": 2216.7
+      }
+    },
+    {
+      "attempt": 2,
+      "reply": "No",
+      "expected": "safe",
+      "rules": {
+        "verdict": "safe",
+        "outcome": "close"
+      },
+      "with_ai": {
+        "verdict": "unclear",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 2902.5
+      }
+    },
+    {
+      "attempt": 2,
+      "reply": "Yes please",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 2315.7
+      }
+    },
+    {
+      "attempt": 2,
+      "reply": "No, I can't move",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 2268.0
+      }
+    },
+    {
+      "attempt": 2,
+      "reply": "Please don't, I'm fine",
+      "expected": "safe",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "rules (llm fallback)",
+        "ms": 4849.7
+      }
+    },
+    {
+      "attempt": 2,
+      "reply": "Not needed, my son is already here",
+      "expected": "safe",
+      "rules": {
+        "verdict": "safe",
+        "outcome": "close"
+      },
+      "with_ai": {
+        "verdict": "safe",
+        "outcome": "close",
+        "interpreted_by": "llm",
+        "ms": 3902.6
+      }
+    },
+    {
+      "attempt": 2,
+      "reply": "I think so, my head is bleeding",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 2211.5
+      }
+    },
+    {
+      "attempt": 2,
+      "reply": "Call my daughter",
+      "expected": "help",
+      "rules": {
+        "verdict": "help",
+        "outcome": "escalate"
+      },
+      "with_ai": {
+        "verdict": "help",
+        "outcome": "escalate",
+        "interpreted_by": "llm",
+        "ms": 2184.2
+      }
+    }
+  ]
+}
