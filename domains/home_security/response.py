@@ -125,6 +125,8 @@ def confirmation_decision(
         message = "Home Security response approved; simulated protection started."
     elif approved:
         message = "Home Security approval recorded; no safe automatic action matched the validated evidence."
+    elif verdict == "safe":
+        message = "Home Security response rejected; no device action taken."
     else:
         message = "Home Security confirmation timed out or remained unclear; no device action taken."
     return MonitoringDecision(

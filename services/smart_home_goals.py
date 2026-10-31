@@ -35,6 +35,7 @@ NEGATABLE_DIRECT_PHRASES = (
     + AC_ON_PHRASES
     + ("unlock", "open the front door", "open front door", "lock the front door", "lock front door", "打开门锁", "解锁", "开门", "锁门", "锁上门", "把门锁上")
 )
+NO_MATCH_CLARIFICATION = "Please clarify the device states or home mode you want."
 
 
 def _clarification(event: Event, evidence: str, question: str) -> GoalInterpretation:
@@ -194,15 +195,32 @@ def interpret_smart_home_goal_by_rules(event: Event, *, evidence_prefix: str = "
             evidence,
             "The request negates a home-mode change. Please state the desired final home mode.",
         )
-    if any(phrase in text for phrase in NIGHT_MODE_PHRASES):
-        return GoalInterpretation(event.event_id, "smart_home_control", "night_mode", evidence=evidence)
-    if any(phrase in text for phrase in AWAY_MODE_PHRASES):
-        return GoalInterpretation(event.event_id, "smart_home_control", "away_mode", evidence=evidence)
-    if any(phrase in text for phrase in RELAX_MODE_PHRASES):
-        return GoalInterpretation(event.event_id, "smart_home_control", "relax_mode", evidence=evidence)
+    matched_modes = [
+        intent
+        for intent, phrases in (
+            ("night_mode", NIGHT_MODE_PHRASES),
+            ("away_mode", AWAY_MODE_PHRASES),
+            ("relax_mode", RELAX_MODE_PHRASES),
+        )
+        if _contains(text, *phrases)
+    ]
     direct, problem = _parse_direct_parameters(text)
     if problem:
         return _clarification(event, evidence, problem)
+    if len(matched_modes) > 1:
+        return _clarification(
+            event,
+            evidence,
+            "The request contains conflicting home modes. Please choose one home mode.",
+        )
+    if matched_modes and direct:
+        return _clarification(
+            event,
+            evidence,
+            "The request combines a home mode with explicit device states. Please send them as separate commands.",
+        )
+    if matched_modes:
+        return GoalInterpretation(event.event_id, "smart_home_control", matched_modes[0], evidence=evidence)
     if direct:
         intent = "unlock_door" if direct == {"door_locked": False} else "direct_control"
         parameters = {} if intent == "unlock_door" else direct
@@ -210,7 +228,7 @@ def interpret_smart_home_goal_by_rules(event: Event, *, evidence_prefix: str = "
     return _clarification(
         event,
         (evidence_prefix + "No supported home mode or device target matched").strip(),
-        "Please clarify the device states or home mode you want.",
+        NO_MATCH_CLARIFICATION,
     )
 
 
@@ -229,8 +247,17 @@ class SmartHomeGoalInterpreter:
         if re.search(r"\b(?:not|don't|dont|never)\b|不要|别|不许|不能|不用|不需要|不必", text):
             return _clarification(event, "Negated request blocked before AI interpretation",
                                   "The request negates an action. Please state the desired final device states or home mode.")
+        # Fixed rules retain authority over syntactically conflicting requests.
+        # An AI proposal must not select one side of a mode/device or multi-mode
+        # conflict and silently execute it.
+        rule_result = interpret_smart_home_goal_by_rules(event)
+        if (
+            rule_result.intent == "clarify"
+            and rule_result.clarification_question != NO_MATCH_CLARIFICATION
+        ):
+            return rule_result
         if self.proposal_provider is None:
-            return interpret_smart_home_goal_by_rules(event)
+            return rule_result
         try:
             proposal = self.proposal_provider(event)
             return self._validate(event, proposal)
@@ -268,8 +295,8 @@ class SmartHomeGoalInterpreter:
         if explicit.intent != "clarify":
             if explicit.intent != intent:
                 raise ValueError("AI intent conflicts with the explicit request")
-            if any(validated.get(key) != value for key, value in explicit.parameters.items()):
-                raise ValueError("AI target state conflicts with the explicit request")
+            if validated != explicit.parameters:
+                raise ValueError("AI target states differ from the explicit request")
         return GoalInterpretation(
             event_id=event.event_id,
             domain=domain,
