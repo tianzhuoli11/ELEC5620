@@ -15,12 +15,30 @@ This record captures an actual Streamlit run of UC-02 on 31 October 2026. It com
 
 | ID | Input and setup | Observed result | UI evidence |
 | --- | --- | --- | --- |
-| UI-SH01 | `Good night`; no simulated fault | `COMPLETE`; 4/4 actions accepted and verified; `HomeMode=NIGHT` | SCRUM-35 screenshot: Good Night success |
-| UI-SH02 | `Good night`; Air conditioner offline | `PARTIAL`; 3/4 actions verified; AC reports `Simulated device is offline after 2 attempts`; `HomeMode=HOME` | SCRUM-35 screenshot: AC offline |
-| UI-SH03 | `Good night and turn on the bedroom light` | `CLARIFICATION_REQUIRED`; the UI asks for separate commands; zero device commands dispatched | SCRUM-35 screenshot: conflict clarification |
-| UI-SH04 | `Unlock the front door.` followed by `Keep door locked` | `ASSESSED`; zero device commands dispatched; front door remains `locked=True` | SCRUM-35 screenshot: declined unlock |
+| UI-SH01 | `Good night`; no simulated fault | `COMPLETE`; 4/4 actions accepted and verified; `HomeMode=NIGHT` | [Good Night screenshot](assets/smart-home/ui-sh01-good-night.png) |
+| UI-SH02 | `Good night`; Air conditioner offline | `PARTIAL`; 3/4 actions verified; AC reports `Simulated device is offline after 2 attempts`; `HomeMode=HOME` | [AC-offline screenshot](assets/smart-home/ui-sh02-ac-offline.png) |
+| UI-SH03 | `Good night and turn on the bedroom light` | `CLARIFICATION_REQUIRED`; the UI asks for separate commands; zero device commands dispatched | [Conflict screenshot](assets/smart-home/ui-sh03-conflict.png) |
+| UI-SH04 | `Unlock the front door.` followed by `Keep door locked` | `ASSESSED`; zero device commands dispatched; front door remains `locked=True` | [Declined-unlock screenshot](assets/smart-home/ui-sh04-unlock-denied.png) |
 
-The four screenshots were captured directly from the browser after each scenario completed. The unrelated image briefly shown in Windows Paint was an older clipboard image and is deliberately excluded from this evidence set.
+The four screenshots were captured directly from the browser after each scenario completed. They are stored both in this repository and as attachments to SCRUM-35 so that the Canvas source archive remains self-contained. The unrelated image briefly shown in Windows Paint was an older clipboard image and is deliberately excluded from this evidence set.
+
+## Repository screenshots
+
+### UI-SH01 — Good Night success
+
+![Good Night completes with four verified actions](assets/smart-home/ui-sh01-good-night.png)
+
+### UI-SH02 — Air conditioner offline
+
+![Offline air conditioner produces a partial result](assets/smart-home/ui-sh02-ac-offline.png)
+
+### UI-SH03 — Conflicting request
+
+![Conflicting mode and direct command requires clarification](assets/smart-home/ui-sh03-conflict.png)
+
+### UI-SH04 — Declined unlock
+
+![Declined unlock dispatches no command and keeps the door locked](assets/smart-home/ui-sh04-unlock-denied.png)
 
 ## Reproduction steps
 

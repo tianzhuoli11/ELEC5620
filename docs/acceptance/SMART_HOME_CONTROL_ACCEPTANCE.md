@@ -99,7 +99,7 @@ The full machine log is written to `data/runtime/smart_home_acceptance.json` (gi
 
 ## Streamlit UI evidence
 
-Four actual Streamlit scenarios were run from `main` at `78c3506` on 31 October 2026. The observed results and reviewer reproduction checklist are recorded in [SMART_HOME_UI_EVIDENCE.md](SMART_HOME_UI_EVIDENCE.md); the matching screenshots are attached to [SCRUM-35](https://f1orestyinlem.atlassian.net/browse/SCRUM-35).
+Four actual Streamlit scenarios were run from `main` at `78c3506` on 31 October 2026. The observed results, repository screenshots and reviewer reproduction checklist are recorded in [SMART_HOME_UI_EVIDENCE.md](SMART_HOME_UI_EVIDENCE.md); the same screenshots are attached to [SCRUM-35](https://f1orestyinlem.atlassian.net/browse/SCRUM-35).
 
 - Good Night: `COMPLETE`, 4/4 verified and `HomeMode=NIGHT`.
 - Air conditioner offline: `PARTIAL`, 3/4 verified, explicit offline error and `HomeMode=HOME`.
