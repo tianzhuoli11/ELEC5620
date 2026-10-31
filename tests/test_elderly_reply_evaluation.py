@@ -20,6 +20,17 @@ class ElderlyReplyEvaluationTests(unittest.TestCase):
         self.assertEqual(evaluation.interpret_by_rules(1, "I'm not okay"), "help")
         self.assertEqual(evaluation.interpret_by_rules(2, "Not needed, my son is already here"), "safe")
 
+    def test_reassuring_start_does_not_hide_a_problem(self):
+        for reply in ("Okay, I can't breathe", "Ok but I hit my head", "Okay, there is blood"):
+            self.assertEqual(evaluation.interpret_by_rules(1, reply), "help", reply)
+        self.assertEqual(evaluation.interpret_by_rules(1, "Okay but I fell"), "unclear")
+        self.assertEqual(evaluation.interpret_by_rules(1, "I'm fine, I just sat down."), "safe")
+
+    def test_second_answer_no_is_a_whole_word_and_not_mixed(self):
+        self.assertEqual(evaluation.interpret_by_rules(2, "Not sure"), "unclear")
+        self.assertEqual(evaluation.interpret_by_rules(2, "No, please come"), "unclear")
+        self.assertEqual(evaluation.interpret_by_rules(2, "no thanks"), "safe")
+
     def test_report_is_written_without_a_key(self):
         folder = Path(tempfile.mkdtemp())
         code = evaluation.main(["--output", str(folder / "e.json"), "--report", str(folder / "e.md")])

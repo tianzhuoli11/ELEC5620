@@ -54,6 +54,13 @@ CASES: tuple[tuple[int, str, str], ...] = (
     (2, "Not needed, my son is already here", "safe"),
     (2, "I think so, my head is bleeding", "help"),
     (2, "Call my daughter", "help"),
+    # Added in the second iteration: replies that start reassuringly but report a problem.
+    (1, "Okay, I can't breathe", "help"),
+    (1, "Ok but I hit my head", "help"),
+    (1, "Fine... I think my wrist is broken", "help"),
+    (1, "Okay, there is blood", "help"),
+    (2, "Not sure", "unclear"),
+    (2, "No, please come", "help"),
 )
 
 
