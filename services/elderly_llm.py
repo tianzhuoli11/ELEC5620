@@ -18,6 +18,7 @@ module's `CampusProxyConfig`.
 from __future__ import annotations
 
 import json
+import os
 import re
 from typing import Any, Mapping
 from urllib.request import Request, urlopen
@@ -53,6 +54,11 @@ def _chat_json(config: CampusProxyConfig, system: str, user: Mapping[str, Any], 
         "max_completion_tokens": max_tokens,
         "stream": False,
     }
+    # Opt-in for OpenAI-compatible providers whose models think before answering
+    # (e.g. DashScope Qwen3): otherwise the token budget can be spent on reasoning
+    # and the answer text is empty. Not sent to the course proxy by default.
+    if os.getenv("ELEC5620_DISABLE_THINKING", "").strip() == "1":
+        payload["enable_thinking"] = False
     request = Request(
         config.base_url.rstrip("/") + "/chat/completions",
         data=json.dumps(payload).encode("utf-8"),
@@ -61,9 +67,13 @@ def _chat_json(config: CampusProxyConfig, system: str, user: Mapping[str, Any], 
     )
     with urlopen(request, timeout=config.timeout_seconds) as response:
         data = json.load(response)
-    content = data["choices"][0]["message"]["content"]
+    choice = data["choices"][0]
+    content = choice["message"].get("content")
     if not isinstance(content, str):
         raise ValueError("campus proxy returned non-text model content")
+    if not content.strip():
+        raise ValueError(f"model returned no answer text (finish_reason={choice.get('finish_reason')}); "
+                         "for thinking models set ELEC5620_DISABLE_THINKING=1")
     text = _FENCE.sub("", content.strip())
     proposal = json.loads(text)
     if not isinstance(proposal, dict):
