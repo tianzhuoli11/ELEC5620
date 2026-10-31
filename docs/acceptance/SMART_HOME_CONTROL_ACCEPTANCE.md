@@ -97,16 +97,22 @@ No acceptance case failed in this run. The earlier integration defects below are
 
 The full machine log is written to `data/runtime/smart_home_acceptance.json` (git-ignored). It includes the workflow result, agent trace, action read-backs, dispatch count and final simulated state for each row.
 
+## Streamlit UI evidence
+
+Four actual Streamlit scenarios were run from `main` at `78c3506` on 31 October 2026. The observed results, repository screenshots and reviewer reproduction checklist are recorded in [SMART_HOME_UI_EVIDENCE.md](SMART_HOME_UI_EVIDENCE.md); the same screenshots are attached to [SCRUM-35](https://f1orestyinlem.atlassian.net/browse/SCRUM-35).
+
+- Good Night: `COMPLETE`, 4/4 verified and `HomeMode=NIGHT`.
+- Air conditioner offline: `PARTIAL`, 3/4 verified, explicit offline error and `HomeMode=HOME`.
+- Conflicting request: `CLARIFICATION_REQUIRED` and zero dispatch.
+- Declined unlock: `ASSESSED`, zero dispatch and the front door remains locked.
+
 ## Manual evidence still required for SCRUM-35 / SCRUM-40
 
 These items are intentionally **not** marked complete by this automated run:
 
-- Attach Streamlit screenshots or a short recording for AT-SH01, AT-SH03, AT-SH06 and AT-SH08 to SCRUM-35.
 - Rehearse from the exact Canvas source archive on the demonstration laptop and record the real result.
 - Link this report, PR #23 and the final clean-source rehearsal in the group UC-01–UC-05 acceptance report.
 - Record the actual Sprint Review, feedback, follow-up issues/retests and Retrospective only after the team performs them.
-
-Suggested screenshots: Smart Home page after a verified Night run; conflict clarification with no dispatch; denied mixed unlock with the door still locked; offline AC showing PARTIAL and the explicit error.
 
 ## Scope and honesty notes
 
