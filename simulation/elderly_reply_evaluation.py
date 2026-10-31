@@ -81,11 +81,28 @@ def _summary(rows: list[dict], key: str) -> dict:
     }
 
 
+class ModelUnavailable(RuntimeError):
+    """The live comparison would silently measure rules twice, so stop instead."""
+
+
+def preflight(interpreter) -> None:
+    """One test call before a live run; report why the model cannot be used."""
+    try:
+        proposal = interpreter({"reply": "I'm fine", "attempt": 1})
+    except Exception as error:  # urllib HTTPError, timeout, invalid JSON ...
+        detail = f"HTTP {error.code}" if hasattr(error, "code") else type(error).__name__
+        raise ModelUnavailable(f"campus-qwen test call failed ({detail}: {error}). "
+                               "Check the key, the campus network/VPN and the proxy address.") from error
+    if not isinstance(proposal, dict) or proposal.get("verdict") not in ("safe", "help", "unclear"):
+        raise ModelUnavailable(f"campus-qwen returned an unusable test reply: {proposal!r}")
+
+
 def run(live: bool = False) -> dict:
     interpreter = None
     if live:
         from services.elderly_llm import campus_providers
         _, interpreter = campus_providers()  # raises if no key is configured
+        preflight(interpreter)
     event = make_fall_scenario("medium_wait")  # only supplies an event ID; never executed
     rows = []
     for attempt, reply, expected in CASES:
@@ -151,7 +168,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
     args = parser.parse_args(argv)
-    result = run(live=args.live)
+    try:
+        result = run(live=args.live)
+    except ModelUnavailable as error:
+        print(f"Live evaluation stopped: {error}")
+        return 2
     for path, text in ((args.output, json.dumps(result, indent=2, ensure_ascii=False)), (args.report, markdown(result))):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")

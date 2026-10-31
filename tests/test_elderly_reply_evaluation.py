@@ -26,6 +26,13 @@ class ElderlyReplyEvaluationTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("Rules only", (folder / "e.md").read_text(encoding="utf-8"))
 
+    def test_live_run_stops_when_the_model_cannot_be_called(self):
+        def broken(_payload):
+            raise TimeoutError("no route")
+        with self.assertRaises(evaluation.ModelUnavailable):
+            evaluation.preflight(broken)
+        evaluation.preflight(lambda _payload: {"verdict": "safe", "rationale": "ok"})
+
 
 if __name__ == "__main__":
     unittest.main()
