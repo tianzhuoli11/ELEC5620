@@ -27,6 +27,7 @@ python -m venv .venv
 .venv\Scripts\python -m unittest discover -s tests -v
 .venv\Scripts\python -m simulation.framework_demo
 .venv\Scripts\python -m simulation.smart_home_demo --scenario good-night
+.venv\Scripts\python -m simulation.smart_home_acceptance
 .venv\Scripts\python -m streamlit run app.py
 ```
 
@@ -35,6 +36,8 @@ On macOS/Linux, use `.venv/bin/python` in place of `.venv\Scripts\python`. The f
 Campus AI is optional in the implemented domain pages. Set `ELEC5620_API_KEY` in your local environment and connect to the university network or VPN, then enable the relevant page option. The key is not entered into the page or stored in the repository. Invalid, timed-out or unsafe model proposals fall back to deterministic rules and cannot directly authorise device commands. Owner alerts and device actions are simulated locally.
 
 For Elderly Safety, run `.venv\Scripts\python -m simulation.elderly_demo --scenario high_floor` for an immediate HIGH response (caregiver alert and room light), `--scenario medium_wait --reply "I'm fine"` for a resident confirmation that closes the event, `--reply help` or `--timeout` for escalation, and `--scenario high_floor --ack-timeouts 2` for multi-level escalation to the Human Operator. `.venv\Scripts\python -m simulation.elderly_acceptance` runs the 18 acceptance cases and writes [the acceptance report](docs/acceptance/ELDERLY_SAFETY_ACCEPTANCE.md). Add `--use-campus-llm` only when the local key and university network are available. Records are saved at `data/runtime/elderly_safety.jsonl`. See [Elderly Safety](domains/elderly_safety/README.md) for rules and scope.
+
+For Smart Home Control, `.venv\Scripts\python -m simulation.smart_home_acceptance` runs ten repeatable SCRUM-35 scenarios through the production shared workflow and writes [the generated UC-02 acceptance report](docs/acceptance/SMART_HOME_CONTROL_ACCEPTANCE.md). It covers Night/Away success, unclear and unsupported requests, sensitive-action approve/deny paths, offline and stale read-back failures, and an AI extra-target safety retest. The run is simulated evidence; Jira screenshots, the exact Canvas-source rehearsal and the actual team review/retrospective must be attached separately.
 
 For a repeatable Pet Care acceptance check, run `python -m simulation.pet_demo --scenario empty_bowl` for core monitoring and notification, then `python -m simulation.pet_demo --scenario empty_bowl --enable-feeding --feed-grams 20` for one verified simulated feed. Add `--feeder-offline` or `--stale-readback` to check failure reporting. See [Jinjing's Sprint 2 evidence](docs/JINJING_SPRINT2.md) for the complete scenario list.
 
