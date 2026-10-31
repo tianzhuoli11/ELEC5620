@@ -24,7 +24,10 @@ VERDICTS = ("safe", "help", "unclear")
 # Receives {"reply": str, "attempt": int} and returns {"verdict": ..., "rationale": ...} or raises.
 ReplyInterpreter = Callable[[Mapping[str, Any]], Mapping[str, Any]]
 
-_HELP = ("help", "can't get up", "cant get up", "cannot get up", "hurt", "pain", "bleeding", "call", "ambulance", "emergency", "dizzy", "stuck")
+# "can't move", "not okay" and "faint" were added after the reply evaluation
+# (simulation/elderly_reply_evaluation.py) showed "No, I can't move" being closed as safe.
+_HELP = ("help", "can't get up", "cant get up", "cannot get up", "can't move", "cant move", "cannot move", "unable to",
+         "not ok", "hurt", "pain", "bleeding", "call", "ambulance", "emergency", "dizzy", "faint", "stuck")
 _SAFE = ("i'm ok", "im ok", "i am ok", "i'm fine", "im fine", "i am fine", "i'm okay", "im okay", "i am okay", "ok", "okay", "fine", "all good", "no help", "false alarm", "dropped", "nothing happened")
 _YES = ("yes", "yeah", "yep", "please", "do it", "contact", "need")
 _NO = ("no", "nope", "don't", "dont", "not needed", "no need", "no thanks")
