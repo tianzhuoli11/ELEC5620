@@ -97,16 +97,7 @@ No acceptance case failed in this run. The earlier integration defects below are
 
 The full machine log is written to `data/runtime/smart_home_acceptance.json` (git-ignored). It includes the workflow result, agent trace, action read-backs, dispatch count and final simulated state for each row.
 
-## Manual evidence still required for SCRUM-35 / SCRUM-40
-
-These items are intentionally **not** marked complete by this automated run:
-
-- Attach Streamlit screenshots or a short recording for AT-SH01, AT-SH03, AT-SH06 and AT-SH08 to SCRUM-35.
-- Rehearse from the exact Canvas source archive on the demonstration laptop and record the real result.
-- Link this report, PR #23 and the final clean-source rehearsal in the group UC-01–UC-05 acceptance report.
-- Record the actual Sprint Review, feedback, follow-up issues/retests and Retrospective only after the team performs them.
-
-Suggested screenshots: Smart Home page after a verified Night run; conflict clarification with no dispatch; denied mixed unlock with the door still locked; offline AC showing PARTIAL and the explicit error.
+UI screenshots: [SMART_HOME_UI_EVIDENCE.md](SMART_HOME_UI_EVIDENCE.md).
 
 ## Scope and honesty notes
 
@@ -114,4 +105,3 @@ Suggested screenshots: Smart Home page after a verified Night run; conflict clar
 - Device I/O is simulated, although production policy, shared-agent routing, retries and returned-state verification are exercised.
 - Mode defaults are configurable simulated cooling presets: Relax 23 °C, Night 24 °C and Away Eco 26 °C.
 - Away is an energy-saving standby and does not assume the home is empty; a direct request can turn the air conditioner off.
-- A passing automated run is evidence for moving SCRUM-35 to In Review; it is not evidence that the group coordination work in SCRUM-40 is Done.

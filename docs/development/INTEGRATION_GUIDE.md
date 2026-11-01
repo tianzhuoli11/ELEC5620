@@ -1,6 +1,6 @@
 # Integrating a domain into the shared workflow
 
-Start from the latest `main` after this framework has been reviewed and merged. Install dependencies from `requirements.txt`, then run `python -m simulation.framework_demo` and `python -m unittest discover -s tests -v` from the repository root. The demo is entirely simulated and does not require an API key.
+Start from the latest `main`. Install dependencies from `requirements.txt`, then run `python -m simulation.framework_demo` and `python -m unittest discover -s tests -v` from the repository root. The demo is entirely simulated and does not require an API key.
 
 ## Scope of the current contract
 
@@ -67,8 +67,8 @@ Use `simulation.events.make_user_goal_event(text)` to create a simulated user re
 | Yan Li (Flora) | Implement `NotificationService` adapter and security handler | Contacts, security rules, delivery outcomes |
 | Tianzhuo Li | Implement energy/comfort handler and context | Temperature, preference and energy policy |
 
-The team should choose a UI integration owner. For either path, the UI calls `workflow.run(event)` and displays `WorkflowResult`; it does not duplicate rule logic. Each owner adds tests for their normal and failure paths and a fictional demo event. Merge the framework first, then synchronize named branches from `main`, integrate one domain at a time, and resolve contract changes through reviewed PRs. Keep Jira task dates and evidence aligned with actual work.
+For either path, the UI calls `workflow.run(event)` and displays `WorkflowResult`; it does not duplicate rule logic. Each owner adds tests for their normal and failure paths and a fictional demo event. Merge the framework first, then synchronize named branches from `main`, integrate one domain at a time, and resolve contract changes through reviewed PRs. Keep Jira task dates and evidence aligned with actual work.
 
 ## Stage 2 deploy rehearsal
 
-Before Canvas submission, copy the submitted source into a clean directory, install from the dependency file, set the API key only in local environment variables when real model access is needed, run tests, then launch the final UI from that downloaded source. The current baseline CLI confirms only framework wiring; it is not the finished Week 13 demonstration.
+Before Canvas submission, copy the submitted source into a clean directory, install from the dependency file, set the API key only in local environment variables when real model access is needed, run tests, then launch the final UI from that downloaded source. Full steps: [DEPLOYMENT.md](../deployment/DEPLOYMENT.md).

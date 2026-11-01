@@ -16,13 +16,13 @@ Energy & Comfort keeps its assessment-only button and adds **Run a simulated adj
 - Post-action **room** temperature, occupancy, and whole-home power are **`UNKNOWN_NOT_MEASURED`** unless a separate probe is supplied (`domains/energy_comfort/post_action.py`); device readback success does not claim comfort or energy savings.
 - Protective Elderly/Security devices and door locks are outside this plan's target set. No safety feed or approval is inferred from an event dictionary.
 
-The page uses three UI modes: **`ASSESSMENT_ONLY`** (formal integration checklist), **`EXPLICIT_SIMULATION`** (approved panel with live session SafetyState), and **`FORMAL_CONTROL_PENDING`** for unchecked M2/M4 automatic contracts. Eligibility worksheet fields are demo-only and do not replace SafetyState.
+The page uses three UI modes: **`ASSESSMENT_ONLY`** (formal integration checklist), **`EXPLICIT_SIMULATION`** (approved panel with live session SafetyState), and **`FORMAL_CONTROL_PENDING`** (unattended automatic control is disabled; control requires explicit approval). Eligibility worksheet fields are demo-only and do not replace SafetyState.
 
 The page saves inputs, the approval, cross-domain safety evidence, planned count and actual workflow results to ignored `data/runtime/energy_comfort.jsonl`. Results disappear on rerun when inputs change, preventing a previous outcome being shown as the result of new inputs.
 
 ## Repeatable review
 
-29 October verification: **275 repository tests passed, zero skips**, with the real campus fall/reply test enabled over VPN. The actual cross-page Streamlit test runs both safety pages, verifies successful energy adjustment, then triggers Smoke in Home Security and verifies zero subsequent energy actions. Separate tests cover stale/missing evidence, pending confirmation, active warning retention and safety changes between device commands.
+29 October verification: **275 repository tests passed**, with the live campus fall/reply test enabled over VPN. The actual cross-page Streamlit test runs both safety pages, verifies successful energy adjustment, then triggers Smoke in Home Security and verifies zero subsequent energy actions. Separate tests cover stale/missing evidence, pending confirmation, active warning retention and safety changes between device commands.
 
 1. Home Security: assess Normal. Elderly Safety: run the medium fall and answer “I'm fine”. Both actual workflow results must be clear.
 2. Energy & Comfort: choose Too warm (occupied), approve and run adjustment. Expect two verified actions, COMPLETE and recorded safety event IDs.
@@ -34,4 +34,4 @@ The page saves inputs, the approval, cross-domain safety evidence, planned count
 
 All sensor inputs, devices and notifications remain simulated. The safety state is local to the current browser session: a new/restarted session begins unknown and blocks control. It is not persistent monitoring of a real home. Changing safety mid-plan blocks subsequent dispatches; the UI audit saves both initial and final safety snapshots. Acknowledging a caregiver alert alone does not establish that a hazard has cleared.
 
-The legacy approval/readiness APIs remain for historical assessment tests; no fabricated teammate approval flags were set. Reviewers should review the executable simulation contract and device mapping in this PR. Physical sensors, measured post-action temperature improvements and energy savings are not claimed.
+Legacy approval/readiness APIs remain for the historical assessment tests. Physical sensors are not used, and post-action temperature and energy savings are not measured.

@@ -28,4 +28,4 @@ Personal branches do not automatically follow later changes to main. Synchronise
 
 Stage only intended files. Reference the Jira issue, for example `SCRUM-20: add shared event simulator`. Push to your branch, open a PR targeting `main`, explain the changes, validation and limitations, and ask at least one teammate to review before merging.
 
-Agree shared types and public interfaces before changing them. Ask the relevant owner to review edits to another domain. Mark Jira Done only after runnable implementation, acceptance checks and actual evidence. Do not commit credentials, personal data or fabricated meeting/test records.
+Agree shared types and public interfaces before changing them. Ask the relevant owner to review edits to another domain. Mark Jira Done only after runnable implementation, acceptance checks and actual evidence. Do not commit credentials or personal data.

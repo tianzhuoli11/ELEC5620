@@ -6,7 +6,7 @@ Update (29 October): the separate `control.run_energy_control` API and **Run a s
 
 Owner: Tianzhuo Li. Requirements: AR-05 / UC-05; optional OR-05, with UC-06 integration.
 
-Stage 1 implements SCRUM-22's provisional shared context and SCRUM-16's deterministic assessment slice. The Streamlit page in `ui/energy_comfort.py` runs that assessment through the shared workflow, shows fail-closed eligibility and deterministic explanations, and records local assessment evidence. It does not control a device, send a notification, call an LLM, or claim formal Energy & Comfort device control. Formal control remains pending.
+SCRUM-22 provides the shared context and SCRUM-16 the deterministic assessment. The Streamlit page in `ui/energy_comfort.py` runs that assessment through the shared workflow, shows fail-closed eligibility and deterministic explanations, and records local assessment evidence. Device control runs through the separate approved adjustment panel described above.
 
 Put shared HomeEnvironment, UserPreference, EnergyProfile and HomeMode types in `models/`. Reuse `tools/` and `services/`. Safety overrides comfort and energy goals; missing facts remain unknown. Put tests in `tests/` and views in `ui/`.
 
@@ -21,7 +21,7 @@ The candidate shared types are `HomeEnvironment`, `UserPreference`, `EnergyProfi
 - For a known occupied home, both ends of `UserPreference` are inclusive. A temperature inside or on the boundary is `NO_ADJUSTMENT` for the observed temperature-comfort target only; it says nothing about other rooms, energy waste or safety. A value outside is `ADJUSTMENT_NEEDED` for further comfort assessment.
 - Missing occupancy prevents selecting a policy. Missing occupied temperature or either preference bound is `INSUFFICIENT_DATA`.
 - A known unoccupied home does not use the occupied comfort range. The fictional energy rule compares observed whole-home watts with an explicit unoccupied watt limit. At or below the limit is `NO_ADJUSTMENT` for this one configured rule only, not proof that the whole home has no energy waste. Above it is `ADJUSTMENT_NEEDED` for further investigation only when an available device is explicitly observed with `power="on"`; otherwise evidence is insufficient.
-- A powered-device observation is only a candidate clue. It does not prove that device caused the excess, that it can be safely switched off, or that control would save a particular amount. A controllable-device allowlist, device-level power attribution and safety policy are deferred to the next stage.
+- A powered-device observation is only a candidate clue. It does not prove that device caused the excess, that it can be safely switched off, or that control would save a particular amount. Device-level power attribution is outside this prototype.
 - These values are user/configuration inputs for a simulated policy, not official safety, medical, tariff or HVAC standards.
 
 `EnergyComfortHandler` maps `NO_ADJUSTMENT` to shared risk `LOW`; `ADJUSTMENT_NEEDED` and `INSUFFICIENT_DATA` map to `MEDIUM` so neither is mislabeled as a high safety risk. The shared graph does not dispatch or notify based on `MEDIUM`; it only follows explicit action and notification requests, and this handler returns neither. Downstream Energy & Comfort code reads the three-way value structurally from `EnergyComfortWorkflowOutcome.assessment.decision`; it must not distinguish the states by parsing rationale text. A consumer holding only the generic `WorkflowResult` cannot recover this domain enum without parsing its string evidence, so adding a generic structured domain-result field remains a team-level contract decision. `ASSESSED` means the assessment ran, not that an `INSUFFICIENT_DATA` case achieved the user's goal. `WorkflowResult.trace` is in-memory execution evidence, not persistent history.
@@ -61,8 +61,7 @@ The executable offline examples produce `NO_ADJUSTMENT`, `ADJUSTMENT_NEEDED`,
 and `INSUFFICIENT_DATA`; unknown occupancy remains missing rather than becoming
 `false`. `tests.test_energy_comfort.SharedContextTests` imports the candidate
 types through `models`, verifies the serialized namespace, and round-trips that
-payload through `context_from_event`. This is a local simulated consumer, not
-evidence that M2 or M4 has integrated the contract.
+payload through `context_from_event`.
 
 `evaluate_light_shutdown_candidate` now composes assessment with fail-closed,
 non-executable eligibility. `explain_energy_comfort` explains only supplied
@@ -84,13 +83,7 @@ Formal automatic integration remains **`FORMAL_CONTROL_PENDING`** while
 false, so formal control status stays `PENDING`, zero `ActionRequest` values are
 created, and Elderly/Security protective devices remain on an explicit deny-list.
 
-The current `HomeCoordinatorAgent` has no UC-06 explanation-request route: it
-routes sensor events and user goals and coordinates notifications. Adding a
-shared explanation request/response contract therefore remains a framework-owner
-decision. Until then, domain callers can pass an actual
-`EnergyComfortAssessment`, optional `WorkflowResult`, and optional eligibility
-result directly to `explain_energy_comfort`; missing workflow evidence returns
-`UNKNOWN`, not an execution claim.
+UC-06 explanation requests are routed by `HomeCoordinatorAgent.explain` (see [EXPLANATIONS.md](../../docs/assessment/EXPLANATIONS.md)); `explain_energy_comfort` supplies the Energy facts, and missing workflow evidence returns `UNKNOWN`.
 
 ## Offline reproduction
 

@@ -1,38 +1,320 @@
-{"read_at": "2026-11-01 11:40 AEDT", "source": "Jira changelog (status field) for SCRUM-1..43; epics SCRUM-5..11 and placeholder subtask SCRUM-4 excluded",
+{
+ "read_at": "2026-11-01 11:40 AEDT",
+ "source": "Jira changelog (status field) for SCRUM-1..43; epics SCRUM-5..11 and placeholder subtask SCRUM-4 excluded",
  "issues": {
- "SCRUM-1": [0, "Jinjing", ["10-20 19:56>In Progress","10-24 17:07>Done"]],
- "SCRUM-12": [0, "Yuanbo", ["10-20 14:47>In Review","10-20 15:04>In Progress","10-21 19:23>Done"]],
- "SCRUM-13": [0, "Yang", ["10-24 11:26>In Progress","10-24 15:16>In Review","10-30 22:55>Done"]],
- "SCRUM-14": [0, "Jinjing", ["10-19 19:59>In Progress","10-24 17:07>Done"]],
- "SCRUM-15": [0, "Flora", ["10-21 16:37>In Progress","10-21 20:23>Done"]],
- "SCRUM-16": [0, "Tianzhuo", ["10-21 15:28>In Progress","10-24 23:56>Done"]],
- "SCRUM-17": [0, "Yuanbo", ["10-20 14:47>In Review","10-20 15:04>In Progress","10-21 19:23>Done"]],
- "SCRUM-18": [0, "Yuanbo", ["10-20 14:47>In Review","10-20 15:04>In Progress","10-21 19:23>Done"]],
- "SCRUM-19": [0, "Yang", ["10-24 11:26>In Progress","10-24 15:17>In Review","10-24 19:00>Done"]],
- "SCRUM-20": [0, "Jinjing", ["10-19 20:01>In Progress","10-24 17:07>Done"]],
- "SCRUM-21": [0, "Flora", ["10-21 16:37>In Progress","10-28 01:41>Done","10-31 00:20>In Review","10-31 00:50>Done"]],
- "SCRUM-22": [0, "Tianzhuo", ["10-21 15:29>In Progress","10-24 23:56>Done"]],
- "SCRUM-23": [0, "Yang", ["10-24 11:26>In Progress","10-24 15:17>In Review","10-24 19:01>Done"]],
- "SCRUM-2": [1, "Flora", ["10-28 01:42>Done","10-31 00:21>In Progress","10-31 12:20>In Review","10-31 12:23>Done"]],
- "SCRUM-24": [1, "Yuanbo", ["10-21 19:23>In Review","10-25 19:30>Done"]],
- "SCRUM-25": [1, "Yuanbo", ["10-25 19:59>Done"]],
- "SCRUM-26": [1, "Yang", ["10-24 15:17>In Review","10-30 23:35>Done"]],
- "SCRUM-27": [1, "Yang", ["10-24 15:18>In Review","10-30 23:35>Done"]],
- "SCRUM-28": [1, "Jinjing", ["10-28 20:59>In Review","10-30 23:35>Done"]],
- "SCRUM-29": [1, "Jinjing", ["10-28 20:59>In Review","10-30 23:35>Done"]],
- "SCRUM-30": [1, "Flora", ["10-28 01:42>Done"]],
- "SCRUM-31": [1, "Flora", ["10-28 01:42>Done"]],
- "SCRUM-32": [1, "Tianzhuo", ["10-24 23:56>Done"]],
- "SCRUM-33": [1, "Tianzhuo", ["10-24 23:56>Done"]],
- "SCRUM-3": [2, "Tianzhuo", ["10-24 23:56>Done"]],
- "SCRUM-34": [2, "Yuanbo", ["10-29 22:24>Done"]],
- "SCRUM-35": [2, "Yang", ["10-30 22:55>In Progress","10-31 12:13>In Review","10-31 12:42>Done"]],
- "SCRUM-36": [2, "Jinjing", ["10-30 22:55>In Progress","10-31 14:46>Done"]],
- "SCRUM-37": [2, "Flora", ["10-30 22:55>In Progress","10-31 00:06>In Review","10-31 12:23>Done","10-31 13:01>In Review","10-31 22:30>Done"]],
- "SCRUM-38": [2, "Tianzhuo", ["10-24 23:56>Done"]],
- "SCRUM-39": [2, "Yuanbo", ["10-30 22:55>In Progress","10-31 20:54>Done"]],
- "SCRUM-40": [2, "Yang", ["10-30 22:55>In Progress","10-31 22:30>Done"]],
- "SCRUM-41": [2, "Jinjing", ["10-30 22:55>In Progress","10-31 14:46>Done","10-31 14:49>In Progress","10-31 22:31>Done"]],
- "SCRUM-42": [2, "Flora", ["10-30 22:55>In Progress","10-31 00:07>In Review","10-31 12:23>Done","10-31 13:01>In Review","10-31 22:31>Done"]],
- "SCRUM-43": [2, "Tianzhuo", ["10-24 23:56>In Progress","11-01 11:14>Done"]]
- }}
+  "SCRUM-1": [
+   0,
+   "Jinjing",
+   [
+    "10-20 19:56>In Progress",
+    "10-24 17:07>Done"
+   ]
+  ],
+  "SCRUM-12": [
+   0,
+   "Yuanbo",
+   [
+    "10-20 14:47>In Review",
+    "10-20 15:04>In Progress",
+    "10-21 19:23>Done"
+   ]
+  ],
+  "SCRUM-13": [
+   0,
+   "Yang",
+   [
+    "10-24 11:26>In Progress",
+    "10-24 15:16>In Review",
+    "10-30 22:55>Done"
+   ]
+  ],
+  "SCRUM-14": [
+   0,
+   "Jinjing",
+   [
+    "10-19 19:59>In Progress",
+    "10-24 17:07>Done"
+   ]
+  ],
+  "SCRUM-15": [
+   0,
+   "Flora",
+   [
+    "10-21 16:37>In Progress",
+    "10-21 20:23>Done"
+   ]
+  ],
+  "SCRUM-16": [
+   0,
+   "Tianzhuo",
+   [
+    "10-21 15:28>In Progress",
+    "10-24 23:56>Done"
+   ]
+  ],
+  "SCRUM-17": [
+   0,
+   "Yuanbo",
+   [
+    "10-20 14:47>In Review",
+    "10-20 15:04>In Progress",
+    "10-21 19:23>Done"
+   ]
+  ],
+  "SCRUM-18": [
+   0,
+   "Yuanbo",
+   [
+    "10-20 14:47>In Review",
+    "10-20 15:04>In Progress",
+    "10-21 19:23>Done"
+   ]
+  ],
+  "SCRUM-19": [
+   0,
+   "Yang",
+   [
+    "10-24 11:26>In Progress",
+    "10-24 15:17>In Review",
+    "10-24 19:00>Done"
+   ]
+  ],
+  "SCRUM-20": [
+   0,
+   "Jinjing",
+   [
+    "10-19 20:01>In Progress",
+    "10-24 17:07>Done"
+   ]
+  ],
+  "SCRUM-21": [
+   0,
+   "Flora",
+   [
+    "10-21 16:37>In Progress",
+    "10-28 01:41>Done",
+    "10-31 00:20>In Review",
+    "10-31 00:50>Done"
+   ]
+  ],
+  "SCRUM-22": [
+   0,
+   "Tianzhuo",
+   [
+    "10-21 15:29>In Progress",
+    "10-24 23:56>Done"
+   ]
+  ],
+  "SCRUM-23": [
+   0,
+   "Yang",
+   [
+    "10-24 11:26>In Progress",
+    "10-24 15:17>In Review",
+    "10-24 19:01>Done"
+   ]
+  ],
+  "SCRUM-2": [
+   1,
+   "Flora",
+   [
+    "10-28 01:42>Done",
+    "10-31 00:21>In Progress",
+    "10-31 12:20>In Review",
+    "10-31 12:23>Done"
+   ]
+  ],
+  "SCRUM-24": [
+   1,
+   "Yuanbo",
+   [
+    "10-21 19:23>In Review",
+    "10-25 19:30>Done"
+   ]
+  ],
+  "SCRUM-25": [
+   1,
+   "Yuanbo",
+   [
+    "10-25 19:59>Done"
+   ]
+  ],
+  "SCRUM-26": [
+   1,
+   "Yang",
+   [
+    "10-24 15:17>In Review",
+    "10-30 23:35>Done"
+   ]
+  ],
+  "SCRUM-27": [
+   1,
+   "Yang",
+   [
+    "10-24 15:18>In Review",
+    "10-30 23:35>Done"
+   ]
+  ],
+  "SCRUM-28": [
+   1,
+   "Jinjing",
+   [
+    "10-28 20:59>In Review",
+    "10-30 23:35>Done"
+   ]
+  ],
+  "SCRUM-29": [
+   1,
+   "Jinjing",
+   [
+    "10-28 20:59>In Review",
+    "10-30 23:35>Done"
+   ]
+  ],
+  "SCRUM-30": [
+   1,
+   "Flora",
+   [
+    "10-28 01:42>Done"
+   ]
+  ],
+  "SCRUM-31": [
+   1,
+   "Flora",
+   [
+    "10-28 01:42>Done"
+   ]
+  ],
+  "SCRUM-32": [
+   1,
+   "Tianzhuo",
+   [
+    "10-24 23:56>Done"
+   ]
+  ],
+  "SCRUM-33": [
+   1,
+   "Tianzhuo",
+   [
+    "10-24 23:56>Done"
+   ]
+  ],
+  "SCRUM-3": [
+   2,
+   "Tianzhuo",
+   [
+    "10-24 23:56>Done"
+   ]
+  ],
+  "SCRUM-34": [
+   2,
+   "Yuanbo",
+   [
+    "10-29 22:24>Done"
+   ]
+  ],
+  "SCRUM-35": [
+   2,
+   "Yang",
+   [
+    "10-30 22:55>In Progress",
+    "10-31 12:13>In Review",
+    "10-31 12:42>Done"
+   ]
+  ],
+  "SCRUM-36": [
+   2,
+   "Jinjing",
+   [
+    "10-30 22:55>In Progress",
+    "10-31 14:46>Done"
+   ]
+  ],
+  "SCRUM-37": [
+   2,
+   "Flora",
+   [
+    "10-30 22:55>In Progress",
+    "10-31 00:06>In Review",
+    "10-31 12:23>Done",
+    "10-31 13:01>In Review",
+    "10-31 22:30>Done"
+   ]
+  ],
+  "SCRUM-38": [
+   2,
+   "Tianzhuo",
+   [
+    "10-24 23:56>Done"
+   ]
+  ],
+  "SCRUM-39": [
+   2,
+   "Yuanbo",
+   [
+    "10-30 22:55>In Progress",
+    "10-31 20:54>Done"
+   ]
+  ],
+  "SCRUM-40": [
+   2,
+   "Yang",
+   [
+    "10-30 22:55>In Progress",
+    "10-31 22:30>Done"
+   ]
+  ],
+  "SCRUM-41": [
+   2,
+   "Jinjing",
+   [
+    "10-30 22:55>In Progress",
+    "10-31 14:46>Done",
+    "10-31 14:49>In Progress",
+    "10-31 22:31>Done"
+   ]
+  ],
+  "SCRUM-42": [
+   2,
+   "Flora",
+   [
+    "10-30 22:55>In Progress",
+    "10-31 00:07>In Review",
+    "10-31 12:23>Done",
+    "10-31 13:01>In Review",
+    "10-31 22:31>Done"
+   ]
+  ],
+  "SCRUM-43": [
+   2,
+   "Tianzhuo",
+   [
+    "10-24 23:56>In Progress",
+    "11-01 11:14>Done"
+   ]
+  ]
+ },
+ "sprints": {
+  "note": "Jira board 1 sprint objects as read from the Jira agile API on 30 Oct and 1 Nov 2026; times UTC",
+  "SCRUM Sprint 0": {
+   "state": "closed",
+   "start": "2026-10-13T23:09Z",
+   "complete": "2026-10-30T12:28Z"
+  },
+  "SCRUM Sprint 1": {
+   "state": "closed",
+   "start": "2026-10-30T12:34Z",
+   "complete": "2026-10-30T12:35Z"
+  },
+  "SCRUM Sprint 2": {
+   "state": "closed",
+   "start": "2026-10-30T12:35Z",
+   "complete": "2026-10-30T12:40Z"
+  },
+  "SCRUM Sprint 3": {
+   "state": "closed",
+   "start": "2026-10-30T13:43Z",
+   "complete": "2026-11-01T00:15Z"
+  }
+ }
+}

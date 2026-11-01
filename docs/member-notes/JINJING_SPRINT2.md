@@ -1,6 +1,6 @@
 # Jinjing Huang — Pet Care Sprint 2 acceptance evidence
 
-This document records the Pet Care work completed ahead of the planned Sprint 2 window (28–31 October 2026). It covers AR-03 / UC-03 core monitoring and simulated owner alerts, plus optional OR-01 simulated feeding. It does not claim a real owner message or physical feeder operation.
+This document records the Pet Care work for SCRUM-28/29 (Sprint 1) and the Sprint 2 acceptance (SCRUM-36). It covers AR-03 / UC-03 core monitoring and simulated owner alerts, plus optional OR-01 simulated feeding. It does not claim a real owner message or physical feeder operation.
 
 ## Implemented flow
 
@@ -40,11 +40,7 @@ The Pet Care page has the same editable scenarios and an **Optional feeding demo
 - The 11 Pet Care Sprint 2 tests and the full 134-test repository suite passed locally, including the Streamlit reset test. Its output no longer contains the conflicting `pet_feed_grams` default warning. Streamlit still reports separate `use_container_width` deprecation notices from existing layout code.
 - Jira work items: [SCRUM-36 Pet Care scenario acceptance](https://f1orestyinlem.atlassian.net/browse/SCRUM-36) and [SCRUM-29 optional automatic feeding](https://f1orestyinlem.atlassian.net/browse/SCRUM-29).
 
-## Remaining team delivery steps
-
-- Add the actual commit or pull-request link, test output and UI screenshots to the relevant Jira Story before marking it Done.
-- Re-run the complete clean-source rehearsal after the remaining domains are merged, using the exact Canvas submission archive. Check the campus AI connection and any selected optional functions on the demonstration network.
-- Keep `ELEC5620_API_KEY` out of the archive, screenshots and logs. A clean deployment can run the simulated paths without it.
+Final acceptance with UI screenshots: [PET_CARE_ACCEPTANCE.md](../acceptance/PET_CARE_ACCEPTANCE.md). Keep `ELEC5620_API_KEY` out of the archive, screenshots and logs; the simulated paths run without it.
 
 ## Final integrated evidence — 1 November 2026
 

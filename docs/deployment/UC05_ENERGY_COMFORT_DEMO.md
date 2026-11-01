@@ -1,6 +1,6 @@
-# UC-05 Energy & Comfort — 2-minute demonstration script (English)
+# UC-05 Energy & Comfort — 2-minute demonstration script
 
-**Audience:** Stage 2 assessors. **App:** `streamlit run app.py` from commit `2d035f6`. **Duration:** ~2 minutes. **Scope:** Simulated home only.
+**Audience:** Stage 2 assessors. **App:** `streamlit run app.py` from the submitted source. **Duration:** ~2 minutes. **Scope:** Simulated home only.
 
 **Say upfront:** “All sensors and devices are simulated. Successful device readback does not mean the room got cooler or that energy was saved.”
 
@@ -19,7 +19,7 @@
 5. Scenario: **Fall, then not moving (30 s)**. Click **Run scenario** (`run-elderly-scenario`).
 6. **Expected:** Confirmation prompt; safety not clear yet.
 7. Click quick reply **I'm fine** (`quick-I'm fine`).
-8. **Expected:** Green session message on Energy page later: both safety domains clear (or equivalent success on Elderly banner).
+8. **Expected:** Green session message on Energy page later: both safety domains clear (the Elderly page shows the event closed as safe).
 9. Sidebar → **Energy & Comfort**.
 10. **Expected:** Panel **Session safety** shows clear for simulated control (success/info), not “Not clear”.
 
@@ -61,7 +61,7 @@
 
 ## Reproducibility check
 
-Automated equivalent: `tests/test_energy_comfort_ui.py::test_actual_safety_pages_enable_energy_then_smoke_blocks_it` — **PASS** on `2d035f6` (Streamlit AppTest).
+Automated equivalent: `tests/test_energy_comfort_ui.py::test_actual_safety_pages_enable_energy_then_smoke_blocks_it` — **PASS** (Streamlit AppTest; part of the 338-test suite on 1 November).
 
 Manual-only variance: widget timing, first-load session state, or stale browser tab — use a fresh session if control runs before safety clear.
 

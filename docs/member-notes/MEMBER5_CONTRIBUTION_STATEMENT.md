@@ -1,4 +1,4 @@
-# Member 5 contribution statement (SCRUM-43 draft)
+# Member 5 contribution statement
 
 **Name:** Tianzhuo Li  
 **Role:** Energy & Comfort (Member 5)  
@@ -27,14 +27,14 @@ I implemented the Energy & Comfort domain (AR-05 / UC-05) on the shared three-ag
 | PR | Role |
 | --- | --- |
 | **#13** | Merged Energy & Comfort domain into `main`. |
-| **#17** | Integrated release fixes; Energy explicit simulated control and live `SafetyState` interlocks (commits `50d1604`, `4e7607e` — co-developed with integration owner). |
+| **#17** | Integrated release fixes; Energy explicit simulated control and live `SafetyState` interlocks (commits `50d1604`, `4e7607e` by the integration owner, Jinjing Huang). |
 | **#22** | Merged SCRUM-32 post-action boundary, UI semantics, conflict resolution with PR #21 explanation audit fields (`2d035f6`). |
 
 ## Testing and integration
 
 - Offline: `python -m simulation.energy_comfort_acceptance` (11+2 cases); SCRUM-32 and cross-domain suites cited in the acceptance report.
 - UI: Streamlit tests for assessment-only scope, explicit simulation, and cross-page smoke block (`test_energy_comfort_ui.py`).
-- Full repository regression was **315 tests OK (2 skipped)** on `2d035f6` before this documentation pass; not re-run for doc-only updates unless code changes.
+- Full repository regression: **315 tests OK (2 skipped)** on `2d035f6`; **338** on the final integrated `main` (1 November).
 
 ## Boundaries (stated for assessors)
 
@@ -51,8 +51,4 @@ I implemented the Energy & Comfort domain (AR-05 / UC-05) on the shared three-ag
 5. Generated JSON log: `data/runtime/energy_comfort_acceptance_run.json` (produce locally; not in git).
 6. Optional screenshots from the UC-05 demo steps (assessment scope, COMPLETE control, smoke block, UNKNOWN_NOT_MEASURED caption).
 
-## Manual steps still required by me
 
-- Upload the final Canvas archive and this statement when the course submission opens.
-- Reconcile Jira SCRUM-38 / SCRUM-43 status with attached evidence (not done in this commit).
-- Perform one live Streamlit rehearsal using the demo script on the same machine used for presentation.

@@ -25,7 +25,7 @@ AR-05 / UC-05 / MR-08 / MR-09 (prototype scope). Generated from `python -m simul
 | Explicit UI control | `EXPLICIT_SIMULATION` | Approved panel + session `SafetyState` + `run_energy_control` |
 | Formal automatic integration | `FORMAL_CONTROL_PENDING` | `ACTIVE_FORMAL_CONTROL_CONTRACT` gates remain false |
 | Device readback | **PASS when tested** | `DeviceAutomationAgent` independent readback; `ActionResult.success = accepted and verified` |
-| Room environment after action | **NOT PASS** | `post_action_environment.status = UNKNOWN_NOT_MEASURED` (not a comfort/savings claim) |
+| Room environment after action | **NOT MEASURED** | `post_action_environment.status = UNKNOWN_NOT_MEASURED` (not a comfort/savings claim) |
 
 ## Offline acceptance results (`simulation.energy_comfort_acceptance`)
 
@@ -74,13 +74,13 @@ cd <clean ELEC5620 checkout at 2d035f6>
 .venv\Scripts\python -m unittest discover -s tests -p "test_energy_comfort_ui.py" -q
 ```
 
-Full machine JSON for this run: `data/runtime/energy_comfort_acceptance_run.json` (git-ignored; attach to Jira SCRUM-38 if required).
+Full machine JSON for this run: `data/runtime/energy_comfort_acceptance_run.json` (git-ignored).
 
-## Limits (do not claim in demo or Jira)
+## Scope limits
 
 - No measured temperature drop, occupancy change or energy savings after control.
-- `UNKNOWN_NOT_MEASURED` is an honest **non-PASS** for environment verification, not evidence of improvement.
-- Formal Energy dispatch via `evaluate_formal_control_attempt` remains **PENDING** until team-approved M2/M4 contracts are enabled.
+- `UNKNOWN_NOT_MEASURED`: the prototype has no environment sensor, so the room is not re-measured after control.
+- Unattended automatic dispatch (`evaluate_formal_control_attempt`) is disabled; control runs through the explicitly approved panel.
 - Eligibility worksheet fields on the assessment panel are demo-only; live clearance comes from Elderly Safety and Home Security workflow results in the same Streamlit session.
 
 ## Defects

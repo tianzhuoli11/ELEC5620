@@ -55,9 +55,9 @@ prototype values, not medical advice; record agreed changes in Jira and here.
 | Ext. 1 model unavailable -> MEDIUM | `apply_llm_fallback` |
 | Ext. 2 low risk -> false alarm | LOW decision, no action |
 | Ext. 3 high risk -> skip confirmation | HIGH decision: notification + light, `requires_human_review=False` |
-| Steps 5-6 ask resident, interpret reply | **not yet** (SCRUM-24): baseline graph has no pause point; MEDIUM is blocked with `requires_human_review` |
-| Step 7 model drafts alert, coordinator checks privacy | **not yet** (SCRUM-24); message is rule text, describes the condition only |
-| Step 9 / Ext. 6 caregiver ack timeout -> operator | **not yet** (SCRUM-25) |
+| Steps 5-6 ask resident, interpret reply | Sprint 1 (SCRUM-24): baseline graph has no pause point; MEDIUM is blocked with `requires_human_review` |
+| Step 7 model drafts alert, coordinator checks privacy | Sprint 1 (SCRUM-24); message is rule text, describes the condition only |
+| Step 9 / Ext. 6 caregiver ack timeout -> operator | Sprint 1 (SCRUM-25) |
 
 ## Proposed shared-contract additions (for review, not changed here)
 
@@ -68,11 +68,6 @@ prototype values, not medical advice; record agreed changes in Jira and here.
 - A confirmation pause/resume path in `agents/graph.py` for MEDIUM events
   (SCRUM-24); I will propose it as a separate PR.
 
-## Not done yet
+## Next sprint
 
-- Real campus-qwen proposal provider for falls (Yang's shared adapter); rules
-  run alone until then and the trace shows `llm_fallback`.
-- Resident confirmation, reply interpretation, caregiver acknowledgement
-  timeout and escalation (SCRUM-24 / SCRUM-25, Sprint 1).
-- Streamlit view for elderly safety (UI owner to be nominated).
-- Sprint Review feedback; record it in Jira when it actually happens.
+Delivered in Sprint 1 ([YUANBO_SPRINT1.md](YUANBO_SPRINT1.md), [YUANBO_SPRINT1_OR04.md](YUANBO_SPRINT1_OR04.md)): campus-qwen fall and reply providers, resident confirmation, multi-level escalation and the Streamlit page.

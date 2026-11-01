@@ -4,7 +4,7 @@
 
 | Folder | Marking criterion | Read first | Also in the folder |
 | --- | --- | --- | --- |
-| [assessment/](assessment/) | 1. Stage 1 requirements and design | [REQUIREMENTS_TRACEABILITY.md](assessment/REQUIREMENTS_TRACEABILITY.md): every MR / AR / OR / NFR mapped to code, tests and acceptance evidence, plus changes from the Stage 1 deployment design | [INTEGRATED_CONTROL_REVIEW.md](assessment/INTEGRATED_CONTROL_REVIEW.md) (cross-domain safety interlocks) |
+| [assessment/](assessment/) | 1. Functions and features (Stage 1 requirements) | [REQUIREMENTS_TRACEABILITY.md](assessment/REQUIREMENTS_TRACEABILITY.md): every MR / AR / OR / NFR mapped to code, tests and acceptance evidence, plus changes from the Stage 1 deployment design | [INTEGRATED_CONTROL_REVIEW.md](assessment/INTEGRATED_CONTROL_REVIEW.md) (cross-domain safety interlocks) |
 | [assessment/](assessment/) | 2. AI agent capabilities | [AI_EVALUATION.md](assessment/AI_EVALUATION.md): real model calls, rules versus model, evaluation-driven fixes | [EXPLANATIONS.md](assessment/EXPLANATIONS.md) (UC-06 decision explanations) |
 | [agile/](agile/) | 3. Agile development | [AGILE.md](agile/AGILE.md): burndown and flow charts, user stories, feedback loops | [SPRINT_REVIEWS.md](agile/SPRINT_REVIEWS.md) (sprint goals, results, the 28 Oct and 1 Nov meetings) |
 | [assessment/](assessment/) | 4. Advanced technologies | [ADVANCED_TECHNOLOGIES.md](assessment/ADVANCED_TECHNOLOGIES.md) | [deployment/DEPLOYMENT.md](deployment/DEPLOYMENT.md) (venv, Docker, CI) |

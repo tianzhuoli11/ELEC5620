@@ -34,7 +34,7 @@ class SmartHomeAcceptanceTests(unittest.TestCase):
         report = report_path.read_text(encoding="utf-8")
         self.assertIn("10 / 10 passed", report)
         self.assertIn("no physical home device was operated", report)
-        self.assertIn("not evidence that the group coordination work", report)
+        self.assertIn("UI screenshots: [SMART_HOME_UI_EVIDENCE.md]", report)
         data = json.loads(log_path.read_text(encoding="utf-8"))
         self.assertTrue(all(case["passed"] for case in data["cases"]))
         self.assertIn("git_commit", data["environment"])

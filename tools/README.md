@@ -1,6 +1,6 @@
 # Device tools and adapters
 
-Store DeviceControlTool, command schemas, device adapters, state queries and verification interfaces here. Yang Yang integrates this layer; domain owners provide action requirements and tests.
+`device.py` defines the `DeviceTool` contract (commands, state queries and verification) used by DeviceAutomationAgent. Yang Yang owns this layer.
 
 Simulated device state lives in `simulation/`; this directory provides the common entry point used by DeviceAutomationAgent. Future real adapters must follow the same contract.
 

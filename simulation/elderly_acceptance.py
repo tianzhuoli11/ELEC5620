@@ -223,7 +223,7 @@ def _fallback_case(c: Case, provider: Callable, scenario: str) -> None:
             and fall.evidence_source == "llm_fallback")
     c.check("resident is asked (not silently closed)", r.outcome == "AWAITING_CONFIRMATION")
     c.check("fallback logged in shared assessment", r.assessment.fallback_used and "[llm_fallback]" in r.assessment.evidence)
-    c.actual = f"model {c.title.split(':')[-1].strip()} -> MEDIUM fallback; {r.outcome}; evidence={r.assessment.evidence}"
+    c.actual = f"{c.title.split(':')[-1].strip()} -> MEDIUM fallback; {r.outcome}; evidence={r.assessment.evidence}"
 
 
 def case_llm_unavailable(c: Case) -> None:
@@ -510,11 +510,11 @@ def write_report(cases: list[Case], env: dict[str, str], path: Path) -> None:
     lines += [
         "",
         "| Defect | Found | Fix | Retest |", "| --- | --- | --- | --- |",
-        "| Page test read the escalation record as a workflow record (`KeyError: 'workflow'`) | 25 Oct, `tests/test_elderly_ui.py` | Select workflow records by `record_type` (commit 5377e46) | Full suite OK, 25 Oct |",
+        "| Page test read the escalation record as a workflow record (`KeyError: 'workflow'`) | 25 Oct, `tests/test_elderly_ui.py` | Select workflow records by `record_type` (PR #10) | Full suite OK, 25 Oct |",
         "",
-        "## Screenshots to attach (Streamlit page)",
+        "## Manual demo steps (Streamlit page)",
         "",
-        "Run `streamlit run app.py` → **Elderly Safety**, capture each, and attach to Jira SCRUM-34:",
+        "Run `streamlit run app.py` → **Elderly Safety**. Screenshots: [ELDERLY_SAFETY_UI_EVIDENCE.md](ELDERLY_SAFETY_UI_EVIDENCE.md).",
         "",
         "1. **Safe reply** — \"Fall, then not moving (30 s)\" → Run → quick reply *I'm fine* → banner *No alert needed*.",
         "2. **Help request** — same scenario → type *Help, I can't get up* → Send → banner HIGH, alert SIMULATED, light verified.",
@@ -523,7 +523,7 @@ def write_report(cases: list[Case], env: dict[str, str], path: Path) -> None:
         "5. **Device failure** — \"Fall, still on the floor (90 s)\" + *All room lights offline* → FAILED, light error shown.",
         "6. Optional, on VPN with a key — AI toggle on, any scenario → *Model rationale* caption.",
         "",
-        "Full machine log of this run: `data/runtime/elderly_acceptance.json` (git-ignored; attach to Jira if needed).",
+        "Full machine log of this run: `data/runtime/elderly_acceptance.json` (git-ignored).",
         "",
     ]
     path.parent.mkdir(parents=True, exist_ok=True)

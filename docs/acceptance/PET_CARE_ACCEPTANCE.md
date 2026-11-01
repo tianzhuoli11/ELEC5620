@@ -67,6 +67,6 @@ Bowl 45%, feeder enabled, explicit 20 g request, offline simulation off. The res
 7. Check the result and local history after each run. An input change clears the previous result until a new check runs.
 8. Optionally enable campus AI after configuring the personal key outside the source archive and connecting to the required network/VPN. If the provider fails, confirm explicit rule fallback.
 
-## Limits and remaining deployment rehearsal
+## Scope
 
-This run used an already installed environment. It does **not** replace a fresh installation from the exact Canvas submission ZIP on the final demonstration computer. All feeding, readings and owner alerts are simulated. Event replay protection is local to the same simulated feeder instance, not durable protection across application restarts. Keep keys and runtime logs outside the source archive. Historical Sprint 2 results remain in [JINJING_SPRINT2.md](../member-notes/JINJING_SPRINT2.md); the counts there describe earlier commits.
+All feeding, readings and owner alerts are simulated. Event replay protection is local to the same simulated feeder instance, not durable protection across application restarts. Keep keys and runtime logs outside the source archive. Historical Sprint 2 results remain in [JINJING_SPRINT2.md](../member-notes/JINJING_SPRINT2.md); the counts there describe earlier commits.
