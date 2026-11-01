@@ -37,12 +37,21 @@ class SmartHomeControlPageTests(unittest.TestCase):
 
     def test_good_night_command_shows_four_verified_actions(self) -> None:
         self.open_page()
+        self.assertIn("Core UC-02 example", "\n".join(item.value for item in self.app.markdown))
         self.app.button(key="run-smart-home-command").click().run()
         self.assertEqual(list(self.app.exception), [])
-        result = self.app.session_state["smart_home_result"]["workflow"]
+        saved = self.app.session_state["smart_home_result"]
+        result = saved["workflow"]
         self.assertEqual(result.outcome, "COMPLETE")
         self.assertEqual(len(result.action_results), 4)
+        self.assertEqual(saved["submitted_scenario"], "Good night")
+        self.assertEqual(saved["mode_before"], "HOME")
+        self.assertEqual(saved["mode_after"], "NIGHT")
+        self.assertGreaterEqual(saved["workflow_ms"], 0)
         self.assertEqual(self.app.session_state["smart_home_mode_state"].current_mode, "NIGHT")
+        page_text = "\n".join(item.value for item in self.app.markdown)
+        self.assertIn("Night mode activated and verified", page_text)
+        self.assertIn("4 of 4 planned device changes", page_text)
         record = json.loads(self.record_path.read_text(encoding="utf-8").strip())
         self.assertEqual(record["outcome"], "COMPLETE")
 
@@ -84,6 +93,18 @@ class SmartHomeControlPageTests(unittest.TestCase):
         tool = self.app.session_state["smart_home_device_tool"]
         self.assertEqual(tool.states, smart_home_ui.default_device_states())
         self.assertEqual(self.app.session_state["smart_home_mode_state"].current_mode, "HOME")
+
+    def test_edited_preset_is_recorded_as_custom_request(self) -> None:
+        self.open_page()
+        self.app.text_area(key="smart_home_text").set_value("Turn on the bedroom light").run()
+        self.app.button(key="run-smart-home-command").click().run()
+        saved = self.app.session_state["smart_home_result"]
+        self.assertEqual(saved["submitted_scenario"], "Custom request")
+        self.assertEqual(saved["workflow"].goal.intent, "direct_control")
+
+    def test_friendly_state_text_explains_lock_and_temperature(self) -> None:
+        text = smart_home_ui._friendly_state({"locked": True, "temperature_c": 22})
+        self.assertEqual(text, "Locked; 22 °C")
 
 
 if __name__ == "__main__":

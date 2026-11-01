@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from html import escape
 import os
+from time import perf_counter
 
 import streamlit as st
 
@@ -26,6 +27,50 @@ SCENARIOS = {
     "Sensitive action": "Unlock the front door.",
     "Custom request": "",
 }
+SCENARIO_DETAILS = {
+    "Good night": {
+        "label": "Core UC-02 example",
+        "description": (
+            "Turns off the bedroom light, closes the bedroom curtain, locks the front door, "
+            "and sets the air conditioner to sleep mode at 22 °C. HomeMode changes to NIGHT "
+            "only after all returned device states are verified."
+        ),
+    },
+    "Leaving home": {
+        "label": "Optional HomeMode demonstration",
+        "description": (
+            "Secures the home, closes the curtain, and runs the air conditioner in eco mode "
+            "at 26 °C. HomeMode changes to AWAY only after every requested state is verified."
+        ),
+    },
+    "Relax mode": {
+        "label": "Additional comfort preset",
+        "description": (
+            "Sets the bedroom light to 40%, closes the curtain, and runs the air conditioner "
+            "in comfort mode at 23 °C. The front-door lock is not changed."
+        ),
+    },
+    "Sensitive action": {
+        "label": "UC-02 sensitive-action path",
+        "description": (
+            "Requests a front-door unlock. No device command is sent until the resident gives "
+            "explicit confirmation; declining keeps the door locked."
+        ),
+    },
+    "Custom request": {
+        "label": "Custom natural-language command",
+        "description": (
+            "Enter a supported home mode or device request. Ambiguous commands ask for "
+            "clarification, and unsupported commands do not operate a device."
+        ),
+    },
+}
+SCENARIO_INTENTS = {
+    "Good night": "night_mode",
+    "Leaving home": "away_mode",
+    "Relax mode": "relax_mode",
+    "Sensitive action": "unlock_door",
+}
 FAULTS = {
     "No simulated fault": None,
     "Air conditioner offline": "living-room-ac",
@@ -38,6 +83,20 @@ OUTCOME_LABELS = {
     "AWAITING_CONFIRMATION": "Confirmation is required before execution",
     "CLARIFICATION_REQUIRED": "More information is required",
     "ASSESSED": "Request assessed without device action",
+}
+DEVICE_LABELS = {
+    "bedroom-light": "Bedroom light",
+    "bedroom-curtain": "Bedroom curtain",
+    "front-door-lock": "Front door lock",
+    "living-room-ac": "Living-room air conditioner",
+}
+INTENT_LABELS = {
+    "night_mode": "Night mode",
+    "away_mode": "Away mode",
+    "relax_mode": "Relax mode",
+    "unlock_door": "Front-door unlock",
+    "direct_control": "Direct device control",
+    "clarification_required": "Clarification required",
 }
 
 
@@ -60,11 +119,123 @@ def _reset_demo() -> None:
     _clear_result()
 
 
+def _friendly_state(state: dict) -> str:
+    labels = {
+        "power": lambda value: f"Power {value}",
+        "brightness": lambda value: f"Brightness {value}%",
+        "position": lambda value: str(value).capitalize(),
+        "locked": lambda value: "Locked" if value else "Unlocked",
+        "mode": lambda value: f"{str(value).capitalize()} mode",
+        "temperature_c": lambda value: f"{value} °C",
+    }
+    return "; ".join(labels.get(key, lambda value: f"{key}={value}")(value) for key, value in state.items())
+
+
 def _state_rows(states: dict[str, dict]) -> list[dict[str, str]]:
     return [
-        {"Device": device_id, "Observed state": ", ".join(f"{key}={value}" for key, value in state.items())}
+        {
+            "Device": DEVICE_LABELS.get(device_id, device_id),
+            "Observed state": _friendly_state(state),
+        }
         for device_id, state in states.items()
     ]
+
+
+def _effective_scenario(selected: str, text: str) -> str:
+    """Treat an edited preset as a custom request, not as evidence for that preset."""
+
+    preset_text = SCENARIOS.get(selected, "")
+    if selected != "Custom request" and text.strip() == preset_text.strip():
+        return selected
+    return "Custom request"
+
+
+def _result_title(outcome: str, intent: str | None) -> str:
+    if outcome == "COMPLETE":
+        return {
+            "night_mode": "Night mode activated and verified",
+            "away_mode": "Away mode activated and verified",
+            "relax_mode": "Relax mode activated and verified",
+            "unlock_door": "Front door unlock verified",
+            "direct_control": "Requested device state verified",
+        }.get(intent or "", OUTCOME_LABELS[outcome])
+    return OUTCOME_LABELS.get(outcome, outcome)
+
+
+def _result_summary(result) -> str:
+    total = len(result.action_results)
+    verified = sum(action.success for action in result.action_results)
+    if result.outcome == "COMPLETE" and total:
+        return f"{verified} of {total} planned device changes were accepted and verified from returned device states."
+    if result.outcome == "PARTIAL":
+        return f"{verified} of {total} device changes were verified. Review the incomplete operation below."
+    if result.outcome == "FAILED":
+        return "No requested device change could be verified as complete."
+    if result.outcome == "AWAITING_CONFIRMATION":
+        return "The plan contains a sensitive action. No device command has been sent yet."
+    if result.outcome == "CLARIFICATION_REQUIRED":
+        return "The request was not clear enough to create a safe device plan. No device command was sent."
+    return "The request was assessed without dispatching a device command."
+
+
+def _decision_source(saved: dict, evidence: str) -> str:
+    lowered = evidence.lower()
+    if saved["requested_ai"] and not saved["ai_configured"]:
+        return "Safe rule fallback (campus AI unavailable)"
+    if "campus qwen structured proposal" in lowered:
+        return "Campus AI proposal + deterministic policy validation"
+    if "fallback" in lowered:
+        return "Safe deterministic rule fallback"
+    return "Deterministic bilingual rules + policy validation"
+
+
+def _result_rows(result) -> list[dict[str, str]]:
+    rows = []
+    for action in result.action_results:
+        rows.append({
+            "Device": DEVICE_LABELS.get(action.device_id, action.device_id),
+            "Result": "Verified" if action.success else "Not verified",
+            "Observed state": _friendly_state(action.returned_state) if action.returned_state else "No state returned",
+            "Issue": action.error or "-",
+        })
+    return rows
+
+
+def _result_table_html(result) -> str:
+    rows = []
+    for row in _result_rows(result):
+        status_class = "verified" if row["Result"] == "Verified" else "failed"
+        issue = "" if row["Issue"] == "-" else f'<small>{escape(row["Issue"])}</small>'
+        rows.append(
+            '<div class="device-result-row">'
+            f'<strong>{escape(row["Device"])}</strong>'
+            f'<span class="device-status {status_class}">{escape(row["Result"])}</span>'
+            f'<span class="device-observed">{escape(row["Observed state"])}{issue}</span>'
+            '</div>'
+        )
+    return '<div class="device-results">' + "".join(rows) + '</div>'
+
+
+def _plain_language_reason(result) -> str:
+    intent = result.goal.intent if result.goal else None
+    total = len(result.action_results)
+    verified = sum(action.success for action in result.action_results)
+    intent_text = INTENT_LABELS.get(intent or "", "The request")
+    if result.outcome == "COMPLETE" and total:
+        return (
+            f"{intent_text} produced a permitted {total}-device plan. Each device returned a state "
+            "that matched the requested target."
+        )
+    if result.outcome == "PARTIAL":
+        return (
+            f"{intent_text} produced a permitted plan. {verified} of {total} returned device states "
+            "matched their targets; the remaining operation is identified below."
+        )
+    if result.outcome == "AWAITING_CONFIRMATION":
+        return "Unlocking a door is sensitive, so the system paused before sending any device command."
+    if result.outcome == "CLARIFICATION_REQUIRED":
+        return "The request did not identify one safe, supported goal, so no device command was sent."
+    return "The workflow did not receive enough verified evidence to claim successful device control."
 
 
 def _device_tool() -> SimulatedDeviceTool:
@@ -75,7 +246,7 @@ def _device_tool() -> SimulatedDeviceTool:
     return tool
 
 
-def _run_request(text: str, use_ai: bool, fault_name: str) -> None:
+def _run_request(text: str, use_ai: bool, fault_name: str, selected_scenario: str) -> None:
     mode_state = st.session_state.get("smart_home_mode_state")
     if not isinstance(mode_state, HomeModeState):
         mode_state = HomeModeState()
@@ -93,6 +264,8 @@ def _run_request(text: str, use_ai: bool, fault_name: str) -> None:
         provider = lambda event: propose_smart_home_goal(event, config)
         ai_configured = True
 
+    mode_before = mode_state.current_mode
+    started = perf_counter()
     result = run_smart_home_control(
         make_user_goal_event(text),
         device_tool=device_tool,
@@ -100,6 +273,7 @@ def _run_request(text: str, use_ai: bool, fault_name: str) -> None:
         mode_state=mode_state,
         record_path=DEFAULT_RECORD_PATH,
     )
+    elapsed_ms = (perf_counter() - started) * 1000
     st.session_state.smart_home_result = {
         "workflow": result,
         "device_tool": device_tool,
@@ -108,6 +282,11 @@ def _run_request(text: str, use_ai: bool, fault_name: str) -> None:
         "fault": fault_name,
         "requested_ai": use_ai,
         "ai_configured": ai_configured,
+        "submitted_scenario": _effective_scenario(selected_scenario, text),
+        "submitted_request": text.strip(),
+        "mode_before": mode_before,
+        "mode_after": mode_state.current_mode,
+        "workflow_ms": elapsed_ms,
     }
 
 
@@ -115,6 +294,7 @@ def _respond_to_sensitive_action(approved: bool) -> None:
     saved = st.session_state.get("smart_home_result")
     if not isinstance(saved, dict):
         raise ValueError("No Smart Home Control result is awaiting confirmation")
+    started = perf_counter()
     result = resume_smart_home_confirmation(
         saved["workflow"],
         approved=approved,
@@ -124,12 +304,15 @@ def _respond_to_sensitive_action(approved: bool) -> None:
     )
     saved["workflow"] = result
     saved["states"] = saved["device_tool"].states
+    saved["mode_after"] = saved["mode_state"].current_mode
+    saved["workflow_ms"] += (perf_counter() - started) * 1000
 
 
 def render_smart_home_control() -> None:
     st.markdown(
         '<div class="page-heading"><h1>Smart Home Control</h1>'
-        '<p>Describe a desired home state, then review the plan and independently verified device results.</p></div>',
+        '<p>Give one natural-language goal. The coordinator interprets it, the automation agent applies a safe plan, '
+        'and returned device states are independently verified.</p></div>',
         unsafe_allow_html=True,
     )
 
@@ -150,10 +333,16 @@ def render_smart_home_control() -> None:
                 key="smart_home_scenario",
                 on_change=_scenario_changed,
             )
+            scenario_detail = SCENARIO_DETAILS[selected]
+            st.markdown(
+                f'<div class="scenario-brief"><strong>{escape(scenario_detail["label"])}</strong>'
+                f'<span>{escape(scenario_detail["description"])}</span></div>',
+                unsafe_allow_html=True,
+            )
             if "smart_home_text" not in st.session_state:
                 st.session_state.smart_home_text = SCENARIOS[selected]
             text = st.text_area(
-                "Natural-language request",
+                "Resident request (editable)",
                 key="smart_home_text",
                 height=96,
                 on_change=_clear_result,
@@ -186,7 +375,7 @@ def render_smart_home_control() -> None:
             if submitted:
                 try:
                     with st.spinner("Interpreting, planning and verifying…"):
-                        _run_request(text, use_ai, fault_name)
+                        _run_request(text, use_ai, fault_name, selected)
                     st.rerun()
                 except OSError:
                     _clear_result()
@@ -208,15 +397,49 @@ def render_smart_home_control() -> None:
             else:
                 result = saved["workflow"]
                 outcome_name = result.outcome
-                css = "low" if outcome_name == "COMPLETE" else "medium" if outcome_name in ("PARTIAL", "CLARIFICATION_REQUIRED", "AWAITING_CONFIRMATION") else "high"
+                actual_intent = result.goal.intent if result.goal else None
+                expected_intent = SCENARIO_INTENTS.get(saved["submitted_scenario"])
+                intent_mismatch = expected_intent is not None and actual_intent != expected_intent
+                css = "high" if intent_mismatch else "low" if outcome_name == "COMPLETE" else "medium" if outcome_name in ("PARTIAL", "CLARIFICATION_REQUIRED", "AWAITING_CONFIRMATION") else "high"
+                title = "Scenario/result mismatch detected" if intent_mismatch else _result_title(outcome_name, actual_intent)
+                summary = (
+                    "The interpreted goal does not match the selected preset, so this result must not be presented as a successful preset demonstration."
+                    if intent_mismatch else _result_summary(result)
+                )
                 st.markdown(
                     f'<div class="result-banner risk-{css}"><span class="risk-label">{escape(outcome_name)}</span>'
-                    f'<h3>{escape(OUTCOME_LABELS.get(outcome_name, outcome_name))}</h3>'
-                    f'<p>{escape(result.assessment.rationale)}</p></div>',
+                    f'<h3>{escape(title)}</h3>'
+                    f'<p>{escape(summary)}</p></div>',
                     unsafe_allow_html=True,
                 )
+                if intent_mismatch:
+                    st.error(
+                        f"Safety check: {saved['submitted_scenario']} should resolve to {expected_intent}, "
+                        f"but the workflow returned {actual_intent}. Reset the demo before presenting this result."
+                    )
                 if result.goal:
-                    st.caption(f"Interpreted intent: {result.goal.intent} · {result.goal.evidence}")
+                    verified = sum(action.success for action in result.action_results)
+                    total = len(result.action_results)
+                    mode_change = (
+                        saved["mode_before"]
+                        if saved["mode_before"] == saved["mode_after"]
+                        else f'{saved["mode_before"]} -> {saved["mode_after"]}'
+                    )
+                    source = _decision_source(saved, result.goal.evidence)
+                    st.markdown(
+                        '<div class="execution-summary">'
+                        f'<div><span>Scenario</span><strong>{escape(saved["submitted_scenario"])}</strong></div>'
+                        f'<div><span>Interpreted goal</span><strong>{escape(INTENT_LABELS.get(result.goal.intent, result.goal.intent))}</strong></div>'
+                        f'<div><span>HomeMode</span><strong>{escape(mode_change)}</strong></div>'
+                        f'<div><span>Verified</span><strong>{verified}/{total if total else "-"}</strong></div>'
+                        '</div>',
+                        unsafe_allow_html=True,
+                    )
+                    st.caption(f"Decision source: {source} | Workflow time: {saved['workflow_ms']:.1f} ms")
+                    st.markdown(
+                        f'<div class="decision-note"><strong>Why this result</strong><span>{escape(_plain_language_reason(result))}</span></div>',
+                        unsafe_allow_html=True,
+                    )
                 if result.goal and result.goal.clarification_question:
                     st.warning(result.goal.clarification_question)
                 if result.pending_confirmation is not None:
@@ -238,19 +461,10 @@ def render_smart_home_control() -> None:
                     st.warning("The command result is shown, but its local audit record could not be saved.")
 
                 if result.action_results:
-                    rows = []
-                    for action in result.action_results:
-                        rows.append({
-                            "Device": action.device_id,
-                            "Accepted": action.accepted,
-                            "Verified": action.verified,
-                            "Observed state": ", ".join(f"{key}={value}" for key, value in action.returned_state.items()) or "—",
-                            "Error": action.error or "—",
-                        })
-                    st.dataframe(rows, hide_index=True, width="stretch")
+                    st.markdown(_result_table_html(result), unsafe_allow_html=True)
                 else:
                     st.caption("No device command was dispatched.")
-                st.caption(f"Failure simulation: {saved['fault']}")
+                st.caption(f"Failure simulation used for this run: {saved['fault']}")
                 with st.expander("Current simulated device states"):
                     st.dataframe(_state_rows(saved["states"]), hide_index=True, width="stretch")
                 with st.expander("Agent trace and audit evidence"):
