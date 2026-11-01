@@ -42,7 +42,7 @@ project domains.
 | Campus proposal with Boolean power | `true` / `false` is normalised to the allow-listed `on` / `off` state before planning |
 | Negated direct command | `Don't turn off the bedroom light` requests clarification and dispatches no action |
 
-## Sprint Review feedback and response
+## PR #7 review feedback and response
 
 Reviewer `jhua0127` exercised the pull request through the live Campus AI path
 over the university network/VPN. The review confirmed that the night-mode flow
@@ -85,8 +85,3 @@ one-time replay protection, verified HomeMode persistence, state verification,
 Streamlit UI, audit records, automated tests and demonstration scenarios.
 Integrated the domain with the shared `HomeCoordinatorAgent` and
 `DeviceAutomationAgent` contracts.
-
-## Evidence still to add after it actually occurs
-
-- Screenshots or recordings of the final demonstration scenarios.
-- The clean-deployment rehearsal using the exact source downloaded from Canvas.

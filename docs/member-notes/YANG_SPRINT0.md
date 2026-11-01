@@ -60,4 +60,3 @@ network call was not claimed.
 - Add an explicit approve/decline interaction for sensitive unlock requests.
 - Introduce typed `SmartDevice` / `DeviceContext` models.
 - Persist the verified `HomeMode` for later monitoring context.
-- Rehearse deployment from the Canvas-submitted source and attach real Jira and Sprint Review evidence when those activities occur.

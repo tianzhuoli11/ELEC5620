@@ -12,7 +12,7 @@ The Sprint 0 summary was **compiled afterwards** from Jira status history, sprin
 
 | Member | Jira | Outcome | Evidence |
 | --- | --- | --- | --- |
-| Yuanbo Zhang | SCRUM-12, 17, 18 | Fall risk assessment; agent message contracts; coordinator orchestration | PR #4 (21 Oct), `docs/YUANBO_SPRINT0.md` |
+| Yuanbo Zhang | SCRUM-12, 17, 18 | Fall risk assessment; agent message contracts; coordinator orchestration | PR #4 (21 Oct), `docs/member-notes/YUANBO_SPRINT0.md` |
 | Yang Yang | SCRUM-13, 19, 23 | Natural-language goals, simulated devices, LLM fallback | PR #6 (24 Oct) |
 | Jinjing Huang | SCRUM-14, 20 | Pet monitoring; shared sensor/event models; shared LangGraph framework | PR #3 shared framework and PR #2 (20 Oct) |
 | Yan Li (Flora) | SCRUM-15, 21 | Hazard/intrusion monitoring; security policy and notifications | Jira Done 21 Oct and 28 Oct |
@@ -53,7 +53,7 @@ The Sprint 0 summary was **compiled afterwards** from Jira status history, sprin
 - **Elderly UI:** a page test failed with `KeyError: 'workflow'` because escalation records share the log file. Records are now filtered by `record_type`. A Streamlit widget-state error was fixed by moving the reply buttons to callbacks.
 - **Integration check:** Elderly Safety was not yet reachable from the shared dashboard; the page was registered in `ui/domain_views.py`.
 
-**Problems observed:** a review bottleneck (items waited about four days in review), and several PRs merged by their own author without a second reviewer.
+**Problems observed:** a review bottleneck (items waited up to six days In Review), and several PRs merged by their own author without a second reviewer.
 
 **What changed in Sprint 2:** shared-file changes were opened as PRs for review, and integration was handled as a dedicated task (SCRUM-39, PR #17).
 
@@ -63,14 +63,14 @@ _The four discussion topics below are what was discussed at the meeting. The pro
 
 | Item            | Detail                                                                                                               |
 | --------------- | -------------------------------------------------------------------------------------------------------------------- |
-| Date and format | Tuesday 28 Oct 2026, in person; the first day of Sprint 2, one day after the planned end of Sprint 1                 |
+| Date and format | Wednesday 28 Oct 2026, in person; the first day of Sprint 2, one day after the planned end of Sprint 1                 |
 | Attendees       | Jinjing Huang, Yan Li (Flora), Tianzhuo Li, Yang Yang, Yuanbo Zhang                                                  |
 | Duration        | About 1 hour                                                                                                         |
 | Purpose         | Review where Sprint 1 stood, agree how the five domains would be integrated, and identify risks for the final sprint |
 
 **State of the project when the meeting took place (from Jira and git)**
 
-- Most Sprint 0 items (shared contracts and Core 1 scenarios) were marked Done on 21–24 Oct, about four days after the planned end of 20 Oct; two were still open.
+- Most Sprint 0 items (shared contracts and Core 1 scenarios) were marked Done on 21–24 Oct, about four days after the planned end of 20 Oct; one (SCRUM-13) was still open.
 - Sprint 1 (Core 2 workflows and Optional extensions) had 4 of 11 items Done by its planned end of 27 Oct. Two Smart Home stories had waited In Review since 24 Oct.
 - Each domain was still developed on its owner's branch. Elderly Safety, Smart Home Control and Pet Care were on `main`; Home Security and Energy & Comfort were merged later that day (PRs #12–#15).
 - No AI call had yet been verified end to end from every domain against the campus proxy.
@@ -97,8 +97,8 @@ _The four discussion topics below are what was discussed at the meeting. The pro
 | --- | --- | --- |
 | Progress | Home Security and Energy & Comfort reached `main` on 28 Oct; Elderly OR-04 integration followed on 28–29 Oct | PRs #12–#16 (28 Oct), #18 (29 Oct) |
 | Integration owner | Jinjing integrated the release, added cross-domain safety interlocks, then CI, Docker and the shared explanation page | PR #17 (30 Oct), #20 (CI and container deployment), #21 (decision explanations) |
-| Overdue tasks | Statuses were reconciled on 30 Oct; Sprint 0 was closed and Sprint 2 started in Jira; the delay is visible in the burndown | Burndown and cumulative-flow charts in AGILE.md |
-| VPN and campus model | An AI evaluation with real campus-qwen calls was added. On 31 Oct the only available course key was rejected (HTTP 401), so the Elderly reply evaluation used another OpenAI-compatible provider and records which | `docs/AI_EVALUATION.md`, PR #20, PR #26 |
+| Overdue tasks | Statuses were reconciled on 30 Oct; the delay is visible in the burndown | Burndown and cumulative-flow charts in AGILE.md |
+| VPN and campus model | An AI evaluation with real campus-qwen calls was added. On 31 Oct the course key used for the Elderly reply evaluation was rejected (HTTP 401), so that evaluation used another OpenAI-compatible provider and records which | `docs/assessment/AI_EVALUATION.md`, PR #20, PR #26 |
 
 **What the team learned from it**
 
@@ -117,7 +117,7 @@ _The four discussion topics below are what was discussed at the meeting. The pro
 | Area | Outcome | Evidence |
 | --- | --- | --- |
 | Integration | All five domains in one release with cross-domain safety interlocks | PR #17 (Jinjing Huang, 30 Oct) |
-| Deployment and CI | GitHub Actions on Python 3.11/3.13, Docker image with health check, tests inside the container | PR #20; `docs/DEPLOYMENT.md` |
+| Deployment and CI | GitHub Actions on Python 3.11/3.13, Docker image with health check, tests inside the container | PR #20; `docs/deployment/DEPLOYMENT.md` |
 | Explanations (OR-03 / UC-06) | Shared "Decision explanations" page for all domains | PR #21 |
 | Acceptance per use case | Elderly 18/18 (PR #19), Smart Home 10/10 plus UI screenshots (PR #24, #25), Energy & Comfort (SCRUM-38), Pet Care and Home Security (SCRUM-36, 37) | `docs/acceptance/` |
 | Safety review | Elderly reply rules redesigned after two review rounds | PR #26 |
@@ -131,31 +131,51 @@ _The four discussion topics below are what was discussed at the meeting. The pro
 - PR #25: Yuanbo Zhang reviewed the Smart Home UI evidence against a rerun of the automated acceptance (10/10) and approved with two non-blocking notes.
 - PR #26: Yang Yang and Jinjing Huang requested changes twice and found three classes of unsafe "safe" verdicts in the Elderly reply rules. This led to a design change, safe only for complete listed phrases, with the reviewers' examples kept as regression and workflow tests. Jinjing retested the final head and reported no remaining blockers.
 
-### Sprint 2 review and final retrospective: 1 Nov 2026
+### Sprint 2 review and final retrospective: 1 Nov 2026 (online)
 
 | Item | Detail |
 | --- | --- |
-| Date and format | Sunday 1 Nov 2026, _(in person / online)_ |
-| Attendees | _(fill in)_ |
-| Duration | _(fill in)_ |
+| Date and format | Sunday 1 Nov 2026, 13:34–14:05, online (Zoom) |
+| Attendees | Jinjing Huang, Yan Li (Flora), Tianzhuo Li, Yang Yang, Yuanbo Zhang |
+| Focus | A full manual end-to-end check of the integrated system before submission, then demonstration and submission planning |
 
-**Review: what each member demonstrated**
+**Review: manual end-to-end walkthrough**
 
-| Member | Scenario shown (success / failure or safety) | Result | Follow-up |
+Jinjing Huang ran the current `main` locally with the VPN connected and shared her screen; each owner directed the scenarios for their own page.
+
+| Page | Scenarios run | Observed result | Follow-up |
 | --- | --- | --- | --- |
-| Yuanbo Zhang | | | |
-| Yang Yang | | | |
-| Jinjing Huang | | | |
-| Yan Li (Flora) | | | |
-| Tianzhuo Li | | | |
+| Elderly Safety (Yuanbo Zhang) | Fall still on the floor; fall then not moving with a resident reply; dropped object then standing again; an unclear reply; all room lights offline; no acknowledgement until the operator is informed | Behaved as designed: immediate alert for HIGH, question and reply handling for MEDIUM, an alert that still goes out when the light fails, escalation on no acknowledgement | None |
+| Smart Home Control (Yang Yang) | Good night, Away, Relax and a custom request | Commands ran and were verified. Away switched everything off, which the team checked was intended | Yang to make the verified-result display easier to read (plain-language summary) |
+| Home Security (Yan Li) | Normal and response scenarios | Behaved as expected | Flora's evidence PR was still awaiting review at the time |
+| Energy & Comfort (Tianzhuo Li) | Adjustment with an occupied room and good comfort, 24 °C setpoint | Plan executed and was verified | None |
+| Pet Care (Jinjing Huang) | Page checked during the walkthrough | No issue raised | None |
 
-**Retrospective**
-- What went well:
-- What did not go well:
-- What we would change next time:
+Result: no blocking defect was found in the five pages. One usability improvement (the Smart Home result display) was agreed.
 
-**Actions before submission**
+**Discussion**
+
+1. **Demonstration format** (from the course Ed Discussion): about 15 minutes to deploy from the Canvas download, then a 12-minute demonstration. Show the five modules and their test results, then the architecture, the three agents and the agile evidence. Assessors may ask any member to locate the code behind a function, so each member must know where their code is. About two minutes per member.
+2. **Submission:** everything, including deployment instructions and evidence, must be inside the submitted source package, because it is downloaded and deployed on site.
+3. **Pull requests:** two PRs were still open. The team agreed that PRs are reviewed on GitHub by another member before merging rather than merged by their author; Jinjing and Flora would review each other's.
+4. **Jira and burndown:** because the Jira sprints were started late (30 Oct), Jira's built-in burndown does not reflect the real timeline. The team uses the charts rebuilt from Jira status history and git history, which show the delays as recorded.
+5. **Documentation:** the `docs/` folder had become hard to navigate; it is to be organised by marking criterion.
+6. **Campus model access:** Yuanbo has no working campus key; Jinjing's environment has working campus AI and VPN access.
+
+**Retrospective: lessons from this project**
+
+- *Went well:* all five domains work end to end on one shared framework; peer reviews on PRs (for example #8 and #26) found real defects before merging; the final walkthrough found no blocking issue.
+- *Did not go well:* Jira sprints were not started when they began, so Jira's built-in burndown does not show the real timeline and statuses lagged behind the code; several early PRs were merged by their author without review; not every member had campus model access; documentation grew without structure.
+- *Next time:* start each sprint in Jira on its first day and update the status in the same step as merging the PR; require a review before every merge; check external-service access (VPN, keys) early on the demonstration machine; keep one index for the documentation from the start.
+
+**Actions**
 
 | Action | Owner | Due |
 | --- | --- | --- |
-| | | |
+| Improve the Smart Home verified-result display, then re-check it | Yang Yang | 1 Nov |
+| Review and merge the open PRs (cross-review) | Jinjing Huang, Yan Li, Tianzhuo Li | 1 Nov |
+| Check whether anything else must be committed before packaging | Each member | 1 Nov, before 17:00 |
+| Merge the remaining work, organise `docs/`, add the agile charts and prepare the final package | Yuanbo Zhang | 1 Nov, about 17:00 |
+| Submit to Canvas, then download the submission and test the deployment from it | Team | 1 Nov |
+| Write a two-minute script for one's own part and share it in the group | Each member | Before the rehearsal |
+| Full rehearsal of the demonstration | Team | Mon 2 or Tue 3 Nov (demonstration on Wed) |

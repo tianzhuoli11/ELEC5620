@@ -36,7 +36,7 @@ when 30 s have passed and calls `resume(result, None)`.
 - `domains/base.py`: optional `ConfirmationHandler` protocol and `supports_confirmation()`.
 - `agents/coordinator.py`: `ask_resident`, `interpret_reply`, `escalate` (validation of domain output).
 - `agents/graph.py`: `pause` and `confirm` nodes, `route_kind == "confirm"`, `SmartHomeWorkflow.resume()`. Domains that do not implement the protocol behave exactly as before.
-- `docs/INTERFACES.md`, `docs/INTEGRATION_GUIDE.md`: one section each.
+- `docs/development/INTERFACES.md`, `docs/development/INTEGRATION_GUIDE.md`: one section each.
 
 ## Tests
 
@@ -57,8 +57,6 @@ trace. Each run and reply is appended to `data/runtime/elderly_safety.jsonl`
 `tests/test_elderly_ui.py` (6 Streamlit AppTest cases) covers registration,
 HIGH, safe reply, typed help, unclear then timeout, offline lights.
 
-## Not done yet
+## Next
 
-- Caregiver acknowledgement timeout, next-level contact, Human Operator notice (SCRUM-25).
-- Model-drafted alert text checked by the coordinator (UC-01 step 7); the alert is rule text describing the condition only.
-- Real campus-qwen reply interpreter (hook exists: `ElderlySafetyHandler(reply_interpreter=...)`).
+Escalation (SCRUM-25) and the campus-qwen reply interpreter are in [YUANBO_SPRINT1_OR04.md](YUANBO_SPRINT1_OR04.md). The caregiver alert uses rule text describing the condition.

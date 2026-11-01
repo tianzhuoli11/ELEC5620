@@ -37,7 +37,7 @@ Temperature improvement, measured energy savings and device-level attribution re
 
 ## Reproduce
 
-Local verification on 30 October: **305 repository tests passed, zero skips**, including the real campus fall/reply test and the new explanation organizer test. The organizer returned `USED` and preserved all 17 supported evidence cards. There are 28 new explanation/service/page tests; fault injection is not mislabeled as a real network request. Public CI intentionally skips the two campus/VPN cases.
+Local verification on 30 October: 305 repository tests passed, including the live explanation organizer test, which returned `USED` and preserved all 17 supported evidence cards. The feature adds 28 explanation, service and page tests.
 
 Run `python -m unittest discover -s tests -p "test_explanation*.py" -q`, then the full suite. On VPN with the existing campus key, set `ELEC5620_RUN_REAL_PROXY=1` to include the live explanation and Elderly tests.
 

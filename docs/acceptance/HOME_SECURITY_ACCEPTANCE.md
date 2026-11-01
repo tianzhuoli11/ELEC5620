@@ -60,14 +60,14 @@ Each stored image is 1902 × 1504 pixels. The screenshots show `Campus LLM: NOT_
 
 ## Existing verification retained
 
-The new browser run supplements the existing [Member 4 evidence report](../MEMBER4_HOME_SECURITY_EVIDENCE.md); it does not replace that report or overwrite historical logs.
+The new browser run supplements the earlier automated evidence consolidated in this report; it does not overwrite historical logs.
 
 | Existing evidence | Actual recorded result / scope |
 | --- | --- |
-| 28 October Home Security core/UI verification | **38 passed**, as recorded in the Member 4 report; this is a historical run, not a newly rerun suite |
+| 28 October Home Security core/UI verification | **38 passed** (28 October run) |
 | 28 October external-warning verification | **9 passed**, covering all four hazards, rejected input, relevance, model fallback and auditing |
 | Integrated repository regression at the accepted local integration | **253 passed, 1 live-proxy test skipped**; distinct from the 7 browser scenarios above |
-| [Current main CI, run 41178514735](https://github.com/tianzhuoli11/ELEC5620/actions/runs/41178514735) | Existing successful run on 31 October at `c9d9570`: Python 3.11/3.13 repository tests and container verification; no new full-suite execution was performed for this report |
+| [Current main CI, run 41178514735](https://github.com/tianzhuoli11/ELEC5620/actions/runs/41178514735) | Existing successful run on 31 October at `c9d9570`: Python 3.11/3.13 repository tests and container verification |
 | Historical local observations | `data/runtime/security_events.jsonl` contains LOW, MEDIUM approval/rejection/timeout, HIGH smoke, device-failure and external-warning observations. It was left unchanged; historical records do not embed an exact Git commit |
 
 Relevant production code is [monitoring.py](../../domains/home_security/monitoring.py), [response.py](../../domains/home_security/response.py), [integration.py](../../domains/home_security/integration.py), [external_warnings.py](../../domains/home_security/external_warnings.py) and the existing [Streamlit page](../../ui/home_security.py).
@@ -93,8 +93,6 @@ No acceptance expectation failed in the seven new browser scenarios.
 | Failed confirmation delivery could be obscured by AWAITING_CONFIRMATION | Commit `a3e99aa` added explicit Home Security delivery-failure messaging, with core and UI failure tests. A pending state does not assert delivery or grant permission |
 | Later main needed an explicit rejection-result notification | Commit [`8f4a6f7`](https://github.com/tianzhuoli11/ELEC5620/commit/8f4a6f7e254d4437a9e5163a65c29dd7c4fe2f4c) added it and extended the rejection regression. This later fix is covered by the linked main CI; it is **not** part of source `0edfd6f` used for these screenshots |
 
-The merged PR is evidence of integration, not proof of written peer feedback. This report does not invent a reviewer, meeting or approval.
-
 ## Reproduction
 
 Start the existing unified application with `.venv\Scripts\python -m streamlit run app.py`, select **Home Security**, and leave both campus-advice options off.
@@ -114,7 +112,6 @@ A normal startup uses `data/runtime/security_events.jsonl`. This evidence sessio
 - This UI run did not request the campus LLM. Previously recorded model-validation tests and CI remain separate evidence. An injected timeout is not a measurement of a real network timeout.
 - The no-reply button simulates expiry of the confirmation window; this report does not claim a background real-time timer.
 - Raw runtime JSONL files and browser profiles are not submission artifacts. The new runtime log remains git-ignored; the temporary browser profile was removed. Existing evidence was preserved.
-- Final Canvas-archive deployment on the demonstration machine, formal group UC-01–UC-05 acceptance linkage, and actual Review/Retrospective sign-off remain group evidence items; they are not marked complete here.
 
 ## Evidence requirement check
 
@@ -124,5 +121,4 @@ A normal startup uses `data/runtime/security_events.jsonl`. This evidence sessio
 - [x] Each new scenario has input, expected, actual, evidence and PASS/FAIL.
 - [x] Two real Streamlit screenshots are stored with this report.
 - [x] Actual run date, runtime and full Git commit are identified.
-- [x] SCRUM-37, PR #15 and the original Member 4 report are linked.
-- [ ] Final submitted-archive deployment and formal group sign-off are outside this evidence run.
+- [x] SCRUM-37 and PR #15 are linked.
