@@ -1,0 +1,200 @@
+{
+  "run_at": "2026-11-01T13:04:50.855863+11:00",
+  "source_commit": "b6865556ae7ed5f25ec26e11b78364dce8e193cf",
+  "python": "3.13.5",
+  "note": "Fictional inputs and simulated devices/alerts. No real feed or owner message.",
+  "cases": [
+    {
+      "case": "PET-01 verified feed",
+      "input": {
+        "food_level_percent": 0,
+        "feeding_requested": true,
+        "feeding_enabled": true
+      },
+      "expected": {
+        "risk": "MEDIUM",
+        "feeding": "VERIFIED",
+        "alert": "SIMULATED",
+        "dispatch_count": 1
+      },
+      "actual": {
+        "risk": "MEDIUM",
+        "feeding": "VERIFIED",
+        "alert": "SIMULATED",
+        "dispatch_count": 1
+      },
+      "workflow_outcome": "COMPLETE",
+      "fallback_used": true,
+      "record_saved": true,
+      "result": "PASS"
+    },
+    {
+      "case": "PET-02 feeder offline",
+      "input": {
+        "food_level_percent": 0,
+        "feeding_requested": true,
+        "feeding_enabled": true
+      },
+      "expected": {
+        "risk": "MEDIUM",
+        "feeding": "UNAVAILABLE",
+        "alert": "SIMULATED",
+        "dispatch_count": 0
+      },
+      "actual": {
+        "risk": "MEDIUM",
+        "feeding": "UNAVAILABLE",
+        "alert": "SIMULATED",
+        "dispatch_count": 0
+      },
+      "workflow_outcome": "COMPLETE",
+      "fallback_used": true,
+      "record_saved": true,
+      "result": "PASS"
+    },
+    {
+      "case": "PET-03 feeding refused above threshold",
+      "input": {
+        "food_level_percent": 45,
+        "feeding_requested": true,
+        "feeding_enabled": true
+      },
+      "expected": {
+        "risk": "LOW",
+        "feeding": "REJECTED",
+        "alert": null,
+        "dispatch_count": 0
+      },
+      "actual": {
+        "risk": "LOW",
+        "feeding": "REJECTED",
+        "alert": null,
+        "dispatch_count": 0
+      },
+      "workflow_outcome": "ASSESSED",
+      "fallback_used": true,
+      "record_saved": true,
+      "result": "PASS"
+    },
+    {
+      "case": "PET-04 feeder timeout",
+      "input": {
+        "food_level_percent": 0,
+        "feeding_requested": true,
+        "feeding_enabled": true
+      },
+      "expected": {
+        "risk": "MEDIUM",
+        "feeding": "UNAVAILABLE",
+        "alert": "SIMULATED",
+        "dispatch_count": 0
+      },
+      "actual": {
+        "risk": "MEDIUM",
+        "feeding": "UNAVAILABLE",
+        "alert": "SIMULATED",
+        "dispatch_count": 0
+      },
+      "workflow_outcome": "COMPLETE",
+      "fallback_used": true,
+      "record_saved": true,
+      "result": "PASS"
+    },
+    {
+      "case": "PET-05 readback mismatch",
+      "input": {
+        "food_level_percent": 0,
+        "feeding_requested": true,
+        "feeding_enabled": true
+      },
+      "expected": {
+        "risk": "MEDIUM",
+        "feeding": "UNVERIFIED",
+        "alert": "SIMULATED",
+        "dispatch_count": 1
+      },
+      "actual": {
+        "risk": "MEDIUM",
+        "feeding": "UNVERIFIED",
+        "alert": "SIMULATED",
+        "dispatch_count": 1
+      },
+      "workflow_outcome": "FAILED",
+      "fallback_used": true,
+      "record_saved": true,
+      "result": "PASS"
+    },
+    {
+      "case": "PET-06 owner alert failure",
+      "input": {
+        "food_level_percent": 0,
+        "feeding_requested": true,
+        "feeding_enabled": true
+      },
+      "expected": {
+        "risk": "MEDIUM",
+        "feeding": "VERIFIED",
+        "alert": "FAILED",
+        "dispatch_count": 1
+      },
+      "actual": {
+        "risk": "MEDIUM",
+        "feeding": "VERIFIED",
+        "alert": "FAILED",
+        "dispatch_count": 1
+      },
+      "workflow_outcome": "PARTIAL",
+      "fallback_used": true,
+      "record_saved": true,
+      "result": "PASS"
+    },
+    {
+      "case": "PET-07 AI timeout",
+      "input": {
+        "food_level_percent": 0,
+        "feeding_requested": false,
+        "feeding_enabled": false
+      },
+      "expected": {
+        "risk": "MEDIUM",
+        "feeding": "NOT_REQUESTED",
+        "alert": "SIMULATED",
+        "dispatch_count": 0
+      },
+      "actual": {
+        "risk": "MEDIUM",
+        "feeding": "NOT_REQUESTED",
+        "alert": "SIMULATED",
+        "dispatch_count": 0
+      },
+      "workflow_outcome": "COMPLETE",
+      "fallback_used": true,
+      "record_saved": true,
+      "result": "PASS"
+    },
+    {
+      "case": "PET-08 normal bowl reading",
+      "input": {
+        "food_level_percent": 45,
+        "feeding_requested": false,
+        "feeding_enabled": false
+      },
+      "expected": {
+        "risk": "LOW",
+        "feeding": "NOT_REQUESTED",
+        "alert": null,
+        "dispatch_count": 0
+      },
+      "actual": {
+        "risk": "LOW",
+        "feeding": "NOT_REQUESTED",
+        "alert": null,
+        "dispatch_count": 0
+      },
+      "workflow_outcome": "ASSESSED",
+      "fallback_used": true,
+      "record_saved": true,
+      "result": "PASS"
+    }
+  ]
+}
