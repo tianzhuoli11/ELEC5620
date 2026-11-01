@@ -2,6 +2,8 @@
 
 This record captures an actual Streamlit run of UC-02 on 31 October 2026. It complements the automated acceptance report; it is not a claim that physical devices or the live campus model were used.
 
+> **Historical evidence notice (1 November 2026):** these screenshots truthfully retain the original Night preset at 22 °C. PR #31 changed the current configurable simulated cooling preset to Sleep 24 °C. Do not use the screenshots as evidence of the current temperature value; use the latest generated [Smart Home Control acceptance report](SMART_HOME_CONTROL_ACCEPTANCE.md), which records the tested source commit and returned 24 °C device state. A new browser screenshot should replace UI-SH01 during the final clean-source rehearsal.
+
 | Item | Value |
 | --- | --- |
 | Source base | `main` at `78c3506` (PR #24 merged) |
