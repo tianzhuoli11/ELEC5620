@@ -14,7 +14,7 @@ Source: Group 11 Stage 1 report, sections 2, 3 and 5. Status describes the curre
 | MR-08 energy context assessment | `models/context.py`, energy assessment/integration | `test_energy_comfort.py`, assessment UI tests | Implemented; unknown values stay unknown |
 | MR-09 permitted plan, execution, verification, safety priority | `domains/energy_comfort/control.py`, `services/safety_state.py` | `test_release_controls.py`, `test_cross_domain_safety.py`, cross-page UI test | Implemented bounded simulated AC/curtain/light plans, fresh safety evidence and per-command checks. Physical effects/general replanning are not claimed |
 | AR-01 / UC-01 fall response | Elderly page, confirmation, escalation | 18-case acceptance runner and optional live AI case | Implemented simulated fall, safe/help/unclear replies and failures |
-| AR-02 / UC-02 multi-device command | Smart Home page, interpreter and plan | Smart Home unit/workflow/page tests | Implemented bounded bilingual goals, confirmation and verified state |
+| AR-02 / UC-02 multi-device command | Smart Home page, interpreter and plan | 10-case `smart_home_acceptance` runner, generated acceptance report, unit/workflow/page tests | Implemented bounded bilingual goals, confirmation and verified state; physical-device and final clean-source evidence remain manual |
 | AR-03 / UC-03 pet monitoring and feeding | Pet page, monitoring, optional feeder | Pet Sprint 2 acceptance tests | Core runs with optional feeder disabled/unavailable |
 | AR-04 / UC-04 security response | Home Security page and domain policy | Home Security and external-warning tests | Simulated LOW/MEDIUM/HIGH response with approval and timeout semantics |
 | AR-05 / UC-05 energy/comfort | Energy page and approved control panel | Energy assessment/control/cross-domain tests | Bounded plan implemented. Updated environmental sensors, quantified savings and general alternative-plan search remain incomplete |
@@ -30,6 +30,19 @@ Source: Group 11 Stage 1 report, sections 2, 3 and 5. Status describes the curre
 | NFR-04 reliability | Failure reporting, fallback and independent readback | Shared/device/domain fault tests and AI fault evaluation | Passed defined failures; injected timeout is distinct from real network timeout |
 | NFR-05 usability | Supported-goal interpretation or clarification | Smart Home/page tests and curated live evaluation | Tested sample coverage, not unrestricted language understanding |
 | NFR-06 factual explanations | Evidence-bound explanations and uncertainty labels | Energy explanation tests | Evidence-bound explanation flow implemented and tested; missing measurements remain explicitly unknown |
+
+## Changes from the Stage 1 deployment design
+
+Stage 1 section 11 described a phone app, a home server, a database server and a smart-home gateway, and noted that "for the Stage 2 prototype, the home server, database and gateway can run on a single machine, with sensors and devices simulated." The prototype follows that note. These are the differences from the full design, recorded as Stage 1 section 12.2 asks:
+
+| Stage 1 design | Stage 2 prototype | Reason | Interface kept for later |
+| --- | --- | --- | --- |
+| `SmartHomeApp` on a phone, HTTPS and WebSocket push | Streamlit web dashboard on the same machine, one page per domain | Single-machine demonstration; one shared UI for five domains | Business logic is independent of Streamlit (`domains/`, `agents/`) |
+| `dbServer` for events, assessments, actions and configuration | Append-only JSONL audit files in `data/runtime/` (git-ignored) | Stage 1 allows a single machine; local records keep resident data off any server | Each domain writes structured records that a database could store |
+| `SmartHomeGateway` with Zigbee/Wi-Fi and MQTT over TLS | `SimulatedDeviceTool` with independent read-back, offline and mismatch faults | No physical devices; the device contract is the same | `tools/device.py` `DeviceTool` interface |
+| `NotificationService` (external cloud) | Simulated notifications that are recorded, never sent | No real person is contacted in a demonstration | `services/notifications.py` interface |
+| External `LLMProvider` | Course campus-qwen proxy; any OpenAI-compatible endpoint through `ELEC5620_BASE_URL` / `ELEC5620_MODEL` | Course-provided model; the Elderly reply evaluation used another provider when the course key was rejected (see AI_EVALUATION.md) | `services/campus_proxy.py`, `services/elderly_llm.py` |
+| Real timers (30 s resident reply, 60 s acknowledgement) | Timeouts triggered by buttons on the page | A full escalation would otherwise take 2.5 minutes of waiting in the demonstration | The 30 s and 60 s values are part of the escalation state and tests |
 
 ## Demonstration use
 

@@ -284,6 +284,8 @@ class SecurityIntegrationTests(unittest.TestCase):
         self.assertEqual(rejected.workflow.outcome, "COMPLETE")
         self.assertEqual(rejected.workflow.action_results, ())
         self.assertEqual(rejected.device_tool.dispatch_count, 0)
+        self.assertIn("rejected", rejected.notification_history[-1]["message"])
+        self.assertNotIn("timed out", rejected.notification_history[-1]["message"])
 
     def test_timeout_never_grants_medium_device_permission(self) -> None:
         first = monitor_security_workflow(make_security_scenario("unusual_door"), record_path=self.path)

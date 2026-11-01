@@ -1,13 +1,36 @@
 # Documentation
 
-Store interface agreements, installation/configuration/startup instructions, demo scripts, test-result notes, actual Sprint Review/Retrospective records and contribution-statement preparation here.
+**Start here (assessors):** the four files in the first table map directly to the Stage 2 marking criteria. Everything else is supporting detail.
 
-- `INTERFACES.md`: implemented baseline contracts and current limitations.
-- `INTEGRATION_GUIDE.md`: how each owner connects a domain and rehearses deployment.
-- `CONTRIBUTING.md`: named branches, main synchronisation, Pull Requests and Jira workflow.
-- `YANG_SPRINT0.md`: first merged AR-02 / UC-02 Smart Home Control increment (PR #6).
-- `YANG_SPRINT1.md`: direct commands, retry/continuation, confirmation safety, HomeMode persistence and final verification.
-- `JINJING_SPRINT2.md`: Pet Care AR-03 / UC-03 acceptance scenarios, optional simulated feeder checks and clean-source rehearsal evidence.
-- Add real deployment and review records as work happens; do not prefill unperformed meetings/tests.
+## By marking criterion
 
-Final deployment instructions must reproduce the system from the Canvas source, including versions, configuration, startup order and verification steps. Examples must not expose real credentials or personal information.
+| Criterion | Read first | Supporting detail |
+| --- | --- | --- |
+| 1. Implementation of Stage 1 requirements | [REQUIREMENTS_TRACEABILITY.md](REQUIREMENTS_TRACEABILITY.md): every MR / AR / OR / NFR mapped to code and tests, with changes from the Stage 1 design | Acceptance reports in [acceptance/](acceptance/) |
+| 2. AI agent capabilities | [AI_EVALUATION.md](AI_EVALUATION.md): real model calls, rules versus model, the evaluation-driven fixes | [EXPLANATIONS.md](EXPLANATIONS.md) (UC-06 decision explanations), [INTEGRATED_CONTROL_REVIEW.md](INTEGRATED_CONTROL_REVIEW.md) |
+| 3. Agile development | [AGILE.md](AGILE.md): Jira-history and Git-derived burndown evidence, user stories and feedback loops | [SPRINT_REVIEWS.md](SPRINT_REVIEWS.md) (per-sprint goals, results, meetings) and the member sprint notes below |
+| 4. Advanced technologies | [ADVANCED_TECHNOLOGIES.md](ADVANCED_TECHNOLOGIES.md) | [DEPLOYMENT.md](DEPLOYMENT.md) (venv, Docker, CI) |
+
+## Acceptance results per use case
+
+- [acceptance/ELDERLY_SAFETY_ACCEPTANCE.md](acceptance/ELDERLY_SAFETY_ACCEPTANCE.md): UC-01, 18 scenarios.
+- [acceptance/SMART_HOME_CONTROL_ACCEPTANCE.md](acceptance/SMART_HOME_CONTROL_ACCEPTANCE.md) and [acceptance/SMART_HOME_UI_EVIDENCE.md](acceptance/SMART_HOME_UI_EVIDENCE.md): UC-02, automated and UI.
+- Pet Care (UC-03): [JINJING_SPRINT2.md](JINJING_SPRINT2.md).
+- Home Security (UC-04): [MEMBER4_HOME_SECURITY_EVIDENCE.md](MEMBER4_HOME_SECURITY_EVIDENCE.md).
+- Energy & Comfort (UC-05): [MEMBER5_ENERGY_COMFORT_EVIDENCE.md](MEMBER5_ENERGY_COMFORT_EVIDENCE.md).
+
+## Member sprint notes (development history)
+
+- Yuanbo Zhang, Elderly Safety: [YUANBO_SPRINT0.md](YUANBO_SPRINT0.md), [YUANBO_SPRINT1.md](YUANBO_SPRINT1.md), [YUANBO_SPRINT1_OR04.md](YUANBO_SPRINT1_OR04.md).
+- Yang Yang, Smart Home Control: [YANG_SPRINT0.md](YANG_SPRINT0.md), [YANG_SPRINT1.md](YANG_SPRINT1.md).
+- Jinjing Huang, Pet Care and integration: [JINJING_SPRINT0.md](JINJING_SPRINT0.md), [JINJING_SPRINT2.md](JINJING_SPRINT2.md).
+
+## For developers
+
+- [INTERFACES.md](INTERFACES.md): shared data contracts and current limitations.
+- [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md): how a domain connects to the shared agents.
+- [CONTRIBUTING.md](CONTRIBUTING.md): branches, pull requests and the Jira workflow.
+- [evidence/](evidence/): raw data behind the reports (Jira history, AI evaluation runs, charts and chart-building scripts).
+- [`tools/generate_git_evidence_charts.py`](../tools/generate_git_evidence_charts.py): regenerates the supplementary Git activity, Sprint 0-2 implementation burndowns and verified feedback-loop charts.
+
+Records here are real: deployment and review notes are added as the work happens, and no meeting or test result is pre-filled. Examples never contain real credentials or personal information.

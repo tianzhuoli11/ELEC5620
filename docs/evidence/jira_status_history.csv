@@ -1,0 +1,82 @@
+issue,planned_sprint,assignee,time_sydney,new_status
+SCRUM-1,Sprint 0,Jinjing,2026-10-20 19:56,In Progress
+SCRUM-1,Sprint 0,Jinjing,2026-10-24 17:07,Done
+SCRUM-2,Sprint 1,Flora,2026-10-28 01:42,Done
+SCRUM-2,Sprint 1,Flora,2026-10-31 00:21,In Progress
+SCRUM-2,Sprint 1,Flora,2026-10-31 12:20,In Review
+SCRUM-2,Sprint 1,Flora,2026-10-31 12:23,Done
+SCRUM-3,Sprint 2,Tianzhuo,2026-10-24 23:56,Done
+SCRUM-12,Sprint 0,Yuanbo,2026-10-20 14:47,In Review
+SCRUM-12,Sprint 0,Yuanbo,2026-10-20 15:04,In Progress
+SCRUM-12,Sprint 0,Yuanbo,2026-10-21 19:23,Done
+SCRUM-13,Sprint 0,Yang,2026-10-24 11:26,In Progress
+SCRUM-13,Sprint 0,Yang,2026-10-24 15:16,In Review
+SCRUM-13,Sprint 0,Yang,2026-10-30 22:55,Done
+SCRUM-14,Sprint 0,Jinjing,2026-10-19 19:59,In Progress
+SCRUM-14,Sprint 0,Jinjing,2026-10-24 17:07,Done
+SCRUM-15,Sprint 0,Flora,2026-10-21 16:37,In Progress
+SCRUM-15,Sprint 0,Flora,2026-10-21 20:23,Done
+SCRUM-16,Sprint 0,Tianzhuo,2026-10-21 15:28,In Progress
+SCRUM-16,Sprint 0,Tianzhuo,2026-10-24 23:56,Done
+SCRUM-17,Sprint 0,Yuanbo,2026-10-20 14:47,In Review
+SCRUM-17,Sprint 0,Yuanbo,2026-10-20 15:04,In Progress
+SCRUM-17,Sprint 0,Yuanbo,2026-10-21 19:23,Done
+SCRUM-18,Sprint 0,Yuanbo,2026-10-20 14:47,In Review
+SCRUM-18,Sprint 0,Yuanbo,2026-10-20 15:04,In Progress
+SCRUM-18,Sprint 0,Yuanbo,2026-10-21 19:23,Done
+SCRUM-19,Sprint 0,Yang,2026-10-24 11:26,In Progress
+SCRUM-19,Sprint 0,Yang,2026-10-24 15:17,In Review
+SCRUM-19,Sprint 0,Yang,2026-10-24 19:00,Done
+SCRUM-20,Sprint 0,Jinjing,2026-10-19 20:01,In Progress
+SCRUM-20,Sprint 0,Jinjing,2026-10-24 17:07,Done
+SCRUM-21,Sprint 0,Flora,2026-10-21 16:37,In Progress
+SCRUM-21,Sprint 0,Flora,2026-10-28 01:41,Done
+SCRUM-21,Sprint 0,Flora,2026-10-31 00:20,In Review
+SCRUM-21,Sprint 0,Flora,2026-10-31 00:50,Done
+SCRUM-22,Sprint 0,Tianzhuo,2026-10-21 15:29,In Progress
+SCRUM-22,Sprint 0,Tianzhuo,2026-10-24 23:56,Done
+SCRUM-23,Sprint 0,Yang,2026-10-24 11:26,In Progress
+SCRUM-23,Sprint 0,Yang,2026-10-24 15:17,In Review
+SCRUM-23,Sprint 0,Yang,2026-10-24 19:01,Done
+SCRUM-24,Sprint 1,Yuanbo,2026-10-21 19:23,In Review
+SCRUM-24,Sprint 1,Yuanbo,2026-10-25 19:30,Done
+SCRUM-25,Sprint 1,Yuanbo,2026-10-25 19:59,Done
+SCRUM-26,Sprint 1,Yang,2026-10-24 15:17,In Review
+SCRUM-26,Sprint 1,Yang,2026-10-30 23:35,Done
+SCRUM-27,Sprint 1,Yang,2026-10-24 15:18,In Review
+SCRUM-27,Sprint 1,Yang,2026-10-30 23:35,Done
+SCRUM-28,Sprint 1,Jinjing,2026-10-28 20:59,In Review
+SCRUM-28,Sprint 1,Jinjing,2026-10-30 23:35,Done
+SCRUM-29,Sprint 1,Jinjing,2026-10-28 20:59,In Review
+SCRUM-29,Sprint 1,Jinjing,2026-10-30 23:35,Done
+SCRUM-30,Sprint 1,Flora,2026-10-28 01:42,Done
+SCRUM-31,Sprint 1,Flora,2026-10-28 01:42,Done
+SCRUM-32,Sprint 1,Tianzhuo,2026-10-24 23:56,Done
+SCRUM-33,Sprint 1,Tianzhuo,2026-10-24 23:56,Done
+SCRUM-34,Sprint 2,Yuanbo,2026-10-29 22:24,Done
+SCRUM-35,Sprint 2,Yang,2026-10-30 22:55,In Progress
+SCRUM-35,Sprint 2,Yang,2026-10-31 12:13,In Review
+SCRUM-35,Sprint 2,Yang,2026-10-31 12:42,Done
+SCRUM-36,Sprint 2,Jinjing,2026-10-30 22:55,In Progress
+SCRUM-36,Sprint 2,Jinjing,2026-10-31 14:46,Done
+SCRUM-37,Sprint 2,Flora,2026-10-30 22:55,In Progress
+SCRUM-37,Sprint 2,Flora,2026-10-31 00:06,In Review
+SCRUM-37,Sprint 2,Flora,2026-10-31 12:23,Done
+SCRUM-37,Sprint 2,Flora,2026-10-31 13:01,In Review
+SCRUM-37,Sprint 2,Flora,2026-10-31 22:30,Done
+SCRUM-38,Sprint 2,Tianzhuo,2026-10-24 23:56,Done
+SCRUM-39,Sprint 2,Yuanbo,2026-10-30 22:55,In Progress
+SCRUM-39,Sprint 2,Yuanbo,2026-10-31 20:54,Done
+SCRUM-40,Sprint 2,Yang,2026-10-30 22:55,In Progress
+SCRUM-40,Sprint 2,Yang,2026-10-31 22:30,Done
+SCRUM-41,Sprint 2,Jinjing,2026-10-30 22:55,In Progress
+SCRUM-41,Sprint 2,Jinjing,2026-10-31 14:46,Done
+SCRUM-41,Sprint 2,Jinjing,2026-10-31 14:49,In Progress
+SCRUM-41,Sprint 2,Jinjing,2026-10-31 22:31,Done
+SCRUM-42,Sprint 2,Flora,2026-10-30 22:55,In Progress
+SCRUM-42,Sprint 2,Flora,2026-10-31 00:07,In Review
+SCRUM-42,Sprint 2,Flora,2026-10-31 12:23,Done
+SCRUM-42,Sprint 2,Flora,2026-10-31 13:01,In Review
+SCRUM-42,Sprint 2,Flora,2026-10-31 22:31,Done
+SCRUM-43,Sprint 2,Tianzhuo,2026-10-24 23:56,In Progress
+SCRUM-43,Sprint 2,Tianzhuo,2026-11-01 11:14,Done

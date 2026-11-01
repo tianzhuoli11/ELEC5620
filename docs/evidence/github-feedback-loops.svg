@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1660" height="840" viewBox="0 0 1660 840" role="img" aria-label="Observed GitHub feedback loops">
+<title>Observed GitHub feedback loops</title>
+<rect width="1660" height="840" fill="#ffffff"/>
+<text x="55" y="58" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700" fill="#172033" text-anchor="start">Observed feedback loops: finding → refinement → verification</text>
+<text x="55" y="88" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="400" fill="#5f6b7a" text-anchor="start">Real pull-request reviews and CI outcomes, joined to the resulting commits</text>
+<rect x="45" y="135" width="1570" height="164" rx="16" fill="#f6f8fa"/>
+<text x="70" y="190" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#172033" text-anchor="start">PR #8 · Pet Care</text>
+<text x="70" y="218" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="400" fill="#5f6b7a" text-anchor="start">24–25 Oct</text>
+<rect x="295" y="173" width="285" height="86" rx="12" fill="#ffebe9" stroke="#cf222e" stroke-width="1.5"/>
+<text x="437.5" y="204" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#cf222e" text-anchor="middle">Review requested changes</text>
+<text x="310" y="228" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a"><tspan x="310" dy="0">Timeout stopped core monitoring</tspan></text>
+<line x1="584" y1="216" x2="612" y2="216" stroke="#5f6b7a" stroke-width="3"/>
+<path d="M 612 210 L 622 216 L 612 222 Z" fill="#5f6b7a"/>
+<rect x="626" y="173" width="285" height="86" rx="12" fill="#dbeafe" stroke="#2f6feb" stroke-width="1.5"/>
+<text x="768.5" y="204" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#2f6feb" text-anchor="middle">ce5a131 / dd5a7e2</text>
+<text x="641" y="228" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a"><tspan x="641" dy="0">Fail-open monitoring boundary +</tspan><tspan x="641" dy="16">regressions</tspan></text>
+<line x1="915" y1="216" x2="943" y2="216" stroke="#5f6b7a" stroke-width="3"/>
+<path d="M 943 210 L 953 216 L 943 222 Z" fill="#5f6b7a"/>
+<rect x="957" y="173" width="285" height="86" rx="12" fill="#dcfce7" stroke="#1a7f37" stroke-width="1.5"/>
+<text x="1099.5" y="204" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#1a7f37" text-anchor="middle">Reviewer approval</text>
+<text x="972" y="228" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a"><tspan x="972" dy="0">11 Pet tests + 134 repository</tspan><tspan x="972" dy="16">tests</tspan></text>
+<line x1="1246" y1="216" x2="1274" y2="216" stroke="#5f6b7a" stroke-width="3"/>
+<path d="M 1274 210 L 1284 216 L 1274 222 Z" fill="#5f6b7a"/>
+<rect x="1288" y="173" width="285" height="86" rx="12" fill="#eee5ff" stroke="#8250df" stroke-width="1.5"/>
+<text x="1430.5" y="204" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#8250df" text-anchor="middle">Merged</text>
+<text x="1303" y="228" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a"><tspan x="1303" dy="0">26ba305</tspan></text>
+<rect x="45" y="330" width="1570" height="164" rx="16" fill="#f6f8fa"/>
+<text x="70" y="385" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#172033" text-anchor="start">PR #20 · Container CI</text>
+<text x="70" y="413" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="400" fill="#5f6b7a" text-anchor="start">30 Oct</text>
+<rect x="295" y="368" width="285" height="86" rx="12" fill="#ffebe9" stroke="#cf222e" stroke-width="1.5"/>
+<text x="437.5" y="399" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#cf222e" text-anchor="middle">CI failure</text>
+<text x="310" y="423" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a"><tspan x="310" dy="0">Run 41048246193: read-only /app</tspan><tspan x="310" dy="16">path</tspan></text>
+<line x1="584" y1="411" x2="612" y2="411" stroke="#5f6b7a" stroke-width="3"/>
+<path d="M 612 405 L 622 411 L 612 417 Z" fill="#5f6b7a"/>
+<rect x="626" y="368" width="285" height="86" rx="12" fill="#dbeafe" stroke="#2f6feb" stroke-width="1.5"/>
+<text x="768.5" y="399" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#2f6feb" text-anchor="middle">546400d / 986de17</text>
+<text x="641" y="423" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a"><tspan x="641" dy="0">Move test fixtures to system</tspan><tspan x="641" dy="16">temp</tspan></text>
+<line x1="915" y1="411" x2="943" y2="411" stroke="#5f6b7a" stroke-width="3"/>
+<path d="M 943 405 L 953 411 L 943 417 Z" fill="#5f6b7a"/>
+<rect x="957" y="368" width="285" height="86" rx="12" fill="#dcfce7" stroke="#1a7f37" stroke-width="1.5"/>
+<text x="1099.5" y="399" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#1a7f37" text-anchor="middle">Passing CI</text>
+<text x="972" y="423" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a"><tspan x="972" dy="0">Run 41048545525</tspan></text>
+<line x1="1246" y1="411" x2="1274" y2="411" stroke="#5f6b7a" stroke-width="3"/>
+<path d="M 1274 405 L 1284 411 L 1274 417 Z" fill="#5f6b7a"/>
+<rect x="1288" y="368" width="285" height="86" rx="12" fill="#eee5ff" stroke="#8250df" stroke-width="1.5"/>
+<text x="1430.5" y="399" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#8250df" text-anchor="middle">Merged</text>
+<text x="1303" y="423" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a"><tspan x="1303" dy="0">5a00b10</tspan></text>
+<rect x="45" y="525" width="1570" height="164" rx="16" fill="#f6f8fa"/>
+<text x="70" y="580" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="700" fill="#172033" text-anchor="start">PR #26 · Elderly Safety</text>
+<text x="70" y="608" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="400" fill="#5f6b7a" text-anchor="start">31 Oct</text>
+<rect x="295" y="563" width="285" height="86" rx="12" fill="#ffebe9" stroke="#cf222e" stroke-width="1.5"/>
+<text x="437.5" y="594" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#cf222e" text-anchor="middle">Review 1</text>
+<text x="310" y="618" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a"><tspan x="310" dy="0">Unsafe prefix matching</tspan><tspan x="310" dy="16">reproduced</tspan></text>
+<line x1="584" y1="606" x2="612" y2="606" stroke="#5f6b7a" stroke-width="3"/>
+<path d="M 612 600 L 622 606 L 612 612 Z" fill="#5f6b7a"/>
+<rect x="626" y="563" width="285" height="86" rx="12" fill="#fff1cc" stroke="#bf6a02" stroke-width="1.5"/>
+<text x="768.5" y="594" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#bf6a02" text-anchor="middle">0dffe44 + review 2</text>
+<text x="641" y="618" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a"><tspan x="641" dy="0">Phrase fix; second ambiguity</tspan><tspan x="641" dy="16">found</tspan></text>
+<line x1="915" y1="606" x2="943" y2="606" stroke="#5f6b7a" stroke-width="3"/>
+<path d="M 943 600 L 953 606 L 943 612 Z" fill="#5f6b7a"/>
+<rect x="957" y="563" width="285" height="86" rx="12" fill="#dbeafe" stroke="#2f6feb" stroke-width="1.5"/>
+<text x="1099.5" y="594" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#2f6feb" text-anchor="middle">a84e781</text>
+<text x="972" y="618" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a"><tspan x="972" dy="0">Complete safe-phrase rule +</tspan><tspan x="972" dy="16">regressions</tspan></text>
+<line x1="1246" y1="606" x2="1274" y2="606" stroke="#5f6b7a" stroke-width="3"/>
+<path d="M 1274 600 L 1284 606 L 1274 612 Z" fill="#5f6b7a"/>
+<rect x="1288" y="563" width="285" height="86" rx="12" fill="#dcfce7" stroke="#1a7f37" stroke-width="1.5"/>
+<text x="1430.5" y="594" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#1a7f37" text-anchor="middle">Green CI + merge</text>
+<text x="1303" y="618" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a"><tspan x="1303" dy="0">c9d9570</tspan></text>
+<text x="55" y="785" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="400" fill="#5f6b7a" text-anchor="start">Sources: selected GitHub review metadata in docs/evidence/pr_history.json, linked Actions runs, and origin/main @ 11c066f.</text>
+<text x="55" y="810" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="400" fill="#5f6b7a" text-anchor="start">The lanes show verified sequence, not a common time scale; no approval is inferred where GitHub records only requested changes.</text>
+</svg>

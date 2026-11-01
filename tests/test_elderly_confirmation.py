@@ -124,6 +124,22 @@ class ConfirmationFlowTests(unittest.TestCase):
         self.assertEqual([r.verdict for r in done.confirmation_replies], ["unclear", "safe"])
         self.assertEqual(devices.dispatch_count, 0)
 
+    def test_ambiguous_reply_asks_again_then_escalates(self):
+        # PR #26 review: replies with a safe start but unrecognised content must not close the event.
+        for first, second in (("Okay, I am down", "No, I am down"), ("I am fine, I am down", "No thanks, I am down"),
+                              ("Okay, \u6211\u6454\u5012\u4e86\u8d77\u4e0d\u6765", "No, \u6211\u8d77\u4e0d\u6765")):
+            with self.subTest(first=first, second=second):
+                workflow, pending, devices = start()
+                again = workflow.resume(pending, first)
+                self.assertEqual(again.outcome, "AWAITING_CONFIRMATION")
+                self.assertEqual(again.pending_confirmation.question, QUESTIONS[2])
+                self.assertIsNone(again.notification_result)
+                done = workflow.resume(again, second)
+                self.assertEqual([r.verdict for r in done.confirmation_replies], ["unclear", "unclear"])
+                self.assertEqual(done.assessment.risk_level, "HIGH")
+                self.assertEqual(done.notification_result.status, "SIMULATED")
+                self.assertEqual(devices.states["living_light"]["power"], "on")
+
     def test_unclear_twice_escalates(self):
         workflow, pending, _ = start()
         again = workflow.resume(pending, "hmm")

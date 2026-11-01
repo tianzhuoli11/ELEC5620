@@ -70,6 +70,21 @@ class AdapterTests(unittest.TestCase):
         with patch("services.elderly_llm.urlopen", return_value=reply_with('```json\n{"verdict": "help", "rationale": "pain"}\n```')):
             self.assertEqual(interpret_resident_reply({"reply": "my hip", "attempt": 1}, FAKE)["verdict"], "help")
 
+    def test_thinking_switch_is_opt_in(self):
+        with patch.dict(os.environ, {"ELEC5620_DISABLE_THINKING": ""}), \
+                patch("services.elderly_llm.urlopen", return_value=reply_with('{"verdict": "safe", "rationale": "ok"}')) as call:
+            interpret_resident_reply({"reply": "I'm fine", "attempt": 1}, FAKE)
+        self.assertNotIn("enable_thinking", json.loads(call.call_args.args[0].data))
+        with patch.dict(os.environ, {"ELEC5620_DISABLE_THINKING": "1"}), \
+                patch("services.elderly_llm.urlopen", return_value=reply_with('{"verdict": "safe", "rationale": "ok"}')) as call:
+            interpret_resident_reply({"reply": "I'm fine", "attempt": 1}, FAKE)
+        self.assertIs(json.loads(call.call_args.args[0].data)["enable_thinking"], False)
+
+    def test_empty_answer_after_reasoning_raises_clearly(self):
+        with patch("services.elderly_llm.urlopen", return_value=reply_with("")):
+            with self.assertRaisesRegex(ValueError, "no answer text"):
+                interpret_resident_reply({"reply": "I'm fine", "attempt": 1}, FAKE)
+
     def test_non_json_reply_raises_for_the_domain_to_fall_back(self):
         with patch("services.elderly_llm.urlopen", return_value=reply_with("I think they are fine")):
             with self.assertRaises(ValueError):

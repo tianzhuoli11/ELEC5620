@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="900" viewBox="0 0 940 900" role="img" aria-label="Git-derived reconstructed Sprint 0 burndown">
+<title>Git-derived reconstructed Sprint 0 burndown</title>
+<rect width="940" height="900" fill="#ffffff"/>
+<text x="45" y="53" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700" fill="#172033" text-anchor="start">Git-derived reconstructed burndown</text>
+<text x="45" y="82" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="400" fill="#5f6b7a" text-anchor="start">Jira work-item scope reconciled with origin/main implementation evidence</text>
+<rect x="660" y="32" width="235" height="32" rx="16" fill="#fff1cc"/>
+<text x="777.5" y="54" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" fill="#bf6a02" text-anchor="middle">RECONSTRUCTION - NOT JIRA EXPORT</text>
+<text x="45" y="124" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="400" fill="#5f6b7a" text-anchor="start">Sprint</text>
+<rect x="45" y="136" width="280" height="47" rx="4" fill="#ffffff" stroke="#8c9bab"/>
+<text x="61" y="166" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="400" fill="#172033" text-anchor="start">SCRUM Sprint 0 (reconstructed)</text>
+<text x="355" y="124" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="400" fill="#5f6b7a" text-anchor="start">Estimation field</text>
+<rect x="355" y="136" width="225" height="47" rx="4" fill="#ffffff" stroke="#2f6feb" stroke-width="1.5"/>
+<text x="371" y="166" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="400" fill="#172033" text-anchor="start">Work item count</text>
+<text x="45" y="222" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="600" fill="#172033" text-anchor="start">Date - October 14, 2026 to October 20, 2026</text>
+<text x="45" y="250" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="400" fill="#5f6b7a"><tspan x="45" dy="0">Sprint goal - Shared architecture/API contracts and five Core 1 runnable scenarios</tspan></text>
+<line x1="110" y1="289" x2="145" y2="289" stroke="#d04a3a" stroke-width="4"/>
+<text x="155" y="294" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#172033" text-anchor="start">Remaining work</text>
+<line x1="335" y1="289" x2="370" y2="289" stroke="#b7bdc5" stroke-width="4"/>
+<text x="380" y="294" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#172033" text-anchor="start">Guideline</text>
+<line x1="110" y1="675.0" x2="830" y2="675.0" stroke="#e6e9ed"/>
+<text x="97" y="680.0" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a" text-anchor="end">0</text>
+<line x1="110" y1="618.8" x2="830" y2="618.8" stroke="#e6e9ed"/>
+<text x="97" y="623.8461538461538" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a" text-anchor="end">2</text>
+<line x1="110" y1="562.7" x2="830" y2="562.7" stroke="#e6e9ed"/>
+<text x="97" y="567.6923076923076" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a" text-anchor="end">4</text>
+<line x1="110" y1="506.5" x2="830" y2="506.5" stroke="#e6e9ed"/>
+<text x="97" y="511.53846153846155" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a" text-anchor="end">6</text>
+<line x1="110" y1="450.4" x2="830" y2="450.4" stroke="#e6e9ed"/>
+<text x="97" y="455.38461538461536" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a" text-anchor="end">8</text>
+<line x1="110" y1="394.2" x2="830" y2="394.2" stroke="#e6e9ed"/>
+<text x="97" y="399.2307692307692" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a" text-anchor="end">10</text>
+<line x1="110" y1="338.1" x2="830" y2="338.1" stroke="#e6e9ed"/>
+<text x="97" y="343.07692307692304" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a" text-anchor="end">12</text>
+<rect x="110" y="310" width="720" height="365" fill="none" stroke="#aeb6c0"/>
+<line x1="110" y1="310.0" x2="830" y2="675" stroke="#b7bdc5" stroke-width="2"/>
+<path d="M 110.0 310.0 L 656.0 310.0 L 656.0 338.1 L 776.0 338.1 L 776.0 422.3 L 830.0 422.3 L 830.0 478.5 L 830.0 478.5" fill="none" stroke="#d04a3a" stroke-width="3" stroke-linejoin="miter"/>
+<line x1="110.0" y1="675" x2="110.0" y2="682" stroke="#808a96"/>
+<text x="110.0" y="702" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#5f6b7a" text-anchor="middle">Oct 14</text>
+<line x1="230.0" y1="675" x2="230.0" y2="682" stroke="#808a96"/>
+<text x="230.0" y="702" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#5f6b7a" text-anchor="middle">Oct 15</text>
+<line x1="350.0" y1="675" x2="350.0" y2="682" stroke="#808a96"/>
+<text x="350.0" y="702" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#5f6b7a" text-anchor="middle">Oct 16</text>
+<line x1="470.0" y1="675" x2="470.0" y2="682" stroke="#808a96"/>
+<text x="470.0" y="702" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#5f6b7a" text-anchor="middle">Oct 17</text>
+<line x1="590.0" y1="675" x2="590.0" y2="682" stroke="#808a96"/>
+<text x="590.0" y="702" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#5f6b7a" text-anchor="middle">Oct 18</text>
+<line x1="710.0" y1="675" x2="710.0" y2="682" stroke="#808a96"/>
+<text x="710.0" y="702" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#5f6b7a" text-anchor="middle">Oct 19</text>
+<line x1="830.0" y1="675" x2="830.0" y2="682" stroke="#808a96"/>
+<text x="830.0" y="702" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="400" fill="#5f6b7a" text-anchor="middle">Oct 20</text>
+<text x="34" y="492.5" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="400" fill="#5f6b7a" text-anchor="middle">Work item count</text>
+<text x="470.0" y="733" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="400" fill="#5f6b7a" text-anchor="middle">Date</text>
+<rect x="45" y="735" width="850" height="105" rx="9" fill="#f6f8fa" stroke="#d9e1ea"/>
+<text x="65" y="763" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#172033" text-anchor="start">Planned Jira scope: 13 work items</text>
+<text x="335" y="763" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#172033" text-anchor="start">Pre-window Git evidence: 0</text>
+<text x="615" y="763" font-family="Segoe UI, Arial, sans-serif" font-size="14" font-weight="700" fill="#172033" text-anchor="start">Remaining at window end: 7</text>
+<text x="65" y="792" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="400" fill="#5f6b7a" text-anchor="start">Evidence after window: 6; no independent Git evidence at cutoff: 1.</text>
+<text x="65" y="818" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="400" fill="#5f6b7a" text-anchor="start">Source cutoff: origin/main @ 11c066f. Mapping details: git-derived-burndown-data.json</text>
+<text x="45" y="875" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="400" fill="#5f6b7a" text-anchor="start">Method: an item burns only when a matching main-branch implementation/test commit exists; Jira Done dates are not reused.</text>
+</svg>

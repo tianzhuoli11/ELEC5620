@@ -56,6 +56,7 @@ def _reset_demo() -> None:
     st.session_state.smart_home_fault = "No simulated fault"
     st.session_state.smart_home_use_ai = False
     st.session_state.smart_home_mode_state = HomeModeState()
+    st.session_state.smart_home_device_tool = SimulatedDeviceTool(default_device_states())
     _clear_result()
 
 
@@ -66,12 +67,21 @@ def _state_rows(states: dict[str, dict]) -> list[dict[str, str]]:
     ]
 
 
+def _device_tool() -> SimulatedDeviceTool:
+    tool = st.session_state.get("smart_home_device_tool")
+    if not isinstance(tool, SimulatedDeviceTool):
+        tool = SimulatedDeviceTool(default_device_states())
+        st.session_state.smart_home_device_tool = tool
+    return tool
+
+
 def _run_request(text: str, use_ai: bool, fault_name: str) -> None:
     mode_state = st.session_state.get("smart_home_mode_state")
     if not isinstance(mode_state, HomeModeState):
         mode_state = HomeModeState()
         st.session_state.smart_home_mode_state = mode_state
-    device_tool = SimulatedDeviceTool(default_device_states())
+    device_tool = _device_tool()
+    device_tool.offline.clear()
     offline_device = FAULTS[fault_name]
     if offline_device:
         device_tool.offline.add(offline_device)
@@ -158,7 +168,6 @@ def render_smart_home_control() -> None:
                 use_ai = st.toggle(
                     "Use campus AI when available",
                     key="smart_home_use_ai",
-                    value=False,
                     on_change=_clear_result,
                 )
                 if use_ai and not os.getenv("ELEC5620_API_KEY", "").strip():
@@ -225,6 +234,8 @@ def render_smart_home_control() -> None:
                     st.warning("Sensitive action remains blocked; no device command was sent.")
                 if saved["requested_ai"] and not saved["ai_configured"]:
                     st.info("Campus AI was requested but no key was available; the deterministic fallback handled this command.")
+                if any(entry.outcome.startswith("audit_record_failed:") for entry in result.trace):
+                    st.warning("The command result is shown, but its local audit record could not be saved.")
 
                 if result.action_results:
                     rows = []
@@ -245,6 +256,7 @@ def render_smart_home_control() -> None:
                 with st.expander("Agent trace and audit evidence"):
                     st.json(result.to_dict())
 
-    st.markdown('<div class="section-line"><h2>Demo device inventory</h2><span>Fresh state is used for each command</span></div>', unsafe_allow_html=True)
-    st.dataframe(_state_rows(default_device_states()), hide_index=True, width="stretch")
-    st.caption("All actions on this page are simulated. The command, plan, readback and result are saved locally as audit evidence.")
+    device_tool = _device_tool()
+    st.markdown('<div class="section-line"><h2>Demo device inventory</h2><span>State persists until Reset demo</span></div>', unsafe_allow_html=True)
+    st.dataframe(_state_rows(device_tool.states), hide_index=True, width="stretch")
+    st.caption("All actions on this page are simulated. Audit evidence is saved locally when storage is available.")

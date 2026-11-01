@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
 from threading import Lock
@@ -30,6 +30,22 @@ def _append_record(result: WorkflowResult, record_path: Path | None) -> None:
         stream.write(json.dumps(result.to_dict(), ensure_ascii=False) + "\n")
 
 
+def _append_record_or_mark_failure(result: WorkflowResult, record_path: Path | None) -> WorkflowResult:
+    """Keep verified device results visible when local audit storage is unavailable."""
+
+    try:
+        _append_record(result, record_path)
+    except OSError as exc:
+        failure = AuditEntry(
+            event_id=result.event.event_id,
+            agent="HomeCoordinatorAgent",
+            outcome=f"audit_record_failed:{type(exc).__name__}",
+            timestamp=datetime.now(timezone.utc).isoformat(),
+        )
+        return replace(result, trace=result.trace + (failure,))
+    return result
+
+
 def _claim_confirmation(result: WorkflowResult) -> None:
     """Consume one sensitive-action confirmation exactly once per process."""
 
@@ -38,6 +54,17 @@ def _claim_confirmation(result: WorkflowResult) -> None:
         raise ValueError("Smart Home Control result is not awaiting confirmation")
     if pending.event_id != result.event.event_id or result.goal is None or result.goal.event_id != result.event.event_id:
         raise ValueError("confirmation result has inconsistent event IDs")
+    pending_timestamp = next(
+        (
+            entry.timestamp
+            for entry in reversed(result.trace)
+            if entry.event_id == pending.event_id and entry.outcome == "awaiting_goal_confirmation"
+        ),
+        result.event.timestamp,
+    )
+    created_at = datetime.fromisoformat(pending_timestamp.replace("Z", "+00:00"))
+    if datetime.now(timezone.utc) > created_at + timedelta(seconds=pending.timeout_seconds):
+        raise ValueError("Smart Home Control confirmation has expired")
     with _CONFIRMATION_LOCK:
         if pending.event_id in _CONSUMED_CONFIRMATIONS:
             raise ValueError("Smart Home Control confirmation has already been handled")
@@ -64,8 +91,7 @@ def run_smart_home_control(
     result = workflow.run(event)
     if mode_state is not None:
         mode_state.update_from_result(result)
-    _append_record(result, record_path)
-    return result
+    return _append_record_or_mark_failure(result, record_path)
 
 
 def resume_smart_home_confirmation(
@@ -115,5 +141,4 @@ def resume_smart_home_confirmation(
         timestamp=datetime.now(timezone.utc).isoformat(),
     )
     combined = replace(resumed, trace=result.trace + (decision_entry,) + resumed.trace)
-    _append_record(combined, record_path)
-    return combined
+    return _append_record_or_mark_failure(combined, record_path)

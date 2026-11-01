@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from datetime import datetime, timedelta, timezone
 import json
 from io import BytesIO
 from pathlib import Path
@@ -97,6 +98,52 @@ class SmartHomeGoalInterpreterTests(unittest.TestCase):
         self.assertEqual(result.goal.parameters, {"light_power": "on"})
         self.assertEqual(tool.states["bedroom-light"]["power"], "on")
         self.assertNotIn("fallback", result.goal.evidence.lower())
+
+    def test_ai_cannot_add_unrequested_allowlisted_device_targets(self) -> None:
+        result, tool = run_goal(
+            "Please turn on the bedroom light",
+            provider=lambda _: {
+                "domain": "smart_home_control",
+                "intent": "direct_control",
+                "parameters": {
+                    "light_power": "on",
+                    "curtain_position": "closed",
+                    "ac_power": "off",
+                },
+            },
+        )
+        self.assertEqual(result.outcome, "COMPLETE")
+        self.assertEqual(result.goal.parameters, {"light_power": "on"})
+        self.assertEqual(tool.dispatch_count, 1)
+        self.assertEqual(tool.states["bedroom-curtain"]["position"], "open")
+        self.assertEqual(tool.states["living-room-ac"]["power"], "on")
+        self.assertIn("fallback", result.goal.evidence.lower())
+
+    def test_mode_and_direct_device_command_requires_clarification(self) -> None:
+        result, tool = run_goal(
+            "Good night and turn on the bedroom light",
+            provider=lambda _: {
+                "domain": "smart_home_control",
+                "intent": "night_mode",
+                "parameters": {},
+            },
+        )
+        self.assertEqual(result.outcome, "CLARIFICATION_REQUIRED")
+        self.assertIn("separate commands", result.goal.clarification_question)
+        self.assertEqual(tool.dispatch_count, 0)
+
+    def test_ai_cannot_rewrite_out_of_range_request_into_an_action(self) -> None:
+        result, tool = run_goal(
+            "Set the air conditioner to 100 degrees",
+            provider=lambda _: {
+                "domain": "smart_home_control",
+                "intent": "direct_control",
+                "parameters": {"ac_power": "on", "temperature_c": 28},
+            },
+        )
+        self.assertEqual(result.outcome, "CLARIFICATION_REQUIRED")
+        self.assertIn("between 18 and 28", result.goal.clarification_question)
+        self.assertEqual(tool.dispatch_count, 0)
 
     def test_negated_light_command_clarifies_without_dispatch(self) -> None:
         result, tool = run_goal("Don't turn off the bedroom light")
@@ -267,6 +314,26 @@ class SmartHomeWorkflowTests(unittest.TestCase):
             )
         self.assertEqual(tool.dispatch_count, 1)
 
+    def test_expired_sensitive_confirmation_cannot_dispatch(self) -> None:
+        initial, tool = run_goal("Unlock the front door")
+        expired_timestamp = (datetime.now(timezone.utc) - timedelta(seconds=61)).isoformat()
+        expired_trace = tuple(
+            replace(entry, timestamp=expired_timestamp)
+            if entry.outcome == "awaiting_goal_confirmation"
+            else entry
+            for entry in initial.trace
+        )
+        expired = replace(initial, trace=expired_trace)
+        with self.assertRaisesRegex(ValueError, "expired"):
+            resume_smart_home_confirmation(
+                expired,
+                approved=True,
+                device_tool=tool,
+                record_path=None,
+            )
+        self.assertEqual(tool.dispatch_count, 0)
+        self.assertTrue(tool.states["front-door-lock"]["locked"])
+
     def test_declined_unlock_is_removed_while_safe_actions_continue(self) -> None:
         initial, tool = run_goal("Turn off the bedroom light and unlock the front door")
         self.assertEqual(initial.outcome, "AWAITING_CONFIRMATION")
@@ -296,6 +363,19 @@ class SmartHomeWorkflowTests(unittest.TestCase):
         self.assertEqual(len(record["action_results"]), 4)
         self.assertTrue(all(item["verified"] for item in record["action_results"]))
         self.assertGreaterEqual(len(record["trace"]), 6)
+
+    def test_audit_write_failure_keeps_verified_result_visible(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            result = run_smart_home_control(
+                make_user_goal_event("Good night"),
+                device_tool=SimulatedDeviceTool(default_device_states()),
+                record_path=Path(directory),
+            )
+        self.assertEqual(result.outcome, "COMPLETE")
+        self.assertTrue(all(item.success for item in result.action_results))
+        self.assertTrue(any(
+            entry.outcome.startswith("audit_record_failed:") for entry in result.trace
+        ))
 
 
 if __name__ == "__main__":

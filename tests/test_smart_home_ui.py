@@ -67,6 +67,24 @@ class SmartHomeControlPageTests(unittest.TestCase):
         self.assertEqual(result.outcome, "COMPLETE")
         self.assertFalse(self.app.session_state["smart_home_result"]["states"]["front-door-lock"]["locked"])
 
+    def test_device_state_persists_across_commands_until_reset(self) -> None:
+        self.open_page()
+        self.app.button(key="run-smart-home-command").click().run()
+        self.app.selectbox(key="smart_home_scenario").set_value("Custom request").run()
+        self.app.text_area(key="smart_home_text").set_value("Turn on the bedroom light").run()
+        self.app.button(key="run-smart-home-command").click().run()
+
+        tool = self.app.session_state["smart_home_device_tool"]
+        self.assertEqual(tool.states["bedroom-light"]["power"], "on")
+        self.assertEqual(tool.states["bedroom-curtain"]["position"], "closed")
+        self.assertEqual(tool.states["living-room-ac"]["mode"], "sleep")
+        self.assertEqual(self.app.session_state["smart_home_mode_state"].current_mode, "NIGHT")
+
+        self.app.button(key="reset-smart-home").click().run()
+        tool = self.app.session_state["smart_home_device_tool"]
+        self.assertEqual(tool.states, smart_home_ui.default_device_states())
+        self.assertEqual(self.app.session_state["smart_home_mode_state"].current_mode, "HOME")
+
 
 if __name__ == "__main__":
     unittest.main()
