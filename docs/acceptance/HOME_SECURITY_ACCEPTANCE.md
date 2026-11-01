@@ -60,7 +60,7 @@ Each stored image is 1902 × 1504 pixels. The screenshots show `Campus LLM: NOT_
 
 ## Existing verification retained
 
-The new browser run supplements the existing [Member 4 evidence report](../MEMBER4_HOME_SECURITY_EVIDENCE.md); it does not replace that report or overwrite historical logs.
+The new browser run supplements the earlier automated evidence consolidated in this report; it does not overwrite historical logs.
 
 | Existing evidence | Actual recorded result / scope |
 | --- | --- |

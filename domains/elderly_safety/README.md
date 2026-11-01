@@ -63,6 +63,6 @@ Thresholds are prototype values, not medical advice. The model only receives de-
 | `simulation/elderly_scenarios.py`, `elderly_demo.py`, `elderly_acceptance.py` | Scenarios, CLI demo, acceptance run |
 | `data/samples/elderly_fall_*.json` | Labelled fictional fixtures |
 
-Evidence: [Sprint 0](../../docs/YUANBO_SPRINT0.md), [Sprint 1](../../docs/YUANBO_SPRINT1.md), [OR-04 and campus AI](../../docs/YUANBO_SPRINT1_OR04.md), [acceptance report](../../docs/acceptance/ELDERLY_SAFETY_ACCEPTANCE.md).
+Evidence: [Sprint 0](../../docs/member-notes/YUANBO_SPRINT0.md), [Sprint 1](../../docs/member-notes/YUANBO_SPRINT1.md), [OR-04 and campus AI](../../docs/member-notes/YUANBO_SPRINT1_OR04.md), [acceptance report](../../docs/acceptance/ELDERLY_SAFETY_ACCEPTANCE.md).
 
 Reuse `models/`, `agents/`, `services/` and `tools/`; do not duplicate the shared agent framework. Tests belong in `tests/`, fixtures in `data/samples/`, and views in `ui/`.

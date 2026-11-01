@@ -1,6 +1,6 @@
 # Agile evidence and remaining gaps
 
-This is a compilation of existing evidence, first written on 30 October 2026 and updated on 1 November 2026 with burndown charts rebuilt from Jira history and the sprint review records in [SPRINT_REVIEWS.md](SPRINT_REVIEWS.md). It does not contain minutes of meetings that were never held. Source data: [Jira board](https://f1orestyinlem.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog), Git history, and [selected actual PR reviews](evidence/pr_history.json).
+This is a compilation of existing evidence, first written on 30 October 2026 and updated on 1 November 2026 with burndown charts rebuilt from Jira history and the sprint review records in [SPRINT_REVIEWS.md](SPRINT_REVIEWS.md). It does not contain minutes of meetings that were never held. Source data: [Jira board](https://f1orestyinlem.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog), Git history, and [selected actual PR reviews](../evidence/pr_history.json).
 
 ## Planned iterations versus observed Jira state
 
@@ -14,17 +14,17 @@ These buttons were the observed UI states on 30 October, not proof the planned s
 
 The Jira sprint objects were formalised late: on 30 October Sprint 0 was closed, Sprint 1 was started and closed within a minute, and Sprint 2 was started and closed; a Sprint 3 then carried the unfinished Sprint 2 items until 1 November. Jira's own sprint reports therefore do not show when the work happened and are not used as evidence. The charts below are rebuilt from the status-change history that Jira recorded for every item.
 
-![Actual Jira sprint state, captured 30 October; not a burndown chart](evidence/jira-sprint-state.png)
+![Actual Jira sprint state, captured 30 October; not a burndown chart](../evidence/jira-sprint-state.png)
 
 ## Burndown and flow reconstructed from Jira status history
 
-The charts are computed from Jira's changelog for SCRUM-1 to SCRUM-43, read on 1 Nov 2026 at 11:40 AEDT, and from the git merge history. Epics (SCRUM-5 to 11) and the placeholder subtask SCRUM-4 are excluded, which leaves 35 planned work items. Each item is assigned to the sprint it was originally planned in. A status time records when someone updated Jira, which can be later than when the code was merged, and a reopened item counts as open until its final Done. Raw data: [jira_history_2026-11-01.json](evidence/jira_history_2026-11-01.json) and [jira_status_history.csv](evidence/jira_status_history.csv). Script: [build_agile_charts.py](evidence/build_agile_charts.py).
+The charts are computed from Jira's changelog for SCRUM-1 to SCRUM-43, read on 1 Nov 2026 at 11:40 AEDT, and from the git merge history. Epics (SCRUM-5 to 11) and the placeholder subtask SCRUM-4 are excluded, which leaves 35 planned work items. Each item is assigned to the sprint it was originally planned in. A status time records when someone updated Jira, which can be later than when the code was merged, and a reopened item counts as open until its final Done. Raw data: [jira_history_2026-11-01.json](../evidence/jira_history_2026-11-01.json) and [jira_status_history.csv](../evidence/jira_status_history.csv). Script: [build_agile_charts.py](../evidence/build_agile_charts.py).
 
-![Overall burndown](evidence/burndown_overall.png)
+![Overall burndown](../evidence/burndown_overall.png)
 
-![Per-sprint burndown](evidence/burndown_per_sprint.png)
+![Per-sprint burndown](../evidence/burndown_per_sprint.png)
 
-![Cumulative flow](evidence/cumulative_flow.png)
+![Cumulative flow](../evidence/cumulative_flow.png)
 
 | Sprint | Planned items | Done by the planned end | Done by 1 Nov |
 | --- | --- | --- | --- |
@@ -41,21 +41,21 @@ What the data shows:
 
 ## Supplementary Git/GitHub implementation evidence
 
-The Jira-status charts above remain the primary Agile record. The following charts answer a different question: when did matching implementation or test evidence first appear on `origin/main`? They are generated from the repository history and selected real GitHub review metadata using [`tools/generate_git_evidence_charts.py`](../tools/generate_git_evidence_charts.py).
+The Jira-status charts above remain the primary Agile record. The following charts answer a different question: when did matching implementation or test evidence first appear on `origin/main`? They are generated from the repository history and selected real GitHub review metadata using [`tools/generate_git_evidence_charts.py`](../../tools/generate_git_evidence_charts.py).
 
 The Stage 1 report defines UC-01 to UC-07 and allocates two core features plus one optional feature to each member; it does not define the sprint calendar. Planned sprint dates, goals and work-item lists therefore come from Jira. No Story Points, issue dates or approvals are invented, and commit counts are repository events rather than contribution percentages.
 
-![Daily direct and merge commit activity from origin/main](evidence/git-activity-by-day.svg)
+![Daily direct and merge commit activity from origin/main](../evidence/git-activity-by-day.svg)
 
 ### Git-derived reconstructed burndowns
 
-These use the same work-item-count convention and red/grey visual language as Jira, but every chart is visibly labelled **Git-derived reconstructed burndown**. An item burns only when a matching main-branch implementation/test commit exists. The auditable issue-to-commit mapping is in [git-derived-burndown-data.json](evidence/git-derived-burndown-data.json).
+These use the same work-item-count convention and red/grey visual language as Jira, but every chart is visibly labelled **Git-derived reconstructed burndown**. An item burns only when a matching main-branch implementation/test commit exists. The auditable issue-to-commit mapping is in [git-derived-burndown-data.json](../evidence/git-derived-burndown-data.json).
 
-![Git-derived reconstructed Sprint 0 work-item-count burndown](evidence/git-reconstructed-sprint0-burndown.svg)
+![Git-derived reconstructed Sprint 0 work-item-count burndown](../evidence/git-reconstructed-sprint0-burndown.svg)
 
-![Git-derived reconstructed Sprint 1 work-item-count burndown](evidence/git-reconstructed-sprint1-burndown.svg)
+![Git-derived reconstructed Sprint 1 work-item-count burndown](../evidence/git-reconstructed-sprint1-burndown.svg)
 
-![Git-derived reconstructed Sprint 2 work-item-count burndown](evidence/git-reconstructed-sprint2-burndown.svg)
+![Git-derived reconstructed Sprint 2 work-item-count burndown](../evidence/git-reconstructed-sprint2-burndown.svg)
 
 | Sprint | Planned items | Matching Git evidence inside planned window | Remaining at planned boundary |
 | --- | --- | --- | --- |
@@ -65,7 +65,7 @@ These use the same work-item-count convention and red/grey visual language as Ji
 
 These values differ from the Jira-status table because Jira administration was late in some sprints and early in others. The two views are retained side by side instead of changing one source to make it resemble the other.
 
-![GitHub pull-request and CI findings linked to fixes and verification](evidence/github-feedback-loops.svg)
+![GitHub pull-request and CI findings linked to fixes and verification](../evidence/github-feedback-loops.svg)
 
 ## User stories and ownership
 
@@ -94,7 +94,7 @@ The following are current reformulations of existing issue scope, not claims the
 | [PR #26 review 1](https://github.com/tianzhuoli11/ELEC5620/pull/26) (Yang Yang) | Elderly reply rules closed "No idea", "Nothing makes sense" and "No, I fell again" as safe on the second question | Whole-word matching and a reply whitelist; the reviewer's examples became regression tests | Re-review requested with 333 tests passing |
 | [PR #26 review 2](https://github.com/tianzhuoli11/ELEC5620/pull/26) (Yang Yang, Jinjing Huang) | The word whitelist accepted "Okay, I am down" and ignored non-English text | A design change: safe only for complete listed phrases; anything unrecognised is unclear. Workflow tests added | Jinjing Huang retested `a84e781` (335 tests, 18/18 acceptance, 19 extra ambiguous and mixed-language checks) and reported no remaining blockers; merged 31 Oct |
 
-PR #17 and #19 were merged without a written review approval, and are not presented as reviewed. PR #26 shows the full loop: two reviewers, two rounds of requested changes, three real safety issues found and fixed, and the change of approach recorded in [AI_EVALUATION.md](AI_EVALUATION.md).
+PR #17 and #19 were merged without a written review approval, and are not presented as reviewed. PR #26 shows the full loop: two reviewers, two rounds of requested changes, three real safety issues found and fixed, and the change of approach recorded in [AI_EVALUATION.md](../assessment/AI_EVALUATION.md).
 
 ## Review and retrospective status
 

@@ -12,7 +12,7 @@ The Sprint 0 summary was **compiled afterwards** from Jira status history, sprin
 
 | Member | Jira | Outcome | Evidence |
 | --- | --- | --- | --- |
-| Yuanbo Zhang | SCRUM-12, 17, 18 | Fall risk assessment; agent message contracts; coordinator orchestration | PR #4 (21 Oct), `docs/YUANBO_SPRINT0.md` |
+| Yuanbo Zhang | SCRUM-12, 17, 18 | Fall risk assessment; agent message contracts; coordinator orchestration | PR #4 (21 Oct), `docs/member-notes/YUANBO_SPRINT0.md` |
 | Yang Yang | SCRUM-13, 19, 23 | Natural-language goals, simulated devices, LLM fallback | PR #6 (24 Oct) |
 | Jinjing Huang | SCRUM-14, 20 | Pet monitoring; shared sensor/event models; shared LangGraph framework | PR #3 shared framework and PR #2 (20 Oct) |
 | Yan Li (Flora) | SCRUM-15, 21 | Hazard/intrusion monitoring; security policy and notifications | Jira Done 21 Oct and 28 Oct |
@@ -98,7 +98,7 @@ _The four discussion topics below are what was discussed at the meeting. The pro
 | Progress | Home Security and Energy & Comfort reached `main` on 28 Oct; Elderly OR-04 integration followed on 28–29 Oct | PRs #12–#16 (28 Oct), #18 (29 Oct) |
 | Integration owner | Jinjing integrated the release, added cross-domain safety interlocks, then CI, Docker and the shared explanation page | PR #17 (30 Oct), #20 (CI and container deployment), #21 (decision explanations) |
 | Overdue tasks | Statuses were reconciled on 30 Oct; Sprint 0 was closed and Sprint 2 started in Jira; the delay is visible in the burndown | Burndown and cumulative-flow charts in AGILE.md |
-| VPN and campus model | An AI evaluation with real campus-qwen calls was added. On 31 Oct the only available course key was rejected (HTTP 401), so the Elderly reply evaluation used another OpenAI-compatible provider and records which | `docs/AI_EVALUATION.md`, PR #20, PR #26 |
+| VPN and campus model | An AI evaluation with real campus-qwen calls was added. On 31 Oct the only available course key was rejected (HTTP 401), so the Elderly reply evaluation used another OpenAI-compatible provider and records which | `docs/assessment/AI_EVALUATION.md`, PR #20, PR #26 |
 
 **What the team learned from it**
 
@@ -117,7 +117,7 @@ _The four discussion topics below are what was discussed at the meeting. The pro
 | Area | Outcome | Evidence |
 | --- | --- | --- |
 | Integration | All five domains in one release with cross-domain safety interlocks | PR #17 (Jinjing Huang, 30 Oct) |
-| Deployment and CI | GitHub Actions on Python 3.11/3.13, Docker image with health check, tests inside the container | PR #20; `docs/DEPLOYMENT.md` |
+| Deployment and CI | GitHub Actions on Python 3.11/3.13, Docker image with health check, tests inside the container | PR #20; `docs/deployment/DEPLOYMENT.md` |
 | Explanations (OR-03 / UC-06) | Shared "Decision explanations" page for all domains | PR #21 |
 | Acceptance per use case | Elderly 18/18 (PR #19), Smart Home 10/10 plus UI screenshots (PR #24, #25), Energy & Comfort (SCRUM-38), Pet Care and Home Security (SCRUM-36, 37) | `docs/acceptance/` |
 | Safety review | Elderly reply rules redesigned after two review rounds | PR #26 |

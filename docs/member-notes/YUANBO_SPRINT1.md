@@ -36,7 +36,7 @@ when 30 s have passed and calls `resume(result, None)`.
 - `domains/base.py`: optional `ConfirmationHandler` protocol and `supports_confirmation()`.
 - `agents/coordinator.py`: `ask_resident`, `interpret_reply`, `escalate` (validation of domain output).
 - `agents/graph.py`: `pause` and `confirm` nodes, `route_kind == "confirm"`, `SmartHomeWorkflow.resume()`. Domains that do not implement the protocol behave exactly as before.
-- `docs/INTERFACES.md`, `docs/INTEGRATION_GUIDE.md`: one section each.
+- `docs/development/INTERFACES.md`, `docs/development/INTEGRATION_GUIDE.md`: one section each.
 
 ## Tests
 

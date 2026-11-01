@@ -44,10 +44,10 @@ I implemented the Energy & Comfort domain (AR-05 / UC-05) on the shared three-ag
 
 ## Suggested Canvas attachments
 
-1. This file (`docs/MEMBER5_CONTRIBUTION_STATEMENT.md`).
+1. This file (`docs/member-notes/MEMBER5_CONTRIBUTION_STATEMENT.md`).
 2. `docs/acceptance/ENERGY_COMFORT_ACCEPTANCE.md`.
-3. `docs/demos/UC05_ENERGY_COMFORT_DEMO.md`.
-4. `docs/MEMBER5_ENERGY_COMFORT_EVIDENCE.md` (traceability index).
+3. `docs/deployment/UC05_ENERGY_COMFORT_DEMO.md`.
+4. `docs/member-notes/MEMBER5_ENERGY_COMFORT_EVIDENCE.md` (traceability index).
 5. Generated JSON log: `data/runtime/energy_comfort_acceptance_run.json` (produce locally; not in git).
 6. Optional screenshots from the UC-05 demo steps (assessment scope, COMPLETE control, smoke block, UNKNOWN_NOT_MEASURED caption).
 

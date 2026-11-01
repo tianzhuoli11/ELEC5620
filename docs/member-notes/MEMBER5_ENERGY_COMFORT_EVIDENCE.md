@@ -8,9 +8,9 @@ This record describes repository evidence on **`main@2d035f6`**. It does not cla
 
 | Artifact | Path |
 | --- | --- |
-| Scenario acceptance report | [docs/acceptance/ENERGY_COMFORT_ACCEPTANCE.md](acceptance/ENERGY_COMFORT_ACCEPTANCE.md) |
-| 2-minute Streamlit demo script | [docs/demos/UC05_ENERGY_COMFORT_DEMO.md](demos/UC05_ENERGY_COMFORT_DEMO.md) |
-| Canvas contribution draft (SCRUM-43) | [docs/MEMBER5_CONTRIBUTION_STATEMENT.md](MEMBER5_CONTRIBUTION_STATEMENT.md) |
+| Scenario acceptance report | [docs/acceptance/ENERGY_COMFORT_ACCEPTANCE.md](../acceptance/ENERGY_COMFORT_ACCEPTANCE.md) |
+| 2-minute Streamlit demo script | [docs/deployment/UC05_ENERGY_COMFORT_DEMO.md](../deployment/UC05_ENERGY_COMFORT_DEMO.md) |
+| Canvas contribution draft (SCRUM-43) | [docs/member-notes/MEMBER5_CONTRIBUTION_STATEMENT.md](MEMBER5_CONTRIBUTION_STATEMENT.md) |
 | Offline runner | `python -m simulation.energy_comfort_acceptance` → `data/runtime/energy_comfort_acceptance_run.json` (git-ignored) |
 
 ## Traceability
@@ -27,7 +27,7 @@ UI modes: **`ASSESSMENT_ONLY`**, **`EXPLICIT_SIMULATION`**, **`FORMAL_CONTROL_PE
 
 ## Team integration hand-off
 
-Candidate context types and `energy_comfort_observation` readings are documented in [domains/energy_comfort/README.md](../domains/energy_comfort/README.md). Formal `ActionRequest` creation via `evaluate_formal_control_attempt` stays at zero until `ACTIVE_FORMAL_CONTROL_CONTRACT` in `control_readiness.py` is approved by the team.
+Candidate context types and `energy_comfort_observation` readings are documented in [domains/energy_comfort/README.md](../../domains/energy_comfort/README.md). Formal `ActionRequest` creation via `evaluate_formal_control_attempt` stays at zero until `ACTIVE_FORMAL_CONTROL_CONTRACT` in `control_readiness.py` is approved by the team.
 
 Protected devices: Elderly `ROOM_LIGHTS` + Home Security `INITIAL_DEVICE_STATES` deny-list.
 

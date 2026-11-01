@@ -48,4 +48,4 @@ The Pet Care page has the same editable scenarios and an **Optional feeding demo
 
 ## Final integrated evidence — 1 November 2026
 
-See [Pet Care acceptance evidence](acceptance/PET_CARE_ACCEPTANCE.md) for main source b686555, eight executed workflow scenarios, 30 Pet Care tests, 10 shared Overview/Pet Care UI tests and three actual browser screenshots. Earlier counts above remain historical; the exact Canvas ZIP still needs a clean deployment rehearsal.
+See [Pet Care acceptance evidence](../acceptance/PET_CARE_ACCEPTANCE.md) for main source b686555, eight executed workflow scenarios, 30 Pet Care tests, 10 shared Overview/Pet Care UI tests and three actual browser screenshots. Earlier counts above remain historical; the exact Canvas ZIP still needs a clean deployment rehearsal.

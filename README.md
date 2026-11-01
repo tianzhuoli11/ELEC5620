@@ -2,12 +2,12 @@
 
 ## Demonstration evidence
 
-- [Decision explanations, human review and Energy trade-offs](docs/EXPLANATIONS.md)
-- [Stage 1 requirements and honest implementation limits](docs/REQUIREMENTS_TRACEABILITY.md)
-- [AI evaluation: real model proposals, policy agreement and latency](docs/AI_EVALUATION.md)
-- [Agile: actual issue ownership, PR feedback and missing historical evidence](docs/AGILE.md)
-- [Advanced technologies and measured support](docs/ADVANCED_TECHNOLOGIES.md)
-- [Python/Docker deployment and CI verification](docs/DEPLOYMENT.md)
+- [Decision explanations, human review and Energy trade-offs](docs/assessment/EXPLANATIONS.md)
+- [Stage 1 requirements and honest implementation limits](docs/assessment/REQUIREMENTS_TRACEABILITY.md)
+- [AI evaluation: real model proposals, policy agreement and latency](docs/assessment/AI_EVALUATION.md)
+- [Agile: burndown from Jira history, sprint reviews and PR feedback loops](docs/agile/AGILE.md)
+- [Advanced technologies and measured support](docs/assessment/ADVANCED_TECHNOLOGIES.md)
+- [Python/Docker deployment and CI verification](docs/deployment/DEPLOYMENT.md)
 
 The GitHub **Actions** tab runs the repository verification pipeline for pushes and pull requests. Campus AI tests remain local opt-in checks; credentials are not sent to public CI.
 
@@ -39,11 +39,11 @@ For Elderly Safety, run `.venv\Scripts\python -m simulation.elderly_demo --scena
 
 For Smart Home Control, `.venv\Scripts\python -m simulation.smart_home_acceptance` runs ten repeatable SCRUM-35 scenarios through the production shared workflow and writes [the generated UC-02 acceptance report](docs/acceptance/SMART_HOME_CONTROL_ACCEPTANCE.md). It covers Night/Away success, unclear and unsupported requests, sensitive-action approve/deny paths, offline and stale read-back failures, and an AI extra-target safety retest. The run is simulated evidence; Jira screenshots, the exact Canvas-source rehearsal and the actual team review/retrospective must be attached separately.
 
-For a repeatable Pet Care acceptance check, run `python -m simulation.pet_demo --scenario empty_bowl` for core monitoring and notification, then `python -m simulation.pet_demo --scenario empty_bowl --enable-feeding --feed-grams 20` for one verified simulated feed. Add `--feeder-offline` or `--stale-readback` to check failure reporting. See [Jinjing's Sprint 2 evidence](docs/JINJING_SPRINT2.md) for the complete scenario list.
+For a repeatable Pet Care acceptance check, run `python -m simulation.pet_demo --scenario empty_bowl` for core monitoring and notification, then `python -m simulation.pet_demo --scenario empty_bowl --enable-feeding --feed-grams 20` for one verified simulated feed. Add `--feeder-offline` or `--stale-readback` to check failure reporting. See [Jinjing's Sprint 2 evidence](docs/member-notes/JINJING_SPRINT2.md) for the complete scenario list.
 
 For Home Security, run `.venv\Scripts\python -m simulation.security_demo --scenario smoke` for immediate HIGH response, `--scenario unusual_door --reply approve` for MEDIUM confirmation, or `--scenario device_failure` for failed simulated actions. `normal` demonstrates LOW. Its Streamlit page also provides simulated OR-06 external warning scenarios. Add `--use-campus-llm` only when the local key and university network are available. The command prints the shared workflow result and saves local JSONL records at `data/runtime/security_events.jsonl`. See [Home Security](domains/home_security/README.md) for rules and scope.
 
-For Energy & Comfort assessment preparation, run `.venv\Scripts\python -m simulation.energy_comfort_demo` and `.venv\Scripts\python -m simulation.energy_comfort_acceptance`. See [Energy acceptance report](docs/acceptance/ENERGY_COMFORT_ACCEPTANCE.md) and [UC-05 demo script](docs/demos/UC05_ENERGY_COMFORT_DEMO.md). The Streamlit page assesses simulated temperature, occupancy, preference and energy context through the shared workflow, shows fail-closed eligibility and explanations, and labels the scope as assessment-only. The separate Run a simulated adjustment panel executes permitted plans after explicit approval and fresh clear safety assessments from both safety pages; unknown or conflicting safety blocks execution. Local assessment evidence is appended to ignored `data/runtime/energy_comfort.jsonl`.
+For Energy & Comfort assessment preparation, run `.venv\Scripts\python -m simulation.energy_comfort_demo` and `.venv\Scripts\python -m simulation.energy_comfort_acceptance`. See [Energy acceptance report](docs/acceptance/ENERGY_COMFORT_ACCEPTANCE.md) and [UC-05 demo script](docs/deployment/UC05_ENERGY_COMFORT_DEMO.md). The Streamlit page assesses simulated temperature, occupancy, preference and energy context through the shared workflow, shows fail-closed eligibility and explanations, and labels the scope as assessment-only. The separate Run a simulated adjustment panel executes permitted plans after explicit approval and fresh clear safety assessments from both safety pages; unknown or conflicting safety blocks execution. Local assessment evidence is appended to ignored `data/runtime/energy_comfort.jsonl`.
 
 ## Project structure
 
@@ -65,7 +65,7 @@ ELEC5620/
 |-- simulation/                # Event generation and simulated device state
 |-- data/samples/              # Fictional fixtures and demonstration scenarios
 |-- tests/                     # Unit, integration and failure-path tests
-|-- docs/                      # Interfaces, collaboration and deployment guidance
+|-- docs/                      # Assessment evidence, acceptance reports, agile records, deployment (see docs/README.md)
 |-- .env.example               # Configuration example without real credentials
 `-- .gitignore                 # Local credentials, environments and generated output
 ```
@@ -90,13 +90,13 @@ The three shared roles are `HomeCoordinatorAgent`, `MonitoringAgent` and `Device
 
 For sensor events, the coordinator routes to monitoring and domain policy, then optional confirmation, device execution and notification. For direct user goals, it calls the configured interpreter and routes to a policy-validated domain plan; monitoring is skipped. Device plans execute in order and independently verify returned state. Each plan sets bounded retry and continuation rules, so a permitted safe warning can proceed after a failed protective command. The final result identifies complete, partial and failed outcomes with an agent trace. Smart Home Control provides a bilingual deterministic interpreter and an optional structured `campus-qwen` proposal path behind the same `GoalInterpreter` contract.
 
-Sending a command is not proof of success. LLM proposals must not bypass safety rules. Domain modules must not directly operate physical devices. The implemented contracts are in [INTERFACES.md](docs/INTERFACES.md), and [INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md) shows how each owner connects their work.
+Sending a command is not proof of success. LLM proposals must not bypass safety rules. Domain modules must not directly operate physical devices. The implemented contracts are in [INTERFACES.md](docs/development/INTERFACES.md), and [INTEGRATION_GUIDE.md](docs/development/INTEGRATION_GUIDE.md) shows how each owner connects their work.
 
 ## Collaboration
 
 Develop on your named branch and open a Pull Request targeting `main`. Ask a teammate to review the change. Reference the Jira issue in commit messages and attach actual verification evidence before marking a task Done.
 
-Synchronise your branch with the latest `main` before development. Personal branches do not automatically receive later changes from `main`. See [CONTRIBUTING.md](docs/CONTRIBUTING.md).
+Synchronise your branch with the latest `main` before development. Personal branches do not automatically receive later changes from `main`. See [CONTRIBUTING.md](docs/development/CONTRIBUTING.md).
 
 ## Configuration and delivery
 
@@ -104,6 +104,6 @@ Use [.env.example](.env.example) for variable names. Real keys belong only in lo
 
 Do not commit real resident data, private contacts, credentials, virtual environments or runtime logs. Clearly label simulated data and devices.
 
-All five domain pages are integrated. Final delivery still requires a clean-source deployment rehearsal, contribution statements and team review. Notifications remain simulated. Smart Home Control appends its simulated workflow evidence to ignored `data/runtime/smart_home_control.jsonl`. Rehearse deployment from a clean directory by 31 October. Canvas submission is due **1 November 2026, 23:59 Australia/Sydney**. All members must download the submitted source and redeploy it during the Week 13 demonstration.
+All five domain pages are integrated and each use case has an acceptance report in `docs/acceptance/`. Notifications remain simulated. Smart Home Control appends its simulated workflow evidence to ignored `data/runtime/smart_home_control.jsonl`. For the Week 13 demonstration the submitted Canvas source is downloaded and redeployed on site; follow [DEPLOYMENT.md](docs/deployment/DEPLOYMENT.md).
 
-See [integrated control delivery and demonstration steps](docs/INTEGRATED_CONTROL_REVIEW.md) for the new execution path, limits and review scope.
+See [integrated control delivery and demonstration steps](docs/assessment/INTEGRATED_CONTROL_REVIEW.md) for the new execution path, limits and review scope.

@@ -1,6 +1,6 @@
 # Shared data models
 
-Common Python dataclasses and validation live here. `docs/INTERFACES.md` describes the implemented baseline; coordinate any public field changes before integration.
+Common Python dataclasses and validation live here. `docs/development/INTERFACES.md` describes the implemented baseline; coordinate any public field changes before integration.
 
 - Jinjing Huang: Sensor, Event, readings and event-related models.
 - Yuanbo Zhang: agent messages, risk and workflow-state contracts.

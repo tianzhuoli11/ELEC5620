@@ -2,7 +2,7 @@
 
 Run: 2026-10-30T11:21:27.300966+00:00. Python 3.13.5. Base c4c8ebe029bb92c01496d6cdd3c2c320a802bdbf. Exact runner hash is in the JSON; the runner was added in the evidence worktree. Inputs are fictional, and only response proposals and timings were retained.
 
-[Live results](evidence/ai_live.json) · [Controlled failure results](evidence/ai_offline.json)
+[Live results](../evidence/ai_live.json) · [Controlled failure results](../evidence/ai_offline.json)
 
 ## Method
 
@@ -34,7 +34,7 @@ Run: 2026-10-30T11:21:27.300966+00:00. Python 3.13.5. Base c4c8ebe029bb92c01496d
 
 ## Elderly Safety: resident-reply interpretation
 
-After a medium-risk fall the resident is asked "Are you okay?" and, if the answer is unclear, "Do you need me to contact your family?". The verdict (safe / help / unclear) decides whether the event closes, the question is repeated, or the caregiver is alerted and the light switched on. `simulation/elderly_reply_evaluation.py` compares the rule interpreter with rules + model on 26 fictional replies labelled by the domain owner. It calls the same `interpret()` the workflow uses; no device or person is involved. [Raw results](evidence/elderly_reply_eval_live.json).
+After a medium-risk fall the resident is asked "Are you okay?" and, if the answer is unclear, "Do you need me to contact your family?". The verdict (safe / help / unclear) decides whether the event closes, the question is repeated, or the caregiver is alerted and the light switched on. `simulation/elderly_reply_evaluation.py` compares the rule interpreter with rules + model on 26 fictional replies labelled by the domain owner. It calls the same `interpret()` the workflow uses; no device or person is involved. [Raw results](../evidence/elderly_reply_eval_live.json).
 
 **Model used:** `qwen3.7-plus` via the DashScope OpenAI-compatible endpoint, **not** campus-qwen. The course key available on 31 Oct was rejected by the proxy (HTTP 401), so the run used the domain owner's own provider account through the existing `ELEC5620_BASE_URL` / `ELEC5620_MODEL` settings. Only the fictional reply text and attempt number were sent. Results may differ for campus-qwen.
 

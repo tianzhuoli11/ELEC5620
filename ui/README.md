@@ -1,6 +1,6 @@
 # Streamlit user interface
 
-Energy & Comfort now also has a separate explicitly approved simulated-control panel. It uses the context entered above, requires fresh clear results from both safety domains, saves actual action outcomes, and exposes offline failures. Its original assessment button remains assessment-only. See [integrated control review](../docs/INTEGRATED_CONTROL_REVIEW.md).
+Energy & Comfort now also has a separate explicitly approved simulated-control panel. It uses the context entered above, requires fresh clear results from both safety domains, saves actual action outcomes, and exposes offline failures. Its original assessment button remains assessment-only. See [integrated control review](../docs/assessment/INTEGRATED_CONTROL_REVIEW.md).
 
 Each domain can supply its own page without changing the application shell. `app.py` owns navigation, page configuration, and styling. `ui/domain_views.py` is the registration point for domain pages. `ui/dashboard.py` supplies the operational Overview and Pet Care workspace, with editable sample readings, saved results, and filtered history.
 
@@ -38,4 +38,4 @@ Elderly Safety is connected with simulated fall assessment, resident confirmatio
 
 Use the project's configured Python environment and start the app from the repository root with `python -m streamlit run app.py`. Open your page from the sidebar and Home services. Confirm that edited inputs reach the handler, changing an input clears any stale result, a new run displays its own outcome, and errors are shown honestly. Check that Overview and Pet Care still work, history filters select the expected saved records, widget keys do not collide, and simulated behavior remains labelled. Include the scenario tested and a screenshot in the pull request.
 
-The sidebar Decision explanations page routes OR-03 / UC-06 / OR-05 requests over stored records through HomeCoordinatorAgent, provides explicit local operator review for sensitive cases, and restores persistent request history. See [explanation workflow](../docs/EXPLANATIONS.md).
+The sidebar Decision explanations page routes OR-03 / UC-06 / OR-05 requests over stored records through HomeCoordinatorAgent, provides explicit local operator review for sensitive cases, and restores persistent request history. See [explanation workflow](../docs/assessment/EXPLANATIONS.md).
