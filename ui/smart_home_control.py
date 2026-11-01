@@ -9,8 +9,11 @@ from time import perf_counter
 import streamlit as st
 
 from domains.smart_home_control import (
+    AWAY_MODE_TEMPERATURE_C,
     DEFAULT_RECORD_PATH,
     HomeModeState,
+    NIGHT_MODE_TEMPERATURE_C,
+    RELAX_MODE_TEMPERATURE_C,
     default_device_states,
     resume_smart_home_confirmation,
     run_smart_home_control,
@@ -32,7 +35,7 @@ SCENARIO_DETAILS = {
         "label": "Core UC-02 example",
         "description": (
             "Turns off the bedroom light, closes the bedroom curtain, locks the front door, "
-            "and sets the air conditioner to sleep mode at 22 °C. HomeMode changes to NIGHT "
+            f"and sets the air conditioner to sleep mode at {NIGHT_MODE_TEMPERATURE_C} °C. HomeMode changes to NIGHT "
             "only after all returned device states are verified."
         ),
     },
@@ -40,14 +43,15 @@ SCENARIO_DETAILS = {
         "label": "Optional HomeMode demonstration",
         "description": (
             "Secures the home, closes the curtain, and runs the air conditioner in eco mode "
-            "at 26 °C. HomeMode changes to AWAY only after every requested state is verified."
+            f"at {AWAY_MODE_TEMPERATURE_C} °C. This energy-saving standby assumes another resident or pet may "
+            "remain at home. HomeMode changes to AWAY only after every requested state is verified."
         ),
     },
     "Relax mode": {
         "label": "Additional comfort preset",
         "description": (
             "Sets the bedroom light to 40%, closes the curtain, and runs the air conditioner "
-            "in comfort mode at 23 °C. The front-door lock is not changed."
+            f"in comfort mode at {RELAX_MODE_TEMPERATURE_C} °C. The front-door lock is not changed."
         ),
     },
     "Sensitive action": {
@@ -65,6 +69,10 @@ SCENARIO_DETAILS = {
         ),
     },
 }
+PRESET_POLICY_NOTE = (
+    "Mode defaults are configurable simulated cooling presets: Relax 23 °C, Night 24 °C, and Away Eco 26 °C. "
+    "Away does not assume the home is empty; use a custom request when the air conditioner should be off."
+)
 SCENARIO_INTENTS = {
     "Good night": "night_mode",
     "Leaving home": "away_mode",
@@ -332,6 +340,7 @@ def render_smart_home_control() -> None:
                 '<span class="small-badge">SIMULATED DEVICES</span></div>',
                 unsafe_allow_html=True,
             )
+            st.caption(PRESET_POLICY_NOTE)
             mode_state = st.session_state.get("smart_home_mode_state")
             current_mode = mode_state.current_mode if isinstance(mode_state, HomeModeState) else "HOME"
             st.caption(f"Current HomeMode: {current_mode}")

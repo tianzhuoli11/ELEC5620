@@ -119,7 +119,8 @@ def case_night_mode(c: Case) -> None:
     c.check("sleep states match the UC-02 plan", tool.states["bedroom-light"]["power"] == "off"
             and tool.states["bedroom-curtain"]["position"] == "closed"
             and tool.states["front-door-lock"]["locked"] is True
-            and tool.states["living-room-ac"]["mode"] == "sleep")
+            and tool.states["living-room-ac"]["mode"] == "sleep"
+            and tool.states["living-room-ac"]["temperature_c"] == 24)
     c.check("verified mode propagated as NIGHT", mode.current_mode == "NIGHT")
     c.check("shared coordinator and device agents are in the trace", {"HomeCoordinatorAgent", "DeviceAutomationAgent"}
             <= {entry.agent for entry in result.trace})
@@ -135,7 +136,9 @@ def case_away_mode(c: Case) -> None:
     c.check("away states are safe", tool.states["bedroom-light"]["power"] == "off"
             and tool.states["bedroom-curtain"]["position"] == "closed"
             and tool.states["front-door-lock"]["locked"] is True
-            and tool.states["living-room-ac"]["mode"] == "eco")
+            and tool.states["living-room-ac"]["power"] == "on"
+            and tool.states["living-room-ac"]["mode"] == "eco"
+            and tool.states["living-room-ac"]["temperature_c"] == 26)
     c.check("verified mode propagated as AWAY", mode.current_mode == "AWAY")
     c.actual = f"{result.outcome}; 4/4 verified; HomeMode={mode.current_mode}; devices={tool.states}"
 
@@ -266,7 +269,7 @@ def run_cases() -> list[Case]:
     return results
 
 
-def _environment() -> dict[str, str]:
+def _environment(report_path: Path = DEFAULT_REPORT) -> dict[str, str]:
     def version(package: str) -> str:
         try:
             return metadata.version(package)
@@ -275,7 +278,15 @@ def _environment() -> dict[str, str]:
 
     try:
         commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=5).stdout.strip() or "unknown"
-        if subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, timeout=5).stdout.strip():
+        status = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        ).stdout.splitlines()
+        report_name = report_path.as_posix()
+        tracked_changes = [line for line in status if line[3:].strip().replace("\\", "/") != report_name]
+        if tracked_changes:
             commit += " (uncommitted changes)"
     except Exception:
         commit = "unknown"
@@ -355,6 +366,8 @@ def write_report(cases: list[Case], environment: dict[str, str], path: Path) -> 
         "",
         "- This is deterministic offline acceptance evidence. It does not claim a successful live campus-qwen call.",
         "- Device I/O is simulated, although production policy, shared-agent routing, retries and returned-state verification are exercised.",
+        "- Mode defaults are configurable simulated cooling presets: Relax 23 °C, Night 24 °C and Away Eco 26 °C.",
+        "- Away is an energy-saving standby and does not assume the home is empty; a direct request can turn the air conditioner off.",
         "- A passing automated run is evidence for moving SCRUM-35 to In Review; it is not evidence that the group coordination work in SCRUM-40 is Done.",
         "",
     ]
@@ -378,7 +391,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     cases = run_cases()
-    environment = _environment()
+    environment = _environment(args.report)
     write_report(cases, environment, args.report)
     write_log(cases, environment, args.log)
     if not args.quiet:
