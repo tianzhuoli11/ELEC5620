@@ -10,6 +10,8 @@ Store interface agreements, installation/configuration/startup instructions, dem
 - `acceptance/SMART_HOME_CONTROL_ACCEPTANCE.md`: generated SCRUM-35 input/expected/actual/PASS evidence for UC-02 success, clarification, confirmation and failure paths.
 - `acceptance/SMART_HOME_UI_EVIDENCE.md`: actual Streamlit UI run record, Jira screenshot index and teammate review checklist for SCRUM-35.
 - `JINJING_SPRINT2.md`: Pet Care AR-03 / UC-03 acceptance scenarios, optional simulated feeder checks and clean-source rehearsal evidence.
+- `AGILE.md`: reconciled Jira sprint history, dated Git/PR evidence, authentic work-item-count burndown guidance and feedback loops.
+- `SPRINT_REVIEW_RETRO_RECOVERY.md`: evidence-backed checklist for transparently recording omitted Sprint Review/Retrospective notes.
 - Add real deployment and review records as work happens; do not prefill unperformed meetings/tests.
 
 Final deployment instructions must reproduce the system from the Canvas source, including versions, configuration, startup order and verification steps. Examples must not expose real credentials or personal information.
