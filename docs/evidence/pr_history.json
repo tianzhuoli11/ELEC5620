@@ -1,5 +1,6 @@
 {
   "collected_at_utc": "2026-10-30T11:20:44.263085+00:00",
+  "refreshed_on": "2026-11-01 Australia/Sydney",
   "source": "GitHub API, selected real PR metadata and reviews",
   "pull_requests": [
     {
@@ -56,6 +57,31 @@
       "head": "c0ec9d2f8dd5618c33f0d0bdb382a4cac73601ab",
       "merge_commit": "c4c8ebe029bb92c01496d6cdd3c2c320a802bdbf",
       "reviews": []
+    },
+    {
+      "number": 26,
+      "title": "SCRUM-39: Elderly reply evaluation, rule safety fix, provider-compatibility switch",
+      "url": "https://github.com/tianzhuoli11/ELEC5620/pull/26",
+      "created_at": "2026-10-31T04:29:36Z",
+      "merged_at": "2026-10-31T06:55:11Z",
+      "head": "a84e78164c17da77506a30c5d858657f66228550",
+      "merge_commit": "c9d957089a52861425cfe50431f264203ea911c2",
+      "reviews": [
+        {
+          "author": "Yang-Yang-yy",
+          "state": "CHANGES_REQUESTED",
+          "submitted_at": "2026-10-31T04:59:13Z",
+          "url": "https://github.com/tianzhuoli11/ELEC5620/pull/26#pullrequestreview-5721373656",
+          "body": "Safety-critical prefix matching treated replies such as 'No idea', 'Nothing makes sense' and 'No, I cannot stand up' as safe. The review requested phrase-aware matching and regressions for the reproduced examples."
+        },
+        {
+          "author": "Yang-Yang-yy",
+          "state": "CHANGES_REQUESTED",
+          "submitted_at": "2026-10-31T05:37:34Z",
+          "url": "https://github.com/tianzhuoli11/ELEC5620/pull/26#pullrequestreview-5721486340",
+          "body": "After the first fix, a bag-of-words whitelist still treated 'Okay, I am down' as safe. The review requested complete normalised safe phrases and workflow regressions so ambiguity remains unclear and escalates on the final attempt."
+        }
+      ]
     }
   ]
 }

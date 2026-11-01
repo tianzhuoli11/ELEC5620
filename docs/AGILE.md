@@ -39,6 +39,34 @@ What the data shows:
 - **Sprint 2 recovered.** After integration (PR #17) and the 28 Oct decisions, the acceptance, safety-review and deployment tasks closed on 31 Oct, and the contribution statement on 1 Nov. Several items were reopened for review and closed again (SCRUM-21, 37, 41, 42).
 - **Some statuses were set early.** SCRUM-3 (final review) and SCRUM-38 were marked Done on 24 Oct, before Sprint 2 began. They are counted as the data shows, not corrected.
 
+## Supplementary Git/GitHub implementation evidence
+
+The Jira-status charts above remain the primary Agile record. The following charts answer a different question: when did matching implementation or test evidence first appear on `origin/main`? They are generated from the repository history and selected real GitHub review metadata using [`tools/generate_git_evidence_charts.py`](../tools/generate_git_evidence_charts.py).
+
+The Stage 1 report defines UC-01 to UC-07 and allocates two core features plus one optional feature to each member; it does not define the sprint calendar. Planned sprint dates, goals and work-item lists therefore come from Jira. No Story Points, issue dates or approvals are invented, and commit counts are repository events rather than contribution percentages.
+
+![Daily direct and merge commit activity from origin/main](evidence/git-activity-by-day.svg)
+
+### Git-derived reconstructed burndowns
+
+These use the same work-item-count convention and red/grey visual language as Jira, but every chart is visibly labelled **Git-derived reconstructed burndown**. An item burns only when a matching main-branch implementation/test commit exists. The auditable issue-to-commit mapping is in [git-derived-burndown-data.json](evidence/git-derived-burndown-data.json).
+
+![Git-derived reconstructed Sprint 0 work-item-count burndown](evidence/git-reconstructed-sprint0-burndown.svg)
+
+![Git-derived reconstructed Sprint 1 work-item-count burndown](evidence/git-reconstructed-sprint1-burndown.svg)
+
+![Git-derived reconstructed Sprint 2 work-item-count burndown](evidence/git-reconstructed-sprint2-burndown.svg)
+
+| Sprint | Planned items | Matching Git evidence inside planned window | Remaining at planned boundary |
+| --- | --- | --- | --- |
+| Sprint 0 | 13 | 6 | 7 |
+| Sprint 1 | 11 | 9 | 2 |
+| Sprint 2 | 11 | 9 (including two items evidenced before the window) | 2 |
+
+These values differ from the Jira-status table because Jira administration was late in some sprints and early in others. The two views are retained side by side instead of changing one source to make it resemble the other.
+
+![GitHub pull-request and CI findings linked to fixes and verification](evidence/github-feedback-loops.svg)
+
 ## User stories and ownership
 
 The following are current reformulations of existing issue scope, not claims these exact sentences were written at sprint inception. Jira remains authoritative for assignment and acceptance criteria.
@@ -62,7 +90,6 @@ The following are current reformulations of existing issue scope, not claims the
 | PR #17 integration inspection and commits `50d1604`, `4e7607e` | A valid but incorrect model proposal could reverse a negated request; Energy control lacked cross-domain clearance | Pre-model negation guard, target consistency checks, executable simulation, fresh safety registry and per-dispatch interlocks | 275-test run, including live AI and cross-page success→smoke→block |
 | PR #19, commit `c0ec9d2` | Integrated main needed fresh Elderly acceptance evidence | Acceptance report rerun against the integrated source | `docs/acceptance/ELDERLY_SAFETY_ACCEPTANCE.md` |
 | PR #20, [first container CI failure](https://github.com/tianzhuoli11/ELEC5620/actions/runs/41048246193) | Tests attempted to create temporary files under non-root read-only `/app` | Commits `546400d` and `986de17`: use the system temporary directory in all affected tests | [Independent Python and container verification passed](https://github.com/tianzhuoli11/ELEC5620/actions/runs/41048545525) |
-
 | [PR #25 review](https://github.com/tianzhuoli11/ELEC5620/pull/25) (Yuanbo Zhang) | Smart Home UI evidence: one screenshot did not show the stated HomeMode, and an error column was cut off | Reviewed against a rerun of the automated acceptance (10/10 PASS); approved with non-blocking notes | Merged 31 Oct |
 | [PR #26 review 1](https://github.com/tianzhuoli11/ELEC5620/pull/26) (Yang Yang) | Elderly reply rules closed "No idea", "Nothing makes sense" and "No, I fell again" as safe on the second question | Whole-word matching and a reply whitelist; the reviewer's examples became regression tests | Re-review requested with 333 tests passing |
 | [PR #26 review 2](https://github.com/tianzhuoli11/ELEC5620/pull/26) (Yang Yang, Jinjing Huang) | The word whitelist accepted "Okay, I am down" and ignored non-English text | A design change: safe only for complete listed phrases; anything unrecognised is unclear. Workflow tests added | Jinjing Huang retested `a84e781` (335 tests, 18/18 acceptance, 19 extra ambiguous and mixed-language checks) and reported no remaining blockers; merged 31 Oct |
@@ -82,6 +109,6 @@ Do not mark a Jira item Done solely because this document lists it.
 ## Two-minute demo evidence
 
 1. Jira backlog: the three planned sprints with their goals and the assigned tasks.
-2. The burndown and cumulative-flow charts above: the Sprint 0 overrun and the Sprint 1 review bottleneck.
-3. SPRINT_REVIEWS.md: the 28 Oct meeting decisions and their follow-up, then the final retrospective.
-4. One feedback loop end to end: PR #26, from the reviewers' requested changes to the redesigned rule and its regression tests.
+2. The Jira-history burndown and cumulative-flow charts: the Sprint 0 overrun and Sprint 1 review bottleneck.
+3. If asked why repository activity differs, show the Git-derived charts and their issue-to-commit mapping.
+4. Show SPRINT_REVIEWS.md and one feedback loop end to end, such as PR #26 from requested changes to regression-tested fixes.
