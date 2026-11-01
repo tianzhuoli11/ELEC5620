@@ -11,6 +11,11 @@ from services.smart_home_goals import SUPPORTED_INTENTS, validate_smart_home_par
 from .devices import BEDROOM_CURTAIN, BEDROOM_LIGHT, FRONT_DOOR_LOCK, LIVING_ROOM_AC
 
 
+NIGHT_MODE_TEMPERATURE_C = 24
+AWAY_MODE_TEMPERATURE_C = 26
+RELAX_MODE_TEMPERATURE_C = 23
+
+
 class SmartHomeControlHandler:
     """Convert an untrusted structured goal into an allow-listed device plan."""
 
@@ -109,20 +114,41 @@ class SmartHomeControlHandler:
                 (BEDROOM_LIGHT, {"power": "off"}),
                 (BEDROOM_CURTAIN, {"position": "closed"}),
                 (FRONT_DOOR_LOCK, {"locked": True}),
-                (LIVING_ROOM_AC, {"power": "on", "mode": "sleep", "temperature_c": temperature or 22}),
+                (
+                    LIVING_ROOM_AC,
+                    {
+                        "power": "on",
+                        "mode": "sleep",
+                        "temperature_c": temperature if temperature is not None else NIGHT_MODE_TEMPERATURE_C,
+                    },
+                ),
             )
         if intent == "away_mode":
             return (
                 (BEDROOM_LIGHT, {"power": "off"}),
                 (BEDROOM_CURTAIN, {"position": "closed"}),
                 (FRONT_DOOR_LOCK, {"locked": True}),
-                (LIVING_ROOM_AC, {"power": "on", "mode": "eco", "temperature_c": temperature or 26}),
+                (
+                    LIVING_ROOM_AC,
+                    {
+                        "power": "on",
+                        "mode": "eco",
+                        "temperature_c": temperature if temperature is not None else AWAY_MODE_TEMPERATURE_C,
+                    },
+                ),
             )
         if intent == "relax_mode":
             return (
                 (BEDROOM_LIGHT, {"power": "on", "brightness": 40}),
                 (BEDROOM_CURTAIN, {"position": "closed"}),
-                (LIVING_ROOM_AC, {"power": "on", "mode": "comfort", "temperature_c": temperature or 23}),
+                (
+                    LIVING_ROOM_AC,
+                    {
+                        "power": "on",
+                        "mode": "comfort",
+                        "temperature_c": temperature if temperature is not None else RELAX_MODE_TEMPERATURE_C,
+                    },
+                ),
             )
         if intent == "unlock_door":
             return ((FRONT_DOOR_LOCK, {"locked": False}),)

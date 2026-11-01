@@ -233,6 +233,7 @@ class SmartHomeWorkflowTests(unittest.TestCase):
         self.assertEqual(tool.states["bedroom-curtain"]["position"], "closed")
         self.assertTrue(tool.states["front-door-lock"]["locked"])
         self.assertEqual(tool.states["living-room-ac"]["mode"], "sleep")
+        self.assertEqual(tool.states["living-room-ac"]["temperature_c"], 24)
         agents = [entry.agent for entry in result.trace]
         self.assertIn("HomeCoordinatorAgent", agents)
         self.assertIn("DeviceAutomationAgent", agents)
