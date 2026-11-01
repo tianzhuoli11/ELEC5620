@@ -102,7 +102,7 @@ Sprint-by-sprint reviews are in [SPRINT_REVIEWS.md](SPRINT_REVIEWS.md):
 
 - **Sprint 0** summary was compiled afterwards from Jira, git and PR records. No Sprint 0 review meeting was held; coordination was asynchronous through the group chat, the weekly lab and PR reviews.
 - **Sprint 1 review and Sprint 2 planning, 28 Oct (in person, all five members, about one hour)**: discussed progress, named Jinjing Huang as integration owner, flagged overdue Jira tasks, and raised the VPN and campus-model risk. Each topic is linked to its follow-up evidence.
-- **Sprint 2 review and final retrospective, 1 Nov**: recorded in SPRINT_REVIEWS.md.
+- **Sprint 2 review and final retrospective, 1 Nov (online, all five members)**: a full manual end-to-end walkthrough of the five pages on the integrated `main` (no blocking defect; one Smart Home display improvement agreed), the demonstration and submission plan, an agreement to cross-review every PR before merging, and the project retrospective with lessons and actions.
 
 Do not mark a Jira item Done solely because this document lists it.
 

@@ -131,31 +131,51 @@ _The four discussion topics below are what was discussed at the meeting. The pro
 - PR #25: Yuanbo Zhang reviewed the Smart Home UI evidence against a rerun of the automated acceptance (10/10) and approved with two non-blocking notes.
 - PR #26: Yang Yang and Jinjing Huang requested changes twice and found three classes of unsafe "safe" verdicts in the Elderly reply rules. This led to a design change, safe only for complete listed phrases, with the reviewers' examples kept as regression and workflow tests. Jinjing retested the final head and reported no remaining blockers.
 
-### Sprint 2 review and final retrospective: 1 Nov 2026
+### Sprint 2 review and final retrospective: 1 Nov 2026 (online)
 
 | Item | Detail |
 | --- | --- |
-| Date and format | Sunday 1 Nov 2026, _(in person / online)_ |
-| Attendees | _(fill in)_ |
-| Duration | _(fill in)_ |
+| Date and format | Sunday 1 Nov 2026, 13:34–14:05, online (Zoom) |
+| Attendees | Jinjing Huang, Yan Li (Flora), Tianzhuo Li, Yang Yang, Yuanbo Zhang |
+| Focus | A full manual end-to-end check of the integrated system before submission, then demonstration and submission planning |
 
-**Review: what each member demonstrated**
+**Review: manual end-to-end walkthrough**
 
-| Member | Scenario shown (success / failure or safety) | Result | Follow-up |
+Jinjing Huang ran the current `main` locally with the VPN connected and shared her screen; each owner directed the scenarios for their own page.
+
+| Page | Scenarios run | Observed result | Follow-up |
 | --- | --- | --- | --- |
-| Yuanbo Zhang | | | |
-| Yang Yang | | | |
-| Jinjing Huang | | | |
-| Yan Li (Flora) | | | |
-| Tianzhuo Li | | | |
+| Elderly Safety (Yuanbo Zhang) | Fall still on the floor; fall then not moving with a resident reply; dropped object then standing again; an unclear reply; all room lights offline; no acknowledgement until the operator is informed | Behaved as designed: immediate alert for HIGH, question and reply handling for MEDIUM, an alert that still goes out when the light fails, escalation on no acknowledgement | None |
+| Smart Home Control (Yang Yang) | Good night, Away, Relax and a custom request | Commands ran and were verified. Away switched everything off, which the team checked was intended | Yang to make the verified-result display easier to read (plain-language summary) |
+| Home Security (Yan Li) | Normal and response scenarios | Behaved as expected | Flora's evidence PR was still awaiting review at the time |
+| Energy & Comfort (Tianzhuo Li) | Adjustment with an occupied room and good comfort, 24 °C setpoint | Plan executed and was verified | None |
+| Pet Care (Jinjing Huang) | Page checked during the walkthrough | No issue raised | None |
 
-**Retrospective**
-- What went well:
-- What did not go well:
-- What we would change next time:
+Result: no blocking defect was found in the five pages. One usability improvement (the Smart Home result display) was agreed.
 
-**Actions before submission**
+**Discussion**
+
+1. **Demonstration format** (from the course Ed Discussion): about 15 minutes to deploy from the Canvas download, then a 12-minute demonstration. Show the five modules and their test results, then the architecture, the three agents and the agile evidence. Assessors may ask any member to locate the code behind a function, so each member must know where their code is. About two minutes per member.
+2. **Submission:** everything, including deployment instructions and evidence, must be inside the submitted source package, because it is downloaded and deployed on site.
+3. **Pull requests:** two PRs were still open. The team agreed that PRs are reviewed on GitHub by another member before merging rather than merged by their author; Jinjing and Flora would review each other's.
+4. **Jira and burndown:** Jira's own burndown was never generated because the sprints were not started in Jira at the time; the team had not used Jira before. The reconstructed charts from Jira's status history and the GitHub history are used instead, the delays are stated as they happened, and no record is backdated or edited to look on time.
+5. **Documentation:** the `docs/` folder had become hard to navigate; it is to be organised by marking criterion.
+6. **Campus model access:** Yuanbo has no working campus key; Jinjing's environment has working campus AI and VPN access.
+
+**Retrospective: lessons from this project**
+
+- *Went well:* all five domains work end to end on one shared framework; peer reviews on PRs (for example #8 and #26) found real defects before merging; the final walkthrough found no blocking issue.
+- *Did not go well:* Jira sprints were not started when they began, so Jira could not produce a burndown and statuses lagged behind the code; several early PRs were merged by their author without review; not every member had campus model access; documentation grew without structure.
+- *Next time:* start each sprint in Jira on its first day and update the status in the same step as merging the PR; require a review before every merge; check external-service access (VPN, keys) early on the demonstration machine; keep one index for the documentation from the start.
+
+**Actions**
 
 | Action | Owner | Due |
 | --- | --- | --- |
-| | | |
+| Improve the Smart Home verified-result display, then re-check it | Yang Yang | 1 Nov |
+| Review and merge the open PRs (cross-review) | Jinjing Huang, Yan Li, Tianzhuo Li | 1 Nov |
+| Check whether anything else must be committed before packaging | Each member | 1 Nov, before 17:00 |
+| Merge the remaining work, organise `docs/`, add the agile charts and prepare the final package | Yuanbo Zhang | 1 Nov, about 17:00 |
+| Submit to Canvas, then download the submission and test the deployment from it | Team | 1 Nov |
+| Write a two-minute script for one's own part and share it in the group | Each member | Before the rehearsal |
+| Full rehearsal of the demonstration | Team | Mon 2 or Tue 3 Nov (demonstration on Wed) |
