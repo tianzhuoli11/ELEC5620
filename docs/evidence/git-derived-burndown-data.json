@@ -1,0 +1,313 @@
+{
+  "created_on": "2026-11-01 Australia/Sydney",
+  "classification": "Git-derived reconstruction; not a Jira export or contemporaneous burndown",
+  "jira_scope_source": "Authenticated Jira Sprint 0-2 reports inspected on 2026-11-01",
+  "git_source": "origin/main @ 11c066f",
+  "completion_rule": "An item burns on the mapped implementation/test commit date. Jira resolution dates are not reused. Items without independent Git evidence remain unburned.",
+  "mapping_caveat": "Some tightly coupled work items share one commit. The mapping is an evidence interpretation and is intentionally reviewable below.",
+  "sprints": [
+    {
+      "number": 0,
+      "start": "2026-10-14",
+      "end": "2026-10-20",
+      "goal": "Shared architecture/API contracts and five Core 1 runnable scenarios",
+      "items": [
+        {
+          "key": "SCRUM-1",
+          "title": "Sprint 0 Review and Retrospective",
+          "evidence_date": null,
+          "commits": []
+        },
+        {
+          "key": "SCRUM-12",
+          "title": "Fall Monitoring and Risk Assessment",
+          "evidence_date": "2026-10-21",
+          "commits": [
+            "d9b42a7"
+          ]
+        },
+        {
+          "key": "SCRUM-13",
+          "title": "Natural Language Goal Interpretation",
+          "evidence_date": "2026-10-24",
+          "commits": [
+            "75cd954"
+          ]
+        },
+        {
+          "key": "SCRUM-14",
+          "title": "Pet Event Monitoring",
+          "evidence_date": "2026-10-19",
+          "commits": [
+            "3f5e636"
+          ]
+        },
+        {
+          "key": "SCRUM-15",
+          "title": "Hazard and Intrusion Monitoring",
+          "evidence_date": "2026-10-21",
+          "commits": [
+            "364206c"
+          ]
+        },
+        {
+          "key": "SCRUM-16",
+          "title": "Environment and Preference Assessment",
+          "evidence_date": "2026-10-21",
+          "commits": [
+            "2eaa35c"
+          ]
+        },
+        {
+          "key": "SCRUM-17",
+          "title": "API Contracts and Agent Message Schema",
+          "evidence_date": "2026-10-18",
+          "commits": [
+            "afe844b"
+          ]
+        },
+        {
+          "key": "SCRUM-18",
+          "title": "HomeCoordinatorAgent and Agent Orchestration",
+          "evidence_date": "2026-10-20",
+          "commits": [
+            "4d0af7a"
+          ]
+        },
+        {
+          "key": "SCRUM-19",
+          "title": "DeviceControlTool and Simulated Devices",
+          "evidence_date": "2026-10-20",
+          "commits": [
+            "4d0af7a"
+          ]
+        },
+        {
+          "key": "SCRUM-20",
+          "title": "Shared Sensor/Event Models and Simulation",
+          "evidence_date": "2026-10-19",
+          "commits": [
+            "b71a67f",
+            "8f71f0"
+          ]
+        },
+        {
+          "key": "SCRUM-21",
+          "title": "Security Policy and Notification Integration",
+          "evidence_date": "2026-10-21",
+          "commits": [
+            "364206c"
+          ]
+        },
+        {
+          "key": "SCRUM-22",
+          "title": "Shared Environment/Preference Context",
+          "evidence_date": "2026-10-21",
+          "commits": [
+            "2eaa35c"
+          ]
+        },
+        {
+          "key": "SCRUM-23",
+          "title": "LLM Service and Fallback Handling",
+          "evidence_date": "2026-10-19",
+          "commits": [
+            "b6a64f8",
+            "33cce8e"
+          ]
+        }
+      ]
+    },
+    {
+      "number": 1,
+      "start": "2026-10-21",
+      "end": "2026-10-27",
+      "goal": "Five Core 2 workflows and five optional extensions through shared agents",
+      "items": [
+        {
+          "key": "SCRUM-2",
+          "title": "Sprint 1 Review and Retrospective",
+          "evidence_date": null,
+          "commits": []
+        },
+        {
+          "key": "SCRUM-24",
+          "title": "Resident Confirmation and Caregiver Notification",
+          "evidence_date": "2026-10-21",
+          "commits": [
+            "4136004"
+          ]
+        },
+        {
+          "key": "SCRUM-25",
+          "title": "Multi-Level Emergency Escalation",
+          "evidence_date": "2026-10-25",
+          "commits": [
+            "590fa61"
+          ]
+        },
+        {
+          "key": "SCRUM-26",
+          "title": "Multi-Device Control and Verification",
+          "evidence_date": "2026-10-24",
+          "commits": [
+            "75cd954"
+          ]
+        },
+        {
+          "key": "SCRUM-27",
+          "title": "Home Operating Mode Commands",
+          "evidence_date": "2026-10-24",
+          "commits": [
+            "0c47518",
+            "b8d1da9"
+          ]
+        },
+        {
+          "key": "SCRUM-28",
+          "title": "Owner Notification and Event Logging",
+          "evidence_date": "2026-10-24",
+          "commits": [
+            "53749aa"
+          ]
+        },
+        {
+          "key": "SCRUM-29",
+          "title": "Automatic Pet Feeding",
+          "evidence_date": "2026-10-24",
+          "commits": [
+            "53749aa"
+          ]
+        },
+        {
+          "key": "SCRUM-30",
+          "title": "Risk-Based Protective Response",
+          "evidence_date": "2026-10-21",
+          "commits": [
+            "364206c"
+          ]
+        },
+        {
+          "key": "SCRUM-31",
+          "title": "Trusted External Disaster Warnings",
+          "evidence_date": "2026-10-28",
+          "commits": [
+            "0525a82"
+          ]
+        },
+        {
+          "key": "SCRUM-32",
+          "title": "Safe Energy and Comfort Control",
+          "evidence_date": "2026-10-21",
+          "commits": [
+            "8655a8e"
+          ]
+        },
+        {
+          "key": "SCRUM-33",
+          "title": "Energy and Safety Trade-off Explanations",
+          "evidence_date": "2026-10-21",
+          "commits": [
+            "3f44771"
+          ]
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "start": "2026-10-28",
+      "end": "2026-10-31",
+      "goal": "Acceptance, integration fixes, safety review and clean-source deployment",
+      "items": [
+        {
+          "key": "SCRUM-3",
+          "title": "Sprint 2 Final Review and Retrospective",
+          "evidence_date": null,
+          "commits": []
+        },
+        {
+          "key": "SCRUM-34",
+          "title": "Elderly Safety Acceptance Tests",
+          "evidence_date": "2026-10-28",
+          "commits": [
+            "ec2d130"
+          ]
+        },
+        {
+          "key": "SCRUM-35",
+          "title": "Smart Home Control Acceptance Tests",
+          "evidence_date": "2026-10-31",
+          "commits": [
+            "78c3506"
+          ]
+        },
+        {
+          "key": "SCRUM-36",
+          "title": "Pet Care Acceptance Tests",
+          "evidence_date": "2026-10-24",
+          "commits": [
+            "53749aa",
+            "dd5a7e2"
+          ]
+        },
+        {
+          "key": "SCRUM-37",
+          "title": "Home Security Acceptance Tests",
+          "evidence_date": "2026-10-28",
+          "commits": [
+            "a3e99aa",
+            "d66f324"
+          ]
+        },
+        {
+          "key": "SCRUM-38",
+          "title": "Energy and Comfort Acceptance Tests",
+          "evidence_date": "2026-10-21",
+          "commits": [
+            "f93437f"
+          ]
+        },
+        {
+          "key": "SCRUM-39",
+          "title": "Integration and API Contract Bugs",
+          "evidence_date": "2026-10-31",
+          "commits": [
+            "4e7607e",
+            "a84e781"
+          ]
+        },
+        {
+          "key": "SCRUM-40",
+          "title": "Acceptance Results and Sprint Feedback",
+          "evidence_date": "2026-10-30",
+          "commits": [
+            "c264023"
+          ]
+        },
+        {
+          "key": "SCRUM-41",
+          "title": "Rebuild and Deploy from Submitted Source",
+          "evidence_date": "2026-10-30",
+          "commits": [
+            "3c81277",
+            "986de17"
+          ]
+        },
+        {
+          "key": "SCRUM-42",
+          "title": "Safety, Privacy and Fallback Review",
+          "evidence_date": "2026-10-31",
+          "commits": [
+            "a84e781"
+          ]
+        },
+        {
+          "key": "SCRUM-43",
+          "title": "Contribution Statement and Canvas Submission",
+          "evidence_date": null,
+          "commits": []
+        }
+      ]
+    }
+  ]
+}

@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | 1. Implementation of Stage 1 requirements | [REQUIREMENTS_TRACEABILITY.md](REQUIREMENTS_TRACEABILITY.md): every MR / AR / OR / NFR mapped to code and tests, with changes from the Stage 1 design | Acceptance reports in [acceptance/](acceptance/) |
 | 2. AI agent capabilities | [AI_EVALUATION.md](AI_EVALUATION.md): real model calls, rules versus model, the evaluation-driven fixes | [EXPLANATIONS.md](EXPLANATIONS.md) (UC-06 decision explanations), [INTEGRATED_CONTROL_REVIEW.md](INTEGRATED_CONTROL_REVIEW.md) |
-| 3. Agile development | [AGILE.md](AGILE.md): burndown, user stories, feedback loops | [SPRINT_REVIEWS.md](SPRINT_REVIEWS.md) (per-sprint goals, results, meetings) and the member sprint notes below |
+| 3. Agile development | [AGILE.md](AGILE.md): Jira-history and Git-derived burndown evidence, user stories and feedback loops | [SPRINT_REVIEWS.md](SPRINT_REVIEWS.md) (per-sprint goals, results, meetings) and the member sprint notes below |
 | 4. Advanced technologies | [ADVANCED_TECHNOLOGIES.md](ADVANCED_TECHNOLOGIES.md) | [DEPLOYMENT.md](DEPLOYMENT.md) (venv, Docker, CI) |
 
 ## Acceptance results per use case
@@ -30,6 +30,7 @@
 - [INTERFACES.md](INTERFACES.md): shared data contracts and current limitations.
 - [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md): how a domain connects to the shared agents.
 - [CONTRIBUTING.md](CONTRIBUTING.md): branches, pull requests and the Jira workflow.
-- [evidence/](evidence/): raw data behind the reports (Jira history, AI evaluation runs, charts and the script that builds them).
+- [evidence/](evidence/): raw data behind the reports (Jira history, AI evaluation runs, charts and chart-building scripts).
+- [`tools/generate_git_evidence_charts.py`](../tools/generate_git_evidence_charts.py): regenerates the supplementary Git activity, Sprint 0-2 implementation burndowns and verified feedback-loop charts.
 
 Records here are real: deployment and review notes are added as the work happens, and no meeting or test result is pre-filled. Examples never contain real credentials or personal information.
