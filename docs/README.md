@@ -23,7 +23,7 @@
 
 | Use case | Report |
 | --- | --- |
-| UC-01 Elderly fall response | [ELDERLY_SAFETY_ACCEPTANCE.md](acceptance/ELDERLY_SAFETY_ACCEPTANCE.md) (18 scenarios) |
+| UC-01 Elderly fall response | [ELDERLY_SAFETY_ACCEPTANCE.md](acceptance/ELDERLY_SAFETY_ACCEPTANCE.md) (18 scenarios) and [ELDERLY_SAFETY_UI_EVIDENCE.md](acceptance/ELDERLY_SAFETY_UI_EVIDENCE.md) |
 | UC-02 Multi-device home command | [SMART_HOME_CONTROL_ACCEPTANCE.md](acceptance/SMART_HOME_CONTROL_ACCEPTANCE.md) and [SMART_HOME_UI_EVIDENCE.md](acceptance/SMART_HOME_UI_EVIDENCE.md) |
 | UC-03 Pet monitoring and feeding | [PET_CARE_ACCEPTANCE.md](acceptance/PET_CARE_ACCEPTANCE.md) |
 | UC-04 Home security response | [HOME_SECURITY_ACCEPTANCE.md](acceptance/HOME_SECURITY_ACCEPTANCE.md) |
