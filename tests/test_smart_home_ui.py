@@ -52,6 +52,7 @@ class SmartHomeControlPageTests(unittest.TestCase):
         page_text = "\n".join(item.value for item in self.app.markdown)
         self.assertIn("Night mode activated and verified", page_text)
         self.assertIn("4 of 4 planned device changes", page_text)
+        self.assertIn("Power off (saved brightness: 70%)", page_text)
         record = json.loads(self.record_path.read_text(encoding="utf-8").strip())
         self.assertEqual(record["outcome"], "COMPLETE")
 
@@ -105,6 +106,12 @@ class SmartHomeControlPageTests(unittest.TestCase):
     def test_friendly_state_text_explains_lock_and_temperature(self) -> None:
         text = smart_home_ui._friendly_state({"locked": True, "temperature_c": 22})
         self.assertEqual(text, "Locked; 22 °C")
+
+    def test_powered_off_light_labels_brightness_as_saved(self) -> None:
+        off_text = smart_home_ui._friendly_state({"power": "off", "brightness": 70})
+        on_text = smart_home_ui._friendly_state({"power": "on", "brightness": 40})
+        self.assertEqual(off_text, "Power off (saved brightness: 70%)")
+        self.assertEqual(on_text, "Power on; Brightness 40%")
 
 
 if __name__ == "__main__":

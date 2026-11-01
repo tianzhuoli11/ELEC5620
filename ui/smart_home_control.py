@@ -128,7 +128,15 @@ def _friendly_state(state: dict) -> str:
         "mode": lambda value: f"{str(value).capitalize()} mode",
         "temperature_c": lambda value: f"{value} °C",
     }
-    return "; ".join(labels.get(key, lambda value: f"{key}={value}")(value) for key, value in state.items())
+    parts: list[str] = []
+    combined_light_state = str(state.get("power", "")).lower() == "off" and "brightness" in state
+    if combined_light_state:
+        parts.append(f'Power off (saved brightness: {state["brightness"]}%)')
+    for key, value in state.items():
+        if combined_light_state and key in ("power", "brightness"):
+            continue
+        parts.append(labels.get(key, lambda item: f"{key}={item}")(value))
+    return "; ".join(parts)
 
 
 def _state_rows(states: dict[str, dict]) -> list[dict[str, str]]:
