@@ -15,8 +15,8 @@
 
 - [acceptance/ELDERLY_SAFETY_ACCEPTANCE.md](acceptance/ELDERLY_SAFETY_ACCEPTANCE.md): UC-01, 18 scenarios.
 - [acceptance/SMART_HOME_CONTROL_ACCEPTANCE.md](acceptance/SMART_HOME_CONTROL_ACCEPTANCE.md) and [acceptance/SMART_HOME_UI_EVIDENCE.md](acceptance/SMART_HOME_UI_EVIDENCE.md): UC-02, automated and UI.
-- Pet Care (UC-03): [JINJING_SPRINT2.md](JINJING_SPRINT2.md).
-- Home Security (UC-04): [MEMBER4_HOME_SECURITY_EVIDENCE.md](MEMBER4_HOME_SECURITY_EVIDENCE.md).
+- [acceptance/PET_CARE_ACCEPTANCE.md](acceptance/PET_CARE_ACCEPTANCE.md): UC-03, with UI screenshots; development history in [JINJING_SPRINT2.md](JINJING_SPRINT2.md).
+- [acceptance/HOME_SECURITY_ACCEPTANCE.md](acceptance/HOME_SECURITY_ACCEPTANCE.md): UC-04, with UI screenshots; evidence index in [MEMBER4_HOME_SECURITY_EVIDENCE.md](MEMBER4_HOME_SECURITY_EVIDENCE.md).
 - Energy & Comfort (UC-05): [MEMBER5_ENERGY_COMFORT_EVIDENCE.md](MEMBER5_ENERGY_COMFORT_EVIDENCE.md).
 
 ## Member sprint notes (development history)
